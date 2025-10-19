@@ -1,110 +1,280 @@
 [![Project generated with PyScaffold](https://img.shields.io/badge/-PyScaffold-005CA0?logo=pyscaffold)](https://pyscaffold.org/)
-<!-- These are examples of badges you might also want to add to your README. Update the URLs accordingly.
-[![Built Status](https://api.cirrus-ci.com/github/<USER>/honegumi_rag_assistant.svg?branch=main)](https://cirrus-ci.com/github/<USER>/honegumi_rag_assistant)
-[![ReadTheDocs](https://readthedocs.org/projects/honegumi_rag_assistant/badge/?version=latest)](https://honegumi_rag_assistant.readthedocs.io/en/stable/)
-[![Coveralls](https://img.shields.io/coveralls/github/<USER>/honegumi_rag_assistant/main.svg)](https://coveralls.io/r/<USER>/honegumi_rag_assistant)
-[![PyPI-Server](https://img.shields.io/pypi/v/honegumi_rag_assistant.svg)](https://pypi.org/project/honegumi_rag_assistant/)
-[![Conda-Forge](https://img.shields.io/conda/vn/conda-forge/honegumi_rag_assistant.svg)](https://anaconda.org/conda-forge/honegumi_rag_assistant)
-[![Monthly Downloads](https://pepy.tech/badge/honegumi_rag_assistant/month)](https://pepy.tech/project/honegumi_rag_assistant)
-[![Twitter](https://img.shields.io/twitter/url/http/shields.io.svg?style=social&label=Twitter)](https://twitter.com/honegumi_rag_assistant)
--->
 
-# honegumi_rag_assistant
+# **Honegumi RAG Assistant**: Agentic Code Generation for Bayesian Optimization
 
-> Add a short description here!
+![Honegumi RAG Assistant Pipeline](docs/_static/honegumi_rag_assistant_logo.JPG)
 
-A longer description of your project goes here...
+*Figure: Schematic of the Honegumi RAG Assistant agentic pipeline for generating Bayesian optimization code from natural language.*
+
+*An intelligent AI assistant that converts natural language problem descriptions into ready-to-run Bayesian optimization code using Meta's [Ax Platform](https://ax.dev/)*
+
+---
+
+## Overview
+
+**Honegumi RAG Assistant** is an advanced agentic AI system that automatically generates high-quality, executable Python code for Bayesian optimization experiments. Built on top of [**Honegumi**](https://honegumi.readthedocs.io/en/latest/), it uses **LangGraph** and **OpenAI GPT models** to orchestrate multiple specialized agents that collaborate to understand your optimization problem, retrieve relevant documentation, and generate production-ready code using the [**Ax Platform**](https://ax.dev/).
+
+[**Honegumi**](https://honegumi.readthedocs.io/en/latest/) provides deterministic skeleton code generation based on problem parameters, and this RAG Assistant enhances it by retrieving relevant [Ax Platform](https://ax.dev/) documentation to help the LLM transform the skeleton into complete, domain-specific code tailored to your problem.
+
+Simply describe your optimization problem in plain English, and the assistant produces complete, runnable code tailored to your specific requirements.
+
+### Key Capabilities
+
+- **Natural language to code**: Describe optimization problems conversationally
+- **Intelligent RAG**: Parallel retrieval of relevant Ax documentation to supplement skeleton code
+- **Built on Honegumi**: Leverages [Honegumi](https://honegumi.readthedocs.io/en/latest/) for deterministic skeleton generation
+- **Multi-agent architecture**: Specialized agents for parameter extraction, retrieval planning, and code writing
+- **Flexible model selection**: Mix GPT-5 and GPT-4o models for cost-performance optimization
+
+---
+
+## Key Features
+
+### Multi-Agent Architecture
+- **Parameter Selector**: Analyzes problem and extracts optimization parameters (objective, constraints, task type etc.)
+- **Skeleton Generator**: Uses [Honegumi](https://honegumi.readthedocs.io/en/latest/) to create deterministic code templates
+- **Retrieval Planner**: Intelligently generates retrieval queries based on problem complexity
+- **Parallel Retrievers**: For efficient documentation retrieval - multiple queries executed concurrently to minimize latency
+- **Code Writer**: GPT-5 powered code generation with streaming output
+- **Reviewer** (optional): Quality assessment and revision requests (disabled by default for speed)
+
+### Advanced Features
+- **LangSmith Integration**: Full tracing support for debugging and monitoring
+
+---
 
 ## Installation
 
-In order to set up the necessary environment:
+### Prerequisites
 
-1. review and uncomment what you need in `environment.yml` and create an environment `honegumi_rag_assistant` with the help of [conda]:
+1. **Python 3.11+** (recommended: use Conda)
+2. **OpenAI API Key** (for GPT-5/GPT-4o models)
+3. **LangChain API Key** (optional, for LangSmith tracing)
+
+### Quick Setup
+
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/hasan-sayeed/honegumi_rag_assistant.git
+   cd honegumi_rag_assistant
    ```
+
+2. **Create Conda Environment** (recommended):
+   ```bash
    conda env create -f environment.yml
-   ```
-2. activate the new environment with:
-   ```
    conda activate honegumi_rag_assistant
    ```
 
-> **_NOTE:_**  The conda environment will have honegumi_rag_assistant installed in editable mode.
-> Some changes, e.g. in `setup.cfg`, might require you to run `pip install -e .` again.
-
-
-Optional and needed only once after `git clone`:
-
-3. install several [pre-commit] git hooks with:
+3. **Configure API Keys**:
+   
+   **IMPORTANT**: Rename `.env.example` to `.env`. Then edit `.env` and add your keys:
+   
    ```bash
-   pre-commit install
-   # You might also want to run `pre-commit autoupdate`
+   # Required: OpenAI API Key for LLM and embeddings
+   OPENAI_API_KEY=sk-your-actual-openai-api-key-here
+   
+   # Optional: LangChain for tracing (recommended for debugging)
+   LANGCHAIN_API_KEY=your-langchain-api-key-here
+   LANGCHAIN_TRACING_V2=true
+   LANGCHAIN_PROJECT=Honegumi RAG Assistant
+   
+   # Optional: Path to FAISS vector store (if using RAG)
+   AX_DOCS_VECTORSTORE_PATH=data/processed/ax_docs_vectorstore
+   RETRIEVAL_TOP_K=5
    ```
-   and checkout the configuration under `.pre-commit-config.yaml`.
-   The `-n, --no-verify` flag of `git commit` can be used to deactivate pre-commit hooks temporarily.
-
-4. install [nbstripout] git hooks to remove the output cells of committed notebooks with:
+   
+   **Alternative**: Set as environment variables (temporary):
    ```bash
-   nbstripout --install --attributes notebooks/.gitattributes
+   # Windows PowerShell
+   $env:OPENAI_API_KEY="sk-your-key"
+   $env:LANGCHAIN_API_KEY="your-key"
+   
+   # Linux/Mac
+   export OPENAI_API_KEY="sk-your-key"
+   export LANGCHAIN_API_KEY="your-key"
    ```
-   This is useful to avoid large diffs due to plots in your notebooks.
-   A simple `nbstripout --uninstall` will revert these changes.
 
-
-Then take a look into the `scripts` and `notebooks` folders.
-
-## Dependency Management & Reproducibility
-
-1. Always keep your abstract (unpinned) dependencies updated in `environment.yml` and eventually
-   in `setup.cfg` if you want to ship and install your package via `pip` later on.
-2. Create concrete dependencies as `environment.lock.yml` for the exact reproduction of your
-   environment with:
+4. ** Build Vector Store for RAG**:
+   
+   For best results with documentation retrieval, run:
    ```bash
-   conda env export -n honegumi_rag_assistant -f environment.lock.yml
+   # Build vector store (one-time setup)
+   python scripts/build_vector_store.py
    ```
-   For multi-OS development, consider using `--no-builds` during the export.
-3. Update your current environment with respect to a new `environment.lock.yml` using:
+   
+   The vector store will be saved to `data/processed/ax_docs_vectorstore/` and automatically loaded if present.
+
+5. **Verify Installation**:
    ```bash
-   conda env update -f environment.lock.yml --prune
+   python -m honegumi_rag_assistant --help
    ```
+
+---
+
+## Usage
+
+Run the assistant:
+
+```bash
+python -m honegumi_rag_assistant
+```
+
+The assistant will prompt you to describe your Bayesian optimization problem in natural language:
+
+```
+Your problem:
+Optimize temperature (50-200°C) and pressure (1-10 bar) for maximum yield in a chemical reaction.
+```
+
+After typing your problem description, press **Enter**. The assistant will process your problem and generate code in real-time (streaming), displaying it as it's created.
+
+**Optional: Enable debug mode** to see detailed agent decisions:
+
+```bash
+python -m honegumi_rag_assistant --debug
+```
+
+### Command Line Arguments
+
+| Argument | Description | Default |
+|----------|-------------|---------|
+| `--output-dir` | Directory where generated script will be saved | From settings |
+| `--debug` | Enable debug mode with detailed logging | `False` |
+| `--review` | Enable Reviewer agent (slower, more accurate) | `False` |
+| `--param-selector-model` | Model for Parameter Selector | `gpt-5` |
+| `--retrieval-planner-model` | Model for Retrieval Planner | `gpt-5` |
+| `--code-writer-model` | Model for Code Writer agent | `gpt-5` |
+| `--reviewer-model` | Model for Reviewer agent | `gpt-4o` |
+
+
+### Model Selection Guide
+
+**Recommended (Best Quality)**:
+```bash
+--param-selector-model gpt-5 \
+--code-writer-model gpt-5 \
+--retrieval-planner-model gpt-5
+```
+
+**Budget (Faster, Lower Cost, Lower Accuracy)**:
+```bash
+--param-selector-model gpt-5-mini \
+--code-writer-model gpt-4o \
+--retrieval-planner-model gpt-5-mini
+```
+
+---
+
 ## Project Organization
 
 ```
-├── AUTHORS.md              <- List of developers and maintainers.
-├── CHANGELOG.md            <- Changelog to keep track of new features and fixes.
-├── CONTRIBUTING.md         <- Guidelines for contributing to this project.
-├── Dockerfile              <- Build a docker container with `docker build .`.
-├── LICENSE.txt             <- License as chosen on the command-line.
-├── README.md               <- The top-level README for developers.
-├── configs                 <- Directory for configurations of model & application.
-├── data
-│   ├── external            <- Data from third party sources.
-│   ├── interim             <- Intermediate data that has been transformed.
-│   ├── processed           <- The final, canonical data sets for modeling.
-│   └── raw                 <- The original, immutable data dump.
-├── docs                    <- Directory for Sphinx documentation in rst or md.
-├── environment.yml         <- The conda environment file for reproducibility.
-├── models                  <- Trained and serialized models, model predictions,
-│                              or model summaries.
-├── notebooks               <- Jupyter notebooks. Naming convention is a number (for
-│                              ordering), the creator's initials and a description,
-│                              e.g. `1.0-fw-initial-data-exploration`.
-├── pyproject.toml          <- Build configuration. Don't change! Use `pip install -e .`
-│                              to install for development or to build `tox -e build`.
-├── references              <- Data dictionaries, manuals, and all other materials.
-├── reports                 <- Generated analysis as HTML, PDF, LaTeX, etc.
-│   └── figures             <- Generated plots and figures for reports.
-├── scripts                 <- Analysis and production scripts which import the
-│                              actual PYTHON_PKG, e.g. train_model.
-├── setup.cfg               <- Declarative configuration of your project.
-├── setup.py                <- [DEPRECATED] Use `python setup.py develop` to install for
-│                              development or `python setup.py bdist_wheel` to build.
-├── src
-│   └── honegumi_rag_assistant <- Actual Python package where the main functionality goes.
-├── tests                   <- Unit tests which can be run with `pytest`.
-├── .coveragerc             <- Configuration for coverage reports of unit tests.
-├── .isort.cfg              <- Configuration for git hook that sorts imports.
-└── .pre-commit-config.yaml <- Configuration of pre-commit git hooks.
+├── AUTHORS.md              <- List of developers and maintainers
+├── CHANGELOG.md            <- Changelog to keep track of new features and fixes
+├── CONTRIBUTING.md         <- Guidelines for contributing to this project
+├── LICENSE.txt             <- MIT License
+├── README.md               <- This file
+├── environment.yml         <- Conda environment specification
+├── .env.example            <- Example environment variables (COPY TO .env)
+│
+├── configs/                <- Configuration files
+│
+├── data/
+│   ├── raw/                <- Original, immutable data
+│   └── processed/          <- Processed data (vector stores)
+│       └── ax_docs_vectorstore/  <- FAISS vector store for Ax docs
+│
+├── src/
+│   └── honegumi_rag_assistant/
+│       ├── __init__.py
+│       ├── __main__.py     <- CLI entry point
+│       ├── orchestrator.py <- LangGraph pipeline orchestration
+│       ├── app_config.py   <- Settings and configuration
+│       ├── states.py       <- State definitions with custom reducers
+│       ├── extractors.py   <- Pydantic schemas for structured extraction
+│       └── nodes/          <- Agent implementations
+│           ├── parameter_selector.py   <- Parameter extraction
+│           ├── skeleton_generator.py   <- Honegumi skeleton generation
+│           ├── retrieval_planner.py    <- Retrieval query generation
+│           ├── retriever.py            <- Parallel FAISS retrieval
+│           ├── code_writer.py          <- GPT-5 code generation
+│           └── reviewer.py             <- Code quality review
+│
+├── scripts/
+│   └── build_vector_store.py  <- Build FAISS vector store
+│
+├── tests/                  <- Unit tests (pytest)
+└── docs/                   <- Documentation
 ```
+
+---
+
+## Advanced Topics
+
+### LangSmith Tracing
+
+Enable comprehensive debugging:
+
+1. Get API key from https://smith.langchain.com/
+2. Add to `.env`:
+   ```
+   LANGCHAIN_API_KEY=your-key
+   LANGCHAIN_TRACING_V2=true
+   LANGCHAIN_PROJECT=Honegumi RAG Assistant
+   ```
+3. View all LLM calls, agent decisions, and timing in LangSmith dashboard
+
+---
+
+## Citation
+
+If you use Honegumi RAG Assistant in your research, please cite:
+
+```bibtex
+@software{honegumi_rag_assistant2025,
+  title = {Honegumi RAG Assistant: Agentic Code Generation for Bayesian Optimization},
+  author = {Sayeed, Hasan Muhammad},
+  year = {2025},
+  url = {https://github.com/hasan-sayeed/honegumi_rag_assistant}
+}
+```
+
+---
+
+## Contributing
+
+We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+**How to contribute**:
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+---
+
+## License
+
+This project is licensed under the MIT License - see [LICENSE.txt](LICENSE.txt) for details.
+
+---
+
+## Acknowledgments
+
+- Built with [PyScaffold](https://pyscaffold.org/)
+- Powered by [LangGraph](https://github.com/langchain-ai/langgraph) and [LangChain](https://github.com/langchain-ai/langchain)
+- Skeleton generation by [Honegumi](https://honegumi.readthedocs.io/en/latest/)
+- Uses Meta's [Ax Platform](https://ax.dev/) for Bayesian optimization
+
+---
+
+## Support
+
+For questions, bug reports, or feature requests:
+- **GitHub Issues**: https://github.com/hasan-sayeed/honegumi_rag_assistant/issues
+- **Email**: hasan.sayeed@utah.edu
+
+---
 
 <!-- pyscaffold-notes -->
 
