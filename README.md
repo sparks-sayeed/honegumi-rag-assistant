@@ -1,4 +1,5 @@
 [![Project generated with PyScaffold](https://img.shields.io/badge/-PyScaffold-005CA0?logo=pyscaffold)](https://pyscaffold.org/)
+[![Documentation Status](https://readthedocs.org/projects/honegumi-rag-assistant/badge/?version=latest)](https://honegumi-rag-assistant.readthedocs.io/en/latest/)
 [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hasan-sayeed/honegumi_rag_assistant/blob/main/notebooks/honegumi_rag_colab_tutorial.ipynb)
 [![GitHub issues](https://img.shields.io/github/issues/hasan-sayeed/honegumi_rag_assistant)](https://github.com/hasan-sayeed/honegumi_rag_assistant/issues)
 [![GitHub Discussions](https://img.shields.io/github/discussions/hasan-sayeed/honegumi_rag_assistant)](https://github.com/hasan-sayeed/honegumi_rag_assistant/discussions)
@@ -179,7 +180,7 @@ The tutorial runs entirely in Colab—no local setup required. All you need is a
 Run the assistant:
 
 ```bash
-honegumi-rag
+honegumi-rag    # if you installed via pip
 # Or: python -m honegumi_rag_assistant
 ```
 
