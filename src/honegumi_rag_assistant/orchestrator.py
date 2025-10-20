@@ -200,7 +200,7 @@ def run_from_text(
     skip_review: bool = False,
     enable_review: bool = False,
 ) -> str:
-    """Run the full pipeline on a problem description string and write the code to disk.
+    """Run the full pipeline on a problem description string and optionally write the code to disk.
 
     Parameters
     ----------
@@ -208,7 +208,7 @@ def run_from_text(
         Natural language problem description.
     output_dir : str or None, optional
         Directory where the generated script should be saved.  If
-        ``None``, the value from :data:`settings.output_dir` is used.
+        ``None``, the code is NOT saved to disk (only returned).
     debug : bool, optional
         Whether to enable debug mode with verbose output. Defaults to False.
     run_id : str or None, optional
@@ -232,9 +232,11 @@ def run_from_text(
     # Start timing
     start_time = time.time()
     
-    # Determine the output directory
-    target_dir = Path(output_dir or settings.output_dir)
-    target_dir.mkdir(parents=True, exist_ok=True)
+    # Determine the output directory (only if user provided one)
+    target_dir = None
+    if output_dir:
+        target_dir = Path(output_dir)
+        target_dir.mkdir(parents=True, exist_ok=True)
     
     # Generate run ID if not provided
     if run_id is None:
@@ -343,10 +345,13 @@ def run_from_text(
         print(code)
         print("="*80 + "\n")
 
-    # Write the code to disk
-    outfile = target_dir / f"honegumi_generated_{run_id}.py"
-    with open(outfile, "w", encoding="utf-8") as f:
-        f.write(code)
+    # Write the code to disk only if output_dir was specified
+    if target_dir:
+        outfile = target_dir / f"honegumi_generated_{run_id}.py"
+        with open(outfile, "w", encoding="utf-8") as f:
+            f.write(code)
+        if debug:
+            print(f"Code saved to: {outfile}\n")
     
     # Print total execution time (only in debug mode)
     if debug:

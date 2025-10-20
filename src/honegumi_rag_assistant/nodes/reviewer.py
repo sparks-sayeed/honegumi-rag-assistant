@@ -178,7 +178,7 @@ Keep in mind: This is review attempt {review_count + 1}/3. Be thorough but fair.
                     print(f"DEBUG: Reviewer returning critique_report, review_count, retrieval_count\n")
                     print(f"DEBUG: NOT returning contexts key - LangGraph should preserve existing\n")
                 else:
-                    print("🔄 Requesting code revision...")
+                    print("Requesting code revision...")
                 return {
                     "critique_report": [feedback],
                     "review_count": review_count + 1,

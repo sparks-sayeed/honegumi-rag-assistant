@@ -53,7 +53,7 @@ class SkeletonGenerator:
             return {"error": "Optimisation parameters are missing; cannot generate skeleton."}
 
         if not settings.debug:
-            print("🏗️  Generating code skeleton using Honegumi...")
+            print("Generating code skeleton using Honegumi...")
         
         try:
             # Determine the location of the Honegumi templates using the package

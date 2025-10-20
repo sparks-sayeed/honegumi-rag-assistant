@@ -128,6 +128,12 @@ Optimize temperature (50-200°C) and pressure (1-10 bar) for maximum yield in a 
 
 After typing your problem description, press **Enter**. The assistant will process your problem and generate code in real-time (streaming), displaying it as it's created.
 
+**By default, code is only printed to the console (not saved)**. To save the generated script to a file, use `--output-dir`:
+
+```bash
+python -m honegumi_rag_assistant --output-dir ./my_experiments
+```
+
 **Optional: Enable debug mode** to see detailed agent decisions:
 
 ```bash
@@ -138,7 +144,7 @@ python -m honegumi_rag_assistant --debug
 
 | Argument | Description | Default |
 |----------|-------------|---------|
-| `--output-dir` | Directory where generated script will be saved | From settings |
+| `--output-dir` | Save generated script to specified directory (if omitted, code is only printed, not saved) | `None` (no save) |
 | `--debug` | Enable debug mode with detailed logging | `False` |
 | `--review` | Enable Reviewer agent (slower, more accurate) | `False` |
 | `--param-selector-model` | Model for Parameter Selector | `gpt-5` |

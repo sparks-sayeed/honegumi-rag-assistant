@@ -49,7 +49,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--output-dir",
         required=False,
-        help="Directory where the generated script will be saved.  Defaults to settings.output_dir.",
+        help="Directory where the generated script will be saved. If not provided, code is only printed (not saved).",
     )
     parser.add_argument(
         "--debug",
@@ -108,6 +108,9 @@ def main(argv: list[str] | None = None) -> int:
         if not problem:
             print("Error: No problem description provided.", file=sys.stderr)
             return 1
+        
+        # Add blank line after user input before processing starts
+        print()
         
         if args.debug:
             print("\n" + "="*80)

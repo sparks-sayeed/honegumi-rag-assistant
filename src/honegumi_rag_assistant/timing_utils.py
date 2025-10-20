@@ -39,7 +39,7 @@ def time_node(node_name: str) -> Callable:
             
             # Only print timing in debug mode
             if settings.debug:
-                print(f"⏱️  {node_name}: {elapsed:.2f}s")
+                print(f"{node_name}: {elapsed:.2f}s")
             
             return result
         return wrapper

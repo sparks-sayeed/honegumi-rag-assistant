@@ -169,11 +169,11 @@ Consider if you need clarification on:
                 print("="*80 + "\n")
             else:
                 if decision.action == "retrieve" and query_strings:
-                    print(f"📚 Planning {len(query_strings)} parallel retrieval{'s' if len(query_strings) > 1 else ''}...")
+                    print(f"Planning {len(query_strings)} parallel retrieval{'s' if len(query_strings) > 1 else ''}...")
                     for i, q in enumerate(query_strings, 1):
                         print(f"   {i}. {q}")
                 elif decision.action == "skip_retrieval":
-                    print("⚡ Skeleton is sufficient, skipping retrieval")
+                    print("Skeleton is sufficient, skipping retrieval")
             
             return {"retrieval_queries": query_strings}
             

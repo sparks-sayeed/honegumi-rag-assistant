@@ -54,7 +54,7 @@ class ParameterSelector:
             return {"error": "No problem description provided to parameter selector."}
 
         if not settings.debug:
-            print("🔧 Analyzing problem and selecting optimization parameters...")
+            print("Analyzing problem and selecting optimization parameters...")
         
         result = ParameterExtractor.invoke(problem_description)
         
