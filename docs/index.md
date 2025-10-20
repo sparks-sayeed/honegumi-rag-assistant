@@ -1,17 +1,24 @@
-# honegumi_rag_assistant
+# Honegumi RAG Assistant
 
-**AI-powered Bayesian optimization code generator using RAG with Ax Platform documentation**
+**Agentic Code Generation for Bayesian Optimization**
 
-Honegumi RAG Assistant is an intelligent code generation tool that helps researchers and practitioners quickly create Bayesian optimization code using the Ax Platform. It combines LangGraph-based agentic workflows with retrieval-augmented generation (RAG) to provide contextually accurate code based on official Ax documentation.
+![Honegumi RAG Assistant Pipeline](_static/honegumi_rag_assistant_logo.JPG)
 
-## Features
+*An intelligent AI assistant that converts natural language problem descriptions into ready-to-run Bayesian optimization code using Meta's [Ax Platform](https://ax.dev/)*
 
-- 🤖 **Agentic Workflow**: Multi-step LangGraph pipeline for intelligent code generation
-- 📚 **RAG-Powered**: Retrieves relevant context from Ax Platform documentation  
-- ⚡ **Fast Generation**: Optimized vector search with FAISS
-- 🎯 **Parameter Detection**: Automatically identifies optimization parameters from problem descriptions
-- 🔄 **Self-Review**: Built-in code review and refinement capabilities
-- 💻 **Multiple Interfaces**: CLI tool and programmatic API
+## Overview
+
+**Honegumi RAG Assistant** is an advanced agentic AI system that automatically generates high-quality, executable Python code for Bayesian optimization experiments. Built on top of [**Honegumi**](https://honegumi.readthedocs.io/en/latest/), it uses **LangGraph** and **OpenAI GPT models** to orchestrate multiple specialized agents that collaborate to understand your optimization problem, retrieve relevant documentation, and generate production-ready code using the [**Ax Platform**](https://ax.dev/).
+
+Simply describe your optimization problem in plain English, and the assistant produces complete, runnable code tailored to your specific requirements.
+
+## Key Capabilities
+
+- **Natural language to code**: Describe optimization problems conversationally
+- **Intelligent RAG**: Parallel retrieval of relevant Ax documentation to supplement skeleton code
+- **Built on Honegumi**: Leverages [Honegumi](https://honegumi.readthedocs.io/en/latest/) for deterministic skeleton generation
+- **Multi-agent architecture**: Specialized agents for parameter extraction, retrieval planning, and code writing
+- **Flexible model selection**: Mix GPT-o1 and GPT-4o models for cost-performance optimization
 
 ## Quick Start
 

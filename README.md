@@ -1,5 +1,5 @@
 [![Project generated with PyScaffold](https://img.shields.io/badge/-PyScaffold-005CA0?logo=pyscaffold)](https://pyscaffold.org/)
-[![Documentation Status](https://readthedocs.org/projects/honegumi-rag-assistant/badge/?version=latest)](https://honegumi-rag-assistant.readthedocs.io/en/latest/)
+[![Documentation Status](https://readthedocs.org/projects/honegumi-rag-assistant/badge/?version=stable)](https://honegumi-rag-assistant.readthedocs.io/en/stable/)
 [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hasan-sayeed/honegumi_rag_assistant/blob/main/notebooks/honegumi_rag_colab_tutorial.ipynb)
 [![GitHub issues](https://img.shields.io/github/issues/hasan-sayeed/honegumi_rag_assistant)](https://github.com/hasan-sayeed/honegumi_rag_assistant/issues)
 [![GitHub Discussions](https://img.shields.io/github/discussions/hasan-sayeed/honegumi_rag_assistant)](https://github.com/hasan-sayeed/honegumi_rag_assistant/discussions)

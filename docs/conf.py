@@ -121,7 +121,7 @@ source_suffix = [".rst", ".md"]
 master_doc = "index"
 
 # General information about the project.
-project = "honegumi_rag_assistant"
+project = "Honegumi RAG Assistant"
 copyright = "2025, Hasan Muhammad Sayeed"
 
 # The version info for the project you're documenting, acts as replacement for
@@ -195,6 +195,10 @@ html_theme = "sphinx_rtd_theme"
 html_theme_options = {
     "navigation_depth": 4,
     "collapse_navigation": False,
+    "logo_only": False,
+    "display_version": True,
+    "prev_next_buttons_location": "bottom",
+    "style_external_links": True,
 }
 
 # Add any paths that contain custom themes here, relative to this directory.
@@ -209,7 +213,7 @@ html_theme_options = {
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-# html_logo = ""
+html_logo = "_static/honegumi_rag_assistant_logo.JPG"
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
@@ -263,7 +267,7 @@ html_static_path = ["_static"]
 # html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = "honegumi_rag_assistant-doc"
+htmlhelp_basename = "honegumi-rag-assistant-doc"
 
 
 # -- Options for LaTeX output ------------------------------------------------
@@ -280,7 +284,7 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-    ("index", "user_guide.tex", "honegumi_rag_assistant Documentation", "Hasan Muhammad Sayeed", "manual")
+    ("index", "user_guide.tex", "Honegumi RAG Assistant Documentation", "Hasan Muhammad Sayeed", "manual")
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
