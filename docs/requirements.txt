@@ -1,6 +1,18 @@
 # Requirements file for ReadTheDocs, check .readthedocs.yml.
 # To build the module reference correctly, make sure every external package
 # under `install_requires` in `setup.cfg` is also listed here!
-# sphinx_rtd_theme
-myst-parser[linkify]
 sphinx>=3.2.1
+myst-parser[linkify]
+sphinx-rtd-theme
+
+# Package dependencies (needed for autodoc to work)
+openai==2.3.0
+langchain-openai==0.3.35
+honegumi==0.4.3
+langchain==0.3.27
+langchain-community==0.3.31
+langgraph==0.6.10
+faiss-cpu==1.12.0
+python-dotenv
+numpy
+pandas

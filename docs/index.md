@@ -1,17 +1,33 @@
 # honegumi_rag_assistant
 
-Add a short description here!
+**AI-powered Bayesian optimization code generator using RAG with Ax Platform documentation**
 
+Honegumi RAG Assistant is an intelligent code generation tool that helps researchers and practitioners quickly create Bayesian optimization code using the Ax Platform. It combines LangGraph-based agentic workflows with retrieval-augmented generation (RAG) to provide contextually accurate code based on official Ax documentation.
 
-## Note
+## Features
 
-> This is the main page of your project's [Sphinx] documentation. It is
-> formatted in [Markdown]. Add additional pages by creating md-files in
-> `docs` or rst-files (formatted in [reStructuredText]) and adding links to
-> them in the `Contents` section below.
->
-> Please check [Sphinx] and [MyST] for more information
-> about how to document your project and how to configure your preferences.
+- 🤖 **Agentic Workflow**: Multi-step LangGraph pipeline for intelligent code generation
+- 📚 **RAG-Powered**: Retrieves relevant context from Ax Platform documentation  
+- ⚡ **Fast Generation**: Optimized vector search with FAISS
+- 🎯 **Parameter Detection**: Automatically identifies optimization parameters from problem descriptions
+- 🔄 **Self-Review**: Built-in code review and refinement capabilities
+- 💻 **Multiple Interfaces**: CLI tool and programmatic API
+
+## Quick Start
+
+Install via pip:
+
+```bash
+pip install honegumi-rag-assistant
+```
+
+Run the CLI:
+
+```bash
+honegumi-rag
+```
+
+Or try it in [Google Colab](https://colab.research.google.com/github/hasan-sayeed/honegumi_rag_assistant/blob/main/notebooks/honegumi_rag_colab_tutorial.ipynb)!
 
 
 ## Contents
@@ -32,8 +48,3 @@ Module Reference <api/modules>
 * {ref}`genindex`
 * {ref}`modindex`
 * {ref}`search`
-
-[Sphinx]: http://www.sphinx-doc.org/
-[Markdown]: https://daringfireball.net/projects/markdown/
-[reStructuredText]: http://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html
-[MyST]: https://myst-parser.readthedocs.io/en/latest/
