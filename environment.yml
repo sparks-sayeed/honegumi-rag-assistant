@@ -8,9 +8,9 @@ dependencies:
   - python>=3.11
   - pip
   # BASICS
-  - numpy
+  - numpy==2.3.3
   - scipy
-  - pandas
+  - pandas==2.3.3
   - tqdm
   - click
   - ipython
