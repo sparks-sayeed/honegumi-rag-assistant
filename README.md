@@ -1,4 +1,8 @@
 [![Project generated with PyScaffold](https://img.shields.io/badge/-PyScaffold-005CA0?logo=pyscaffold)](https://pyscaffold.org/)
+[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hasan-sayeed/honegumi_rag_assistant/blob/main/notebooks/honegumi_rag_colab_tutorial.ipynb)
+[![GitHub issues](https://img.shields.io/github/issues/hasan-sayeed/honegumi_rag_assistant)](https://github.com/hasan-sayeed/honegumi_rag_assistant/issues)
+[![GitHub Discussions](https://img.shields.io/github/discussions/hasan-sayeed/honegumi_rag_assistant)](https://github.com/hasan-sayeed/honegumi_rag_assistant/discussions)
+[![Last Committed](https://img.shields.io/github/last-commit/hasan-sayeed/honegumi_rag_assistant)](https://github.com/hasan-sayeed/honegumi_rag_assistant/commits/main/)
 
 # **Honegumi RAG Assistant**: Agentic Code Generation for Bayesian Optimization
 
@@ -43,15 +47,79 @@ Simply describe your optimization problem in plain English, and the assistant pr
 
 ---
 
+## 🛠️ Prerequisites
+
+- **Conda** (Miniconda or Anaconda)
+- **Python 3.11+**
+- [**OpenAI API key**](https://platform.openai.com/api-keys)
+- [**LangSmith API key**](https://docs.smith.langchain.com/administration/how_to_guides/organization_management/create_account_api_key) (optional)
+
+---
+
+## 📘 Google Colab Tutorial
+
+To help you get started quickly, we've prepared an interactive Google Colab tutorial:
+
+**[Google Colab Tutorial: Getting Started with Honegumi RAG Assistant](https://colab.research.google.com/github/hasan-sayeed/honegumi_rag_assistant/blob/main/notebooks/honegumi_rag_colab_tutorial.ipynb)**
+
+In this tutorial, you'll learn how to:
+
+- Install Honegumi RAG Assistant and all necessary dependencies on Colab
+- Set up API keys using Colab Secrets
+- Build a vector store from Ax Platform documentation
+- Describe your optimization problem and generate code
+- View the generated code in your Google Drive
+
+The tutorial runs entirely in Colab—no local setup required. All you need is access to your Google Drive and valid OpenAI/LangSmith API keys.
+
+---
+
 ## Installation
 
-### Prerequisites
+### Quick Install via pip
 
-1. **Python 3.11+** (recommended: use Conda)
-2. **OpenAI API Key** (for GPT-5/GPT-4o models)
-3. **LangChain API Key** (optional, for LangSmith tracing)
+1. Create & activate a conda environment
+   ```bash
+   conda create -n honegumi_rag python=3.11 -y
+   conda activate honegumi_rag
+   ```
 
-### Quick Setup
+2. Install via pip
+   ```bash
+   pip install honegumi-rag-assistant
+   ```
+
+3. Configure your API keys
+
+   **Honegumi RAG Assistant** will automatically look for a file named `.env` in your current working directory (or any parent) and load any keys it finds.
+
+   In the folder where you'll run the CLI (or in any ancestor), create a file called **`.env`** containing:
+
+   ```bash
+   OPENAI_API_KEY=sk-...
+   LANGCHAIN_API_KEY=lsv2_...
+   ```
+
+4. Build vector store (one-time setup)
+   
+   For best results with documentation retrieval, build the vector store:
+   ```bash
+   # Download the build script
+   wget https://raw.githubusercontent.com/hasan-sayeed/honegumi_rag_assistant/main/scripts/build_vector_store.py
+   
+   # Run it
+   python build_vector_store.py --output ./ax_docs_vectorstore
+   
+   # Set the path in your .env
+   echo "AX_DOCS_VECTORSTORE_PATH=./ax_docs_vectorstore" >> .env
+   ```
+
+5. Run the assistant
+   ```bash
+   honegumi-rag
+   ```
+
+### From Source: Clone & Run
 
 1. **Clone the Repository**:
    ```bash
@@ -65,9 +133,14 @@ Simply describe your optimization problem in plain English, and the assistant pr
    conda activate honegumi_rag_assistant
    ```
 
-3. **Configure API Keys**:
+3. **Install in editable mode**:
+   ```bash
+   pip install -e .
+   ```
+
+4. **Configure API Keys**:
    
-   **IMPORTANT**: Rename `.env.example` to `.env`. Then edit `.env` and add your keys:
+   In the project root directory, create a file called **`.env`** containing:
    
    ```bash
    # Required: OpenAI API Key for LLM and embeddings
@@ -82,19 +155,8 @@ Simply describe your optimization problem in plain English, and the assistant pr
    AX_DOCS_VECTORSTORE_PATH=data/processed/ax_docs_vectorstore
    RETRIEVAL_TOP_K=5
    ```
-   
-   **Alternative**: Set as environment variables (temporary):
-   ```bash
-   # Windows PowerShell
-   $env:OPENAI_API_KEY="sk-your-key"
-   $env:LANGCHAIN_API_KEY="your-key"
-   
-   # Linux/Mac
-   export OPENAI_API_KEY="sk-your-key"
-   export LANGCHAIN_API_KEY="your-key"
-   ```
 
-4. ** Build Vector Store for RAG**:
+5. **Build Vector Store for RAG**:
    
    For best results with documentation retrieval, run:
    ```bash
@@ -104,9 +166,10 @@ Simply describe your optimization problem in plain English, and the assistant pr
    
    The vector store will be saved to `data/processed/ax_docs_vectorstore/` and automatically loaded if present.
 
-5. **Verify Installation**:
+6. **Verify Installation**:
    ```bash
-   python -m honegumi_rag_assistant --help
+   honegumi-rag --help
+   # Or: python -m honegumi_rag_assistant --help
    ```
 
 ---
@@ -116,7 +179,8 @@ Simply describe your optimization problem in plain English, and the assistant pr
 Run the assistant:
 
 ```bash
-python -m honegumi_rag_assistant
+honegumi-rag
+# Or: python -m honegumi_rag_assistant
 ```
 
 The assistant will prompt you to describe your Bayesian optimization problem in natural language:
@@ -131,13 +195,13 @@ After typing your problem description, press **Enter**. The assistant will proce
 **By default, code is only printed to the console (not saved)**. To save the generated script to a file, use `--output-dir`:
 
 ```bash
-python -m honegumi_rag_assistant --output-dir ./my_experiments
+honegumi-rag --output-dir ./my_experiments
 ```
 
 **Optional: Enable debug mode** to see detailed agent decisions:
 
 ```bash
-python -m honegumi_rag_assistant --debug
+honegumi-rag --debug
 ```
 
 ### Command Line Arguments
@@ -271,6 +335,22 @@ This project is licensed under the MIT License - see [LICENSE.txt](LICENSE.txt) 
 - Powered by [LangGraph](https://github.com/langchain-ai/langgraph) and [LangChain](https://github.com/langchain-ai/langchain)
 - Skeleton generation by [Honegumi](https://honegumi.readthedocs.io/en/latest/)
 - Uses Meta's [Ax Platform](https://ax.dev/) for Bayesian optimization
+
+---
+
+## Feedback & Feature Requests
+
+This project demonstrates a **proof of concept** of what's possible with agentic systems for Bayesian optimization code generation. While Honegumi RAG Assistant works out-of-the-box for many scenarios, your use case may involve more complex pipelines, custom constraints, multi-objective optimization, or specific modeling needs.
+
+Have something bigger in mind? Want Honegumi RAG Assistant to handle advanced features, integrate with your workflow, or adapt to your domain?
+
+**We'd love to hear from you!**
+
+- Open a [GitHub issue](https://github.com/hasan-sayeed/honegumi_rag_assistant/issues)
+- Start a [GitHub discussion](https://github.com/hasan-sayeed/honegumi_rag_assistant/discussions)
+- Or reach out directly at hasan.sayeed.71.93@gmail.com
+
+Let's shape the future of agentic systems in optimization—together.
 
 ---
 
