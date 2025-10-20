@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.4] - 2025-10-20
+
+### Added
+- Project logo in ReadTheDocs sidebar
+- ReadTheDocs badge to README.md tracking stable version
+- Enhanced ReadTheDocs theme options (version display, external link styling)
+
+### Changed
+- Updated project name from "honegumi_rag_assistant" to "Honegumi RAG Assistant" in documentation
+- Replaced Features section with Key Capabilities from README in docs/index.md
+- Added project overview and description to documentation landing page
+- Updated README.md badge to track stable version instead of latest
+- Improved documentation landing page with logo and better structure
+
+### Documentation
+- Set ReadTheDocs default version to `stable` for production use
+- Configured logo to appear in documentation sidebar
+- Enhanced theme configuration for better user experience
+
 ## [0.1.3] - 2025-10-20
 
 ### Added
