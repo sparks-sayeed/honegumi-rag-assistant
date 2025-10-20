@@ -34,24 +34,27 @@ Run the CLI:
 honegumi-rag
 ```
 
+The assistant will prompt you:
+
+```
+Please describe your Bayesian optimization problem.
+(Press Enter when finished)
+
+Your problem:
+```
+
+Press Enter after describing your problem, and the code will be generated!
+
 Or try it in [Google Colab](https://colab.research.google.com/github/hasan-sayeed/honegumi_rag_assistant/blob/main/notebooks/honegumi_rag_colab_tutorial.ipynb)!
 
 
-## Contents
+## Documentation
 
 ```{toctree}
-:maxdepth: 2
+:maxdepth: 1
 
-Overview <readme>
-Contributions & Help <contributing>
-License <license>
-Authors <authors>
-Changelog <changelog>
-Module Reference <api/modules>
+readme
+contributing
+changelog
+api/modules
 ```
-
-## Indices and tables
-
-* {ref}`genindex`
-* {ref}`modindex`
-* {ref}`search`

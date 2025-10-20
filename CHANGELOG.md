@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.5] - 2025-10-20
+
+### Changed
+- Simplified ReadTheDocs navigation structure (removed unnecessary sections)
+- Reduced documentation table of contents depth from 2 to 1 for cleaner appearance
+- Removed License and Authors pages from main navigation
+
+### Documentation
+- Added interactive CLI usage example showing the prompt and user input flow
+- Improved Quick Start section with clearer instructions
+- Renamed "Contents" to "Documentation" for better clarity
+
 ## [0.1.4] - 2025-10-20
 
 ### Added
