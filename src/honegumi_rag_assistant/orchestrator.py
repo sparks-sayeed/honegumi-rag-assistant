@@ -114,7 +114,8 @@ def build_graph(skip_review: bool = False, enable_review: bool = False) -> Any:
             # Vector store not configured or doesn't exist - notify user and skip to code writing
             if not settings.debug:
                 print("\n⚠️  Vector store not found - generating code without documentation retrieval")
-                print("   To enable RAG, build the vector store with: python scripts/build_vector_store.py\n")
+                print("   To enable RAG, build the vector store with:")
+                print("   python -m honegumi_rag_assistant.build_vector_store\n")
             return [Send("write_code", state)]
         
         if settings.debug:
