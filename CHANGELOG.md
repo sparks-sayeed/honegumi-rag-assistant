@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+## [0.1.6] - 2025-10-20
+
+### Fixed
+- **Vector store Ax version pinning**: `src/honegumi_rag_assistant/build_vector_store.py` now defaults to cloning Ax v0.4.3 (matching honegumi dependency) instead of latest main branch. This prevents documentation version mismatch where LLM receives v1.x docs but generates v0.4.3 code. New `--ax-version` parameter allows specifying different versions when needed. Addresses issue raised in PR #3.
+- Vector store missing condition now properly detected when path is configured but directory doesn't exist
+
+### Changed
+- **Build script location**: Moved `build_vector_store.py` from `scripts/` to `src/honegumi_rag_assistant/` to make it available as a module for pip-installed users. Usage: `python -m honegumi_rag_assistant.build_vector_store`
+- **Retrieval UX improvements**: Simplified retrieval output to show only essential information. In non-debug mode, displays "Planning X parallel retrievals..." followed by success message with context count and timing, or clear error if vector store missing. Removes verbose query details and individual retriever timings from default output.
+- **Vector store metadata**: Build script now saves `metadata.json` with build details including Ax version, build date, chunk configuration, and document counts for better provenance tracking.
+- Removed verbose per-query retrieval details from non-debug output
+- Cleaner success message: "✓ Retrieved X contexts in Y.XXs"
+
+### Added
+- Clear warning when vector store is not found: prompts user to build it
+- Vector store path existence check before attempting retrieval
+
 ## [0.1.5] - 2025-10-20
 
 ### Changed

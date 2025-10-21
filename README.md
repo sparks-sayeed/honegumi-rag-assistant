@@ -105,14 +105,13 @@ The tutorial runs entirely in Colab—no local setup required. All you need is a
    
    For best results with documentation retrieval, build the vector store:
    ```bash
-   # Download the build script
-   wget https://raw.githubusercontent.com/hasan-sayeed/honegumi_rag_assistant/main/scripts/build_vector_store.py
+   # Run the build script from the package
+   python -m honegumi_rag_assistant.build_vector_store
+   ```
    
-   # Run it
-   python build_vector_store.py --output ./ax_docs_vectorstore
-   
-   # Set the path in your .env
-   echo "AX_DOCS_VECTORSTORE_PATH=./ax_docs_vectorstore" >> .env
+   **Note**: By default, this uses Ax v0.4.3 (matching honegumi). To use a different version:
+   ```bash
+   python -m honegumi_rag_assistant.build_vector_store --ax-version 0.4.0
    ```
 
 5. Run the assistant
@@ -161,8 +160,11 @@ The tutorial runs entirely in Colab—no local setup required. All you need is a
    
    For best results with documentation retrieval, run:
    ```bash
-   # Build vector store (one-time setup)
-   python scripts/build_vector_store.py
+   # Build vector store (one-time setup, defaults to Ax v0.4.3)
+   python -m honegumi_rag_assistant.build_vector_store
+   
+   # Or specify a different Ax version
+   python -m honegumi_rag_assistant.build_vector_store --ax-version 0.4.0
    ```
    
    The vector store will be saved to `data/processed/ax_docs_vectorstore/` and automatically loaded if present.
@@ -262,6 +264,7 @@ honegumi-rag --debug
 │       ├── app_config.py   <- Settings and configuration
 │       ├── states.py       <- State definitions with custom reducers
 │       ├── extractors.py   <- Pydantic schemas for structured extraction
+│       ├── build_vector_store.py  <- Build FAISS vector store
 │       └── nodes/          <- Agent implementations
 │           ├── parameter_selector.py   <- Parameter extraction
 │           ├── skeleton_generator.py   <- Honegumi skeleton generation
@@ -271,7 +274,8 @@ honegumi-rag --debug
 │           └── reviewer.py             <- Code quality review
 │
 ├── scripts/
-│   └── build_vector_store.py  <- Build FAISS vector store
+│   ├── batch_process.py    <- Batch processing utility
+│   └── test_vector_store.py <- Vector store testing
 │
 ├── tests/                  <- Unit tests (pytest)
 └── docs/                   <- Documentation

@@ -102,6 +102,21 @@ def build_graph(skip_review: bool = False, enable_review: bool = False) -> Any:
                 print("\n[ORCHESTRATOR] No retrieval queries - skipping to code writer\n")
             return [Send("write_code", state)]
         
+        # Check if vector store exists before attempting retrieval
+        from pathlib import Path
+        vectorstore_exists = (
+            settings.retrieval_vectorstore_path and
+            Path(settings.retrieval_vectorstore_path).exists() and
+            Path(settings.retrieval_vectorstore_path).is_dir()
+        )
+        
+        if not vectorstore_exists:
+            # Vector store not configured or doesn't exist - notify user and skip to code writing
+            if not settings.debug:
+                print("\n⚠️  Vector store not found - generating code without documentation retrieval")
+                print("   To enable RAG, build the vector store with: python scripts/build_vector_store.py\n")
+            return [Send("write_code", state)]
+        
         if settings.debug:
             print(f"\n[ORCHESTRATOR] Fanning out to {len(queries)} parallel retrievers\n")
         
@@ -259,50 +274,45 @@ def run_from_text(
     # Stream through the graph.  We ignore intermediate values; the
     # checkpoint will retain the final state for us to inspect.
     retrieval_completed = False
+    retrieval_started = False
     retrieval_start_time = None
+    vectorstore_missing = False
+    retrieval_queries_count = 0
+    last_context_count = 0
     
     for state_update in graph.stream(inputs, thread, stream_mode="values"):
         # Track when retrieval starts (when retrieval_queries appear)
-        if retrieval_start_time is None and state_update.get("retrieval_queries"):
+        if not retrieval_started and state_update.get("retrieval_queries"):
             queries = state_update.get("retrieval_queries", [])
             if len(queries) > 0:
+                retrieval_started = True
                 retrieval_start_time = time.time()
+                retrieval_queries_count = len(queries)
+        
+        # Check for vectorstore_missing flag in state (it gets set by retrievers)
+        if state_update.get("vectorstore_missing") is True:
+            vectorstore_missing = True
         
         # Check if we just completed retrieval (contexts were added)
-        if not retrieval_completed and state_update.get("contexts"):
+        # This happens when we move to code_writer stage
+        if retrieval_started and not retrieval_completed:
             contexts = state_update.get("contexts", [])
-            if len(contexts) > 0:
+            current_context_count = len(contexts)
+            
+            # Retrieval is complete when contexts are populated and count changed
+            if current_context_count > last_context_count:
                 retrieval_completed = True
                 
-                # Calculate total parallel retrieval time
-                total_retrieval_time = time.time() - retrieval_start_time if retrieval_start_time else 0
+                # Show appropriate message based on whether vector store was available
+                if vectorstore_missing:
+                    print("\n⚠️  Vector store not found - generating code without documentation retrieval")
+                    print("   To enable RAG, build the vector store with: python scripts/build_vector_store.py\n")
+                elif current_context_count > 0:
+                    # Calculate total parallel retrieval time
+                    total_retrieval_time = time.time() - retrieval_start_time if retrieval_start_time else 0
+                    print(f"✓ Retrieved {current_context_count} contexts in {total_retrieval_time:.2f}s\n")
                 
-                # Show context accumulation summary
-                print("\n" + "="*80)
-                print("PARALLEL RETRIEVAL COMPLETE")
-                print("="*80)
-                print(f"Total contexts retrieved: {len(contexts)}")
-                print(f"Total parallel retrieval time: {total_retrieval_time:.2f}s")
-                
-                # Group by query
-                contexts_by_query = {}
-                for ctx in contexts:
-                    if isinstance(ctx, dict):
-                        query_idx = ctx.get("query_index", "unknown")
-                        query = ctx.get("query", "Unknown query")
-                        if query_idx not in contexts_by_query:
-                            contexts_by_query[query_idx] = {"query": query, "count": 0}
-                        contexts_by_query[query_idx]["count"] += 1
-                
-                if contexts_by_query:
-                    print("\nBreakdown by query:")
-                    for idx in sorted(contexts_by_query.keys()):
-                        info = contexts_by_query[idx]
-                        print(f"  Query {idx + 1 if isinstance(idx, int) else idx}: {info['count']} contexts")
-                        if settings.debug:
-                            print(f"    \"{info['query'][:60]}...\"")
-                
-                print("="*80 + "\n")
+                last_context_count = current_context_count
 
     # Retrieve the final state
     final_state: HonegumiRAGState = graph.get_state(thread).values  # type: ignore[assignment]

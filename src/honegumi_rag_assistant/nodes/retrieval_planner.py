@@ -168,10 +168,9 @@ Consider if you need clarification on:
                     print(f"  Query {i}: {q}")
                 print("="*80 + "\n")
             else:
+                # Only print simple message about number of retrievals
                 if decision.action == "retrieve" and query_strings:
                     print(f"Planning {len(query_strings)} parallel retrieval{'s' if len(query_strings) > 1 else ''}...")
-                    for i, q in enumerate(query_strings, 1):
-                        print(f"   {i}. {q}")
                 elif decision.action == "skip_retrieval":
                     print("Skeleton is sufficient, skipping retrieval")
             

@@ -35,6 +35,15 @@ def merge_contexts(left: List[Dict[str, Any]] | None, right: List[Dict[str, Any]
     return result
 
 
+def merge_vectorstore_flag(left: bool | None, right: bool | None) -> bool:
+    """Custom reducer for vectorstore_missing flag.
+    
+    If ANY parallel retriever reports missing vector store, the flag should be True.
+    This is an OR operation: True if either left or right is True.
+    """
+    return bool(left or right)
+
+
 class HonegumiRAGState(TypedDict):
     """State dictionary propagated through the LangGraph pipeline.
 
@@ -117,3 +126,4 @@ class HonegumiRAGState(TypedDict):
     review_count: int
     retrieval_query: Optional[str]
     retrieval_queries: List[str]  # List of queries for parallel retrieval
+    vectorstore_missing: Annotated[Optional[bool], merge_vectorstore_flag]  # Flag to track if vector store is unavailable

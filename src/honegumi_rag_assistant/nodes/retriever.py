@@ -57,17 +57,19 @@ def retrieve_single_query(query: str, query_index: int) -> Dict[str, Any]:
     if settings.debug:
         print(f"\n[PARALLEL RETRIEVER {query_index + 1}] Query: {query}")
     
-    # If no vector store is configured, return empty
+    # If no vector store is configured, return empty with error marker
     if not settings.retrieval_vectorstore_path:
         if settings.debug:
             print(f"[PARALLEL RETRIEVER {query_index + 1}] No vector store configured\n")
-        return {"contexts": []}
+        # Only set the flag on the first retriever to avoid duplicates
+        return {"contexts": [], "vectorstore_missing": True if query_index == 0 else None}
 
     # Check dependencies
     if FAISS is None or OpenAIEmbeddings is None:
         if settings.debug:
             print(f"[PARALLEL RETRIEVER {query_index + 1}] Dependencies not available\n")
-        return {"contexts": []}
+        # Only set the flag on the first retriever to avoid duplicates
+        return {"contexts": [], "vectorstore_missing": True if query_index == 0 else None}
 
     try:
         # Load the vector store and embeddings
@@ -99,8 +101,6 @@ def retrieve_single_query(query: str, query_index: int) -> Dict[str, Any]:
         if settings.debug:
             print(f"[PARALLEL RETRIEVER {query_index + 1}] Retrieved {len(contexts)} contexts")
             print(f"[PARALLEL RETRIEVER {query_index + 1}] Time: {elapsed_time:.2f}s\n")
-        else:
-            print(f"   Retriever {query_index + 1}: Retrieved {len(contexts)} contexts ({elapsed_time:.2f}s)")
         
         return {"contexts": contexts}
         
@@ -109,7 +109,8 @@ def retrieve_single_query(query: str, query_index: int) -> Dict[str, Any]:
             print(f"[PARALLEL RETRIEVER {query_index + 1}] ERROR: {exc}\n")
             import traceback
             traceback.print_exc()
-        return {"contexts": []}
+        # Mark as missing if we can't load the vector store (only on first retriever)
+        return {"contexts": [], "vectorstore_missing": True if query_index == 0 else None}
 
 
 class RetrieverAgent:

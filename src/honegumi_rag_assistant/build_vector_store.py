@@ -21,6 +21,8 @@ from pathlib import Path
 import subprocess
 import tempfile
 import shutil
+import json
+from datetime import datetime
 from typing import List, Dict, Any
 
 # Load environment variables from .env file if it exists
@@ -39,31 +41,43 @@ from langchain_openai import OpenAIEmbeddings
 from langchain.docstore.document import Document
 
 
-def clone_ax_repo(temp_dir: Path) -> Path:
+def clone_ax_repo(temp_dir: Path, ax_version: str = "0.4.3") -> Path:
     """
-    Clone the Ax repository from GitHub.
+    Clone the Ax repository from GitHub at a specific version.
     
     Args:
         temp_dir: Temporary directory for cloning
+        ax_version: Git tag/branch to clone (default: "0.4.3" to match honegumi)
         
     Returns:
         Path to cloned repository
     """
-    print("Cloning Ax repository from GitHub...")
+    print(f"Cloning Ax repository from GitHub (version: {ax_version})...")
     repo_url = "https://github.com/facebook/Ax.git"
     repo_path = temp_dir / "Ax"
     
     try:
+        # Clone specific version/branch
         subprocess.run(
-            ["git", "clone", "--depth", "1", repo_url, str(repo_path)],
+            ["git", "clone", "--depth", "1", "--branch", ax_version, repo_url, str(repo_path)],
             check=True,
             capture_output=True,
             text=True
         )
-        print(f"  Successfully cloned to {repo_path}")
+        print(f"  Successfully cloned Ax v{ax_version} to {repo_path}")
         return repo_path
     except subprocess.CalledProcessError as e:
-        print(f"Error cloning repository: {e.stderr}")
+        error_msg = e.stderr
+        if "Remote branch" in error_msg or "not found" in error_msg.lower():
+            print(f"\n✗ ERROR: Ax version '{ax_version}' not found!")
+            print(f"\nAvailable versions can be checked at:")
+            print(f"  https://github.com/facebook/Ax/tags")
+            print(f"\nTry one of these common versions:")
+            print(f"  - 0.4.3 (recommended for honegumi 0.4.3)")
+            print(f"  - 0.4.0")
+            print(f"  - main (latest, may have breaking changes)")
+        else:
+            print(f"Error cloning repository: {error_msg}")
         sys.exit(1)
     except FileNotFoundError:
         print("Error: git command not found. Please install git.")
@@ -305,6 +319,11 @@ def main():
         help="OpenAI embedding model (default: text-embedding-3-large)"
     )
     parser.add_argument(
+        "--ax-version",
+        default="0.4.3",
+        help="Ax version/branch to clone (default: 0.4.3)"
+    )
+    parser.add_argument(
         "--update",
         action="store_true",
         help="Force update even if vector store exists"
@@ -334,6 +353,7 @@ def main():
     print("="*80)
     print("AX DOCUMENTATION VECTOR STORE BUILDER")
     print("="*80)
+    print(f"Ax version: {args.ax_version}")
     print(f"Output directory: {args.output}")
     print(f"Chunk size: {args.chunk_size}")
     print(f"Chunk overlap: {args.chunk_overlap}")
@@ -344,7 +364,7 @@ def main():
     try:
         # Step 1: Clone Ax repository
         temp_dir = Path(tempfile.mkdtemp())
-        repo_path = clone_ax_repo(temp_dir)
+        repo_path = clone_ax_repo(temp_dir, ax_version=args.ax_version)
         
         # Step 2: Extract documentation
         documents = extract_docs_from_repo(repo_path)
@@ -372,8 +392,23 @@ def main():
         output_path.mkdir(parents=True, exist_ok=True)
         vectorstore.save_local(str(output_path))
         
+        # Save metadata
+        metadata = {
+            'ax_version': args.ax_version,
+            'build_date': datetime.now().isoformat(),
+            'chunk_size': args.chunk_size,
+            'chunk_overlap': args.chunk_overlap,
+            'embedding_model': args.embedding_model,
+            'total_documents': len(documents),
+            'total_chunks': len(chunked_docs)
+        }
+        metadata_path = output_path / "metadata.json"
+        with open(metadata_path, 'w') as f:
+            json.dump(metadata, f, indent=2)
+        
         print(f"  Vector store saved successfully!")
         print(f"\nStatistics:")
+        print(f"  Ax version: {args.ax_version}")
         print(f"  Total documentation files: {len(documents)}")
         print(f"  Total chunks: {len(chunked_docs)}")
         
