@@ -7,8 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.7] - 2025-10-20
+
 ### Added
 - **Settings reload method**: Added `settings.reload_from_env()` method to allow reloading configuration from environment variables after module import. Fixes Colab/Jupyter notebook issue where settings were cached before environment variables were set.
+
+### Changed
+- **Colab tutorial improvements**: Updated Step 5 to explicitly call `settings.reload_from_env()` and print confirmation of vector store path. Ensures vector store is properly detected in notebooks.
+- **Build script error message**: Updated orchestrator error message to use `python -m honegumi_rag_assistant.build_vector_store` instead of outdated `scripts/build_vector_store.py` path.
 
 ## [0.1.6] - 2025-10-20
 
