@@ -98,6 +98,21 @@ class Settings:
     output_dir: str = os.getenv("OUTPUT_DIR", "./honegumi_rag_output")
     debug: bool = False  # Set at runtime, not from environment
     stream_code: bool = False  # Set at runtime to enable streaming output
+    
+    def reload_from_env(self):
+        """Reload settings from environment variables.
+        
+        Useful when environment variables are set after the module is imported,
+        such as in Jupyter/Colab notebooks.
+        """
+        self.model_name = os.getenv("OPENAI_MODEL_NAME", "gpt-5")
+        self.code_writer_model = os.getenv("CODE_WRITER_MODEL", "gpt-5")
+        self.reviewer_model = os.getenv("REVIEWER_MODEL", "gpt-4o")
+        self.retrieval_planner_model = os.getenv("RETRIEVAL_PLANNER_MODEL", "gpt-5")
+        self.openai_api_key = os.getenv("OPENAI_API_KEY", "")
+        self.retrieval_vectorstore_path = os.getenv("AX_DOCS_VECTORSTORE_PATH", "")
+        self.retrieval_top_k = int(os.getenv("RETRIEVAL_TOP_K", "5"))
+        self.output_dir = os.getenv("OUTPUT_DIR", "./honegumi_rag_output")
 
 
 # A singleton instance for easy access throughout the package

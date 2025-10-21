@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Settings reload method**: Added `settings.reload_from_env()` method to allow reloading configuration from environment variables after module import. Fixes Colab/Jupyter notebook issue where settings were cached before environment variables were set.
+
 ## [0.1.6] - 2025-10-20
 
 ### Fixed
