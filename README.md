@@ -353,9 +353,7 @@ Have something bigger in mind? Want Honegumi RAG Assistant to handle advanced fe
 
 - Open a [GitHub issue](https://github.com/hasan-sayeed/honegumi_rag_assistant/issues)
 - Start a [GitHub discussion](https://github.com/hasan-sayeed/honegumi_rag_assistant/discussions)
-- Or reach out directly at hasan.sayeed.71.93@gmail.com
-
-Let's shape the future of agentic systems in optimization—together.
+- Or reach out directly at hasan.sayeed@utah.edu
 
 ---
 
