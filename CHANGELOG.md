@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- **Problem statement collection**: Created `data/raw/problem_statements.yaml` with initial problem statement for ceramic sintering optimization. Includes both natural version (user-written) and corrected version (expert-refined). Template for collecting 100 problem statements across different personas in physical sciences.
+- **Problem statement collection**: Created `data/raw/problem_statements.yaml` with initial problem statement for ceramic sintering optimization. Includes natural version (underspecified), corrected version (conversational with details), expected Honegumi grid selections, and structured solution specification. Template for collecting 100 problem statements across different personas in physical sciences.
 
 ## [0.1.7] - 2025-10-20
 

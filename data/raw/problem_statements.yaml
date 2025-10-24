@@ -3,34 +3,51 @@ problem_statements:
     domain: materials_science
     complexity: simple
     persona: experimentalist_basic
+    
     natural_version:
       description: |
-        I need to find the best temperature and time for sintering ceramic samples.
-        Temperature can be between 800 and 1200 degrees Celsius.
-        Time can be between 1 and 6 hours.
-        I want to maximize density. I can measure around 20-30 samples.
+        I need to find the best temperature and time for sintering ceramic samples to get maximum density. 
+        I can run about 20-30 experiments.
       notes: |
-        Typical request from a materials scientist without optimization background.
-        Uses natural language, doesn't mention specific BO concepts.
-        Reasonable constraints but doesn't specify units clearly or optimization strategy.
+        Typical underspecified request from a materials scientist.
+        Missing: parameter bounds, units, noise expectations, parameter types.
+        User assumes the assistant will ask for missing details.
     
     corrected_version:
       description: |
-        Optimize sintering temperature (800-1200°C) and sintering time (1-6 hours) 
-        to maximize ceramic sample density (g/cm³). 
-        
-        Search space:
-        - Temperature: continuous, 800-1200°C
-        - Time: continuous, 1-6 hours
-        
-        Objective: Maximize density (single objective)
-        Budget: 20-30 experiments
-        Expected noise: Medium (experimental measurements)
+        I want to optimize sintering conditions for ceramic samples to maximize density. 
+        The temperature can range from 800 to 1200°C, and sintering time from 1 to 6 hours. 
+        I have budget for about 20-30 experiments. The measurements will have some noise since 
+        density measurements can vary a bit between samples.
       notes: |
-        Expert-refined version with:
-        - Clear objective function (maximize density)
-        - Explicit parameter ranges with units
-        - Variable types specified (continuous)
-        - Budget constraint stated
-        - Noise level indicated
-        - Single-objective optimization identified
+        More conversational, includes key details but maintains natural chat style.
+        Provides bounds, mentions noise informally, specifies budget.
+    
+    expected_grid_selections:
+      objective: single
+      noise: true
+      parameter_types:
+        - continuous
+      constraints: false
+      task: standard
+      notes: |
+        Simple single-objective optimization with noisy observations.
+        Two continuous parameters, no constraints, standard (not multitask).
+    
+    solution:
+      search_space:
+        - name: temperature
+          type: continuous
+          bounds: [800, 1200]
+          units: "°C"
+        - name: time
+          type: continuous
+          bounds: [1, 6]
+          units: hours
+      objective:
+        name: density
+        goal: maximize
+        units: "g/cm³"
+      budget: 25
+      noise_model: true
+      constraints: []
