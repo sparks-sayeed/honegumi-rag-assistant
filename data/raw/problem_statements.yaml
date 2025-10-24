@@ -1,0 +1,36 @@
+problem_statements:
+  - id: 1
+    domain: materials_science
+    complexity: simple
+    persona: experimentalist_basic
+    natural_version:
+      description: |
+        I need to find the best temperature and time for sintering ceramic samples.
+        Temperature can be between 800 and 1200 degrees Celsius.
+        Time can be between 1 and 6 hours.
+        I want to maximize density. I can measure around 20-30 samples.
+      notes: |
+        Typical request from a materials scientist without optimization background.
+        Uses natural language, doesn't mention specific BO concepts.
+        Reasonable constraints but doesn't specify units clearly or optimization strategy.
+    
+    corrected_version:
+      description: |
+        Optimize sintering temperature (800-1200°C) and sintering time (1-6 hours) 
+        to maximize ceramic sample density (g/cm³). 
+        
+        Search space:
+        - Temperature: continuous, 800-1200°C
+        - Time: continuous, 1-6 hours
+        
+        Objective: Maximize density (single objective)
+        Budget: 20-30 experiments
+        Expected noise: Medium (experimental measurements)
+      notes: |
+        Expert-refined version with:
+        - Clear objective function (maximize density)
+        - Explicit parameter ranges with units
+        - Variable types specified (continuous)
+        - Budget constraint stated
+        - Noise level indicated
+        - Single-objective optimization identified
