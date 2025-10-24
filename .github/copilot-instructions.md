@@ -32,7 +32,7 @@
 
 ## External Resources
 
-- Validate and access link content using available MCP tools (Playwright and/or Perplexity)
+- Validate and access link content using available MCP tools (Playwright, Perplexity, and/or Firecrawl)
 - Search GitHub for relevant open-source alternatives to commercial tools
 - Prioritize official package documentation over inferred usage by using Context7 MCP tool
 
