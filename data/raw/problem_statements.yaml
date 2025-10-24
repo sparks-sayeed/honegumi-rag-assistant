@@ -15,24 +15,45 @@ problem_statements:
     
     corrected_version:
       description: |
-        I want to optimize sintering conditions for ceramic samples to maximize density. 
+        I want to optimize sintering conditions for ceramic samples to maximize density (g/cm³). 
         The temperature can range from 800 to 1200°C, and sintering time from 1 to 6 hours. 
         I have budget for about 20-30 experiments. The measurements will have some noise since 
         density measurements can vary a bit between samples.
       notes: |
         More conversational, includes key details but maintains natural chat style.
-        Provides bounds, mentions noise informally, specifies budget.
+        Provides bounds, mentions noise informally, specifies budget and units.
     
     expected_grid_selections:
-      objective: single
-      noise: true
-      parameter_types:
-        - continuous
-      constraints: false
-      task: standard
+      objective: Single
+      model: Default
+      task: Single
+      categorical: False
+      sum_constraint: False
+      order_constraint: False
+      linear_constraint: False
+      composition_constraint: False
       notes: |
-        Simple single-objective optimization with noisy observations.
-        Two continuous parameters, no constraints, standard (not multitask).
+        Based on Honegumi interactive grid options (https://honegumi.readthedocs.io/).
+        Single-objective optimization with default GP model.
+        Single-task (not multi-task), no categorical parameters.
+        No constraints (sum, order, linear, or composition).
+        Two continuous parameters with noisy observations handled by default noise model.
+      related_tutorials:
+        - name: "Single-Objective Bayesian Optimization (SOBO)"
+          url: "https://honegumi.readthedocs.io/en/latest/curriculum/tutorials/sobo/sobo.html"
+          description: "Tutorial #1: Basic single-objective BO with continuous parameters"
+        - name: "Batch Optimization with Fully Bayesian"
+          url: "https://honegumi.readthedocs.io/en/latest/curriculum/tutorials/batch/batch-fullybayesian.html"
+          description: "Tutorial #2: Handling noisy observations with fully Bayesian approach"
+      related_ax_issues:
+        - number: 1479
+          title: "Interactive template generation for multi-objective, multi-fidelity, batch optimization"
+          url: "https://github.com/facebook/Ax/issues/1479"
+          relevance: "Original Honegumi concept discussion in Ax repository"
+        - number: 464
+          title: "Making sure model.gen() generate designated number of arms"
+          url: "https://github.com/facebook/Ax/issues/464"
+          relevance: "Discusses batch size and noisy observations in materials science context"
     
     solution:
       search_space:
