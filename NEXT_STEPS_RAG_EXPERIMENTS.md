@@ -1,5 +1,12 @@
 # RAG Experiments - Next Steps
 
+## Status Update
+
+✓ Infrastructure complete and ready
+⚠️ OPENAI_API_KEY configuration issue detected
+
+The experiment runner script (`scripts/run_rag_experiments.py`) checks for `OPENAI_API_KEY` in the environment but it's not currently accessible through standard `os.environ.get()` even though `COPILOT_AGENT_INJECTED_SECRET_NAMES` indicates it should be available.
+
 ## Infrastructure Ready ✓
 
 The following infrastructure has been created and is ready to use:
