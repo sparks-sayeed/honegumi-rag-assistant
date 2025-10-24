@@ -1,0 +1,42 @@
+experiments:
+  - experiment_id: "exp_001_natural"
+    problem_statement_id: 1
+    version: "natural"
+    prompt: |
+      I need to find the best temperature and time for sintering ceramic samples to get maximum density. 
+      I can run about 20-30 experiments.
+    timestamp: null
+    status: "pending"
+    grid_selections: null
+    generated_script_path: null
+    log_artifact_url: null
+    notes: "Natural version - underspecified request from materials scientist"
+    
+  - experiment_id: "exp_002_corrected"
+    problem_statement_id: 1
+    version: "corrected"
+    prompt: |
+      I want to optimize sintering conditions for ceramic samples to maximize density (g/cm³). 
+      The temperature can range from 800 to 1200°C, and sintering time from 1 to 6 hours. 
+      I have budget for about 20-30 experiments. The measurements will have some noise since 
+      density measurements can vary a bit between samples.
+    timestamp: null
+    status: "pending"
+    grid_selections: null
+    generated_script_path: null
+    log_artifact_url: null
+    notes: "Corrected version - conversational with key details and units"
+    
+  - experiment_id: "exp_003_solution"
+    problem_statement_id: 1
+    version: "solution"
+    prompt: |
+      I need to optimize two continuous parameters (temperature: 800-1200°C, time: 1-6 hours) 
+      to maximize density (g/cm³) of ceramic samples. This is a single-objective optimization 
+      with noisy measurements. I have a budget of about 25 experiments.
+    timestamp: null
+    status: "pending"
+    grid_selections: null
+    generated_script_path: null
+    log_artifact_url: null
+    notes: "Solution-based version - explicit parameter specifications"
