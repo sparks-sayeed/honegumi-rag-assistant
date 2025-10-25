@@ -27,3 +27,18 @@ jobs:
       - name: Install package and dev dependencies
         run: |
           pip install -e .
+      - name: Debug secret presence (no value)
+        run: |
+          if [ -z "$OPENAI_API_KEY" ]; then
+            echo "OPENAI_API_KEY MISSING"
+            exit 1
+          else
+            echo "OPENAI_API_KEY PRESENT"
+          fi
+
+          if [ -z "$COPILOT_MCP_FIRECRAWL_API_KEY" ]; then
+            echo "FIRECRAWL KEY MISSING"
+            exit 1
+          else
+            echo "FIRECRAWL KEY PRESENT"
+          fi
