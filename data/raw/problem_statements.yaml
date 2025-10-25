@@ -72,3 +72,223 @@ problem_statements:
       budget: 25
       noise_model: true
       constraints: []
+
+  - id: 2
+    domain: materials_science
+    complexity: intermediate
+    persona: computational_intermediate
+    
+    natural_version:
+      description: |
+        I'm working on developing an anti-corrosion coating formulation and need to optimize 
+        the composition. I have five components to work with: resin, inhibitor, insulator, 
+        stabilizer, and I also need to control the coating thickness. I can test about 6 
+        samples at a time in parallel. I know there are some constraints on the composition 
+        like the resin fraction should be higher than inhibitor and insulator, and the 
+        fractions need to sum to 1. Looking for the formulation that minimizes corrosion damage.
+      notes: |
+        Intermediate user with some understanding of BO and experimental design.
+        Mentions batch capability, composition constraints, and ordering constraints.
+        Missing: specific bounds for all parameters, noise handling, model preferences.
+        Shows awareness of constraints but doesn't specify exact formulation.
+    
+    corrected_version:
+      description: |
+        I'm optimizing an anti-corrosion coating formulation with 5 composition parameters: 
+        resin fraction (0-1), inhibitor fraction (0-1), insulator fraction (0-1), stabilizer 
+        fraction (0-0.1), and coating thickness (0.1-10 mm). The fractions must sum to 1, 
+        and I need the resin fraction to be greater than both inhibitor and insulator fractions. 
+        I can run batches of 6 samples in parallel, planning around 15-20 batches total. 
+        Measurements will have some variability. I want to minimize corrosion damage score. 
+        I'd like to use a fully Bayesian model if possible for better uncertainty handling.
+      notes: |
+        More complete specification with bounds, batch size, constraint details.
+        Mentions specific model preference (fully Bayesian).
+        Acknowledges measurement noise and provides iteration budget.
+        Maintains conversational tone while including technical details.
+    
+    expected_grid_selections:
+      objective: Single
+      model: Fully Bayesian
+      task: Single
+      categorical: False
+      sum_constraint: True
+      order_constraint: True
+      linear_constraint: False
+      composition_constraint: False
+      notes: |
+        Single-objective minimization with fully Bayesian GP model for robustness.
+        Composition constraint (sum to 1) and ordering constraints (resin >= inhibitor, resin >= insulator).
+        Batch optimization with 6 parallel samples.
+        Five parameters (4 composition fractions + 1 continuous thickness).
+      related_tutorials:
+        - name: "Batch Optimization with Fully Bayesian"
+          url: "https://honegumi.readthedocs.io/en/latest/curriculum/tutorials/batch/batch-fullybayesian.html"
+          description: "Tutorial on batch optimization of anti-corrosion coatings with constraints"
+        - name: "Single-Objective Bayesian Optimization (SOBO)"
+          url: "https://honegumi.readthedocs.io/en/latest/curriculum/tutorials/sobo/sobo.html"
+          description: "Basic single-objective BO concepts"
+      related_ax_issues:
+        - number: 1479
+          title: "Interactive template generation for multi-objective, multi-fidelity, batch optimization"
+          url: "https://github.com/facebook/Ax/issues/1479"
+          relevance: "Batch optimization and constraint handling in Ax"
+        - number: 464
+          title: "Making sure model.gen() generate designated number of arms"
+          url: "https://github.com/facebook/Ax/issues/464"
+          relevance: "Batch generation and parallelization"
+    
+    solution:
+      search_space:
+        - name: resin_fraction
+          type: continuous
+          bounds: [0, 1]
+          units: "fraction"
+        - name: inhibitor_fraction
+          type: continuous
+          bounds: [0, 1]
+          units: "fraction"
+        - name: insulator_fraction
+          type: continuous
+          bounds: [0, 1]
+          units: "fraction"
+        - name: stabilizer_fraction
+          type: continuous
+          bounds: [0, 0.1]
+          units: "fraction"
+        - name: coating_thickness
+          type: continuous
+          bounds: [0.1, 10]
+          units: "mm"
+      objective:
+        name: corrosion_damage
+        goal: minimize
+        units: "score"
+      budget: 90
+      batch_size: 6
+      noise_model: true
+      constraints:
+        - type: sum
+          parameters: ["resin_fraction", "inhibitor_fraction", "insulator_fraction", "stabilizer_fraction"]
+          total: 1.0
+        - type: order
+          description: "resin_fraction >= inhibitor_fraction"
+        - type: order
+          description: "resin_fraction >= insulator_fraction"
+
+  - id: 3
+    domain: materials_science
+    complexity: advanced
+    persona: data_science_advanced
+    
+    natural_version:
+      description: |
+        Need to optimize a polymer formulation for a client. They want high strength 
+        (at least 70 MPa) and high biodegradability. We have 5 different monomers plus 
+        extrusion rate and temperature to tune. The monomers need to sum to 1. I have 
+        some historical data from literature (3 data points) that could help bootstrap 
+        the model. This is clearly a multi-objective problem with a threshold constraint 
+        on strength. What's the best way to set this up in Ax?
+      notes: |
+        Advanced user familiar with ML/BO terminology.
+        Uses technical language (multi-objective, threshold constraint, bootstrap).
+        Understands need for historical data and Pareto optimization.
+        Missing: specific parameter bounds, exact threshold values, batch preferences.
+        Frames question about implementation rather than problem description.
+    
+    corrected_version:
+      description: |
+        I'm setting up a multi-objective Bayesian optimization for polymer design with 
+        two objectives: maximize strength (MPa) with threshold ≥70, and maximize 
+        biodegradability score. The search space has 7 parameters: 5 monomer fractions 
+        (each 0-1, must sum to 1), extrusion rate (0.01-0.1 mm/s), and temperature 
+        (120-200°C). I have 3 historical data points from literature that I'd like to 
+        incorporate via attach_trial. Planning to run about 35 trials total. I'm 
+        comfortable with the default GP model and standard acquisition function for 
+        multi-objective (EHVI). How should I structure the ObjectiveProperties for 
+        the threshold constraint?
+      notes: |
+        Expert-level description with specific technical details.
+        Mentions Ax-specific methods (attach_trial, ObjectiveProperties, EHVI).
+        Provides complete parameter specifications and constraints.
+        Asks implementation question showing deep understanding.
+        Professional/collaborative tone typical of data science practitioners.
+    
+    expected_grid_selections:
+      objective: Multi
+      model: Default
+      task: Single
+      categorical: False
+      sum_constraint: True
+      order_constraint: False
+      linear_constraint: False
+      composition_constraint: False
+      notes: |
+        Multi-objective optimization (strength and biodegradability).
+        Default GP model with EHVI acquisition function.
+        Composition constraint for monomer fractions summing to 1.
+        Custom threshold on strength objective (≥70 MPa).
+        Historical data incorporation via attach_trial.
+        Seven parameters total (5 composition + 2 continuous process parameters).
+      related_tutorials:
+        - name: "Multi-Objective Optimization of Polymers"
+          url: "https://honegumi.readthedocs.io/en/latest/curriculum/tutorials/mobo/mobo.html"
+          description: "Tutorial on multi-objective polymer optimization with composition constraints and thresholds"
+        - name: "Single- vs. Multi-Objective Optimization"
+          url: "https://honegumi.readthedocs.io/en/latest/curriculum/concepts/sobo-vs-mobo/sobo-vs-mobo.html"
+          description: "Conceptual overview of SOBO vs MOBO"
+      related_ax_issues:
+        - number: 1479
+          title: "Interactive template generation for multi-objective, multi-fidelity, batch optimization"
+          url: "https://github.com/facebook/Ax/issues/1479"
+          relevance: "Multi-objective optimization and template generation in Honegumi"
+        - number: 2893
+          title: "Multi-objective optimization with outcome constraints"
+          url: "https://github.com/facebook/Ax/issues/2893"
+          relevance: "Threshold constraints in multi-objective setting"
+    
+    solution:
+      search_space:
+        - name: monomer_a_fraction
+          type: continuous
+          bounds: [0, 1]
+          units: "fraction"
+        - name: monomer_b_fraction
+          type: continuous
+          bounds: [0, 1]
+          units: "fraction"
+        - name: monomer_c_fraction
+          type: continuous
+          bounds: [0, 1]
+          units: "fraction"
+        - name: monomer_d_fraction
+          type: continuous
+          bounds: [0, 1]
+          units: "fraction"
+        - name: monomer_e_fraction
+          type: continuous
+          bounds: [0, 1]
+          units: "fraction"
+        - name: extrusion_rate
+          type: continuous
+          bounds: [0.01, 0.1]
+          units: "mm/s"
+        - name: temperature
+          type: continuous
+          bounds: [120, 200]
+          units: "°C"
+      objectives:
+        - name: strength
+          goal: maximize
+          units: "MPa"
+          threshold: 70
+        - name: biodegradability
+          goal: maximize
+          units: "score"
+      budget: 35
+      noise_model: false
+      historical_data_points: 3
+      constraints:
+        - type: sum
+          parameters: ["monomer_a_fraction", "monomer_b_fraction", "monomer_c_fraction", "monomer_d_fraction", "monomer_e_fraction"]
+          total: 1.0
