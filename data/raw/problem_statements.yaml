@@ -115,7 +115,7 @@ problem_statements:
       sum_constraint: True
       order_constraint: True
       linear_constraint: False
-      composition_constraint: False
+      composition_constraint: True
       notes: |
         Single-objective minimization with fully Bayesian GP model for robustness.
         Composition constraint (sum to 1) and ordering constraints (resin >= inhibitor, resin >= insulator).
@@ -222,7 +222,7 @@ problem_statements:
       sum_constraint: True
       order_constraint: False
       linear_constraint: False
-      composition_constraint: False
+      composition_constraint: True
       notes: |
         Multi-objective optimization (strength and biodegradability).
         Default GP model with EHVI acquisition function.
@@ -277,7 +277,7 @@ problem_statements:
           type: continuous
           bounds: [120, 200]
           units: "°C"
-      objectives:
+      objective:
         - name: strength
           goal: maximize
           units: "MPa"
