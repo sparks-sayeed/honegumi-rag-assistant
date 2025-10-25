@@ -224,7 +224,7 @@ class ParameterExtractor:
         """
         if not settings.openai_api_key:
             raise RuntimeError(
-                "OPENAI_API_KEY is not set. Provide an API key via the environment or settings."
+                "LLM_API_KEY is not set. Provide an API key via the environment or settings."
             )
 
         try:
