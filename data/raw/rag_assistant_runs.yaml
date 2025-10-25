@@ -4,15 +4,15 @@ experiments:
   version: natural
   prompt: "I need to find the best temperature and time for sintering ceramic samples\
     \ to get maximum density. \nI can run about 20-30 experiments.\n"
-  timestamp: '2025-10-25T16:12:23.095762'
-  status: failed
+  timestamp: '2025-10-25T16:44:17.224489'
+  status: success
   grid_selections:
     note: Grid selections would be extracted from debug output
     parsed: true
-  generated_script_path: null
+  generated_script_path: /tmp/rag_experiments/scripts/exp_001_natural/honegumi_generated_bc6d3669ace1.py
   log_artifact_url: null
   notes: Natural version - underspecified request from materials scientist
-  log_path: /tmp/rag_experiments/logs/exp_001_natural_2025-10-25T16-12-23.095762.log
+  log_path: /tmp/rag_experiments/logs/exp_001_natural_2025-10-25T16-44-17.224489.log
 - experiment_id: exp_002_corrected
   problem_statement_id: 1
   version: corrected
@@ -20,15 +20,15 @@ experiments:
     \ density (g/cm\xB3). \nThe temperature can range from 800 to 1200\xB0C, and sintering\
     \ time from 1 to 6 hours. \nI have budget for about 20-30 experiments. The measurements\
     \ will have some noise since \ndensity measurements can vary a bit between samples.\n"
-  timestamp: '2025-10-25T16:12:26.020446'
-  status: failed
+  timestamp: '2025-10-25T16:45:25.615613'
+  status: success
   grid_selections:
     note: Grid selections would be extracted from debug output
     parsed: true
-  generated_script_path: null
+  generated_script_path: /tmp/rag_experiments/scripts/exp_002_corrected/honegumi_generated_cf2fa317e78a.py
   log_artifact_url: null
   notes: Corrected version - conversational with key details and units
-  log_path: /tmp/rag_experiments/logs/exp_002_corrected_2025-10-25T16-12-26.020446.log
+  log_path: /tmp/rag_experiments/logs/exp_002_corrected_2025-10-25T16-45-25.615613.log
 - experiment_id: exp_003_solution
   problem_statement_id: 1
   version: solution
@@ -36,12 +36,12 @@ experiments:
     C, time: 1-6 hours) \nto maximize density (g/cm\xB3) of ceramic samples. This\
     \ is a single-objective optimization \nwith noisy measurements. I have a budget\
     \ of about 25 experiments.\n"
-  timestamp: '2025-10-25T16:12:28.754537'
-  status: failed
+  timestamp: '2025-10-25T16:46:39.751120'
+  status: success
   grid_selections:
     note: Grid selections would be extracted from debug output
     parsed: true
-  generated_script_path: null
+  generated_script_path: /tmp/rag_experiments/scripts/exp_003_solution/honegumi_generated_d62411905f93.py
   log_artifact_url: null
   notes: Solution-based version - explicit parameter specifications
-  log_path: /tmp/rag_experiments/logs/exp_003_solution_2025-10-25T16-12-28.754537.log
+  log_path: /tmp/rag_experiments/logs/exp_003_solution_2025-10-25T16-46-39.751120.log
