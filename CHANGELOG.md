@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **API key environment variable**: Updated all code to use `LLM_API_KEY` instead of `OPENAI_API_KEY` for consistency with repository secrets configuration. This affects:
+  - `src/honegumi_rag_assistant/app_config.py` - Settings class now reads from `LLM_API_KEY`
+  - `src/honegumi_rag_assistant/nodes/code_writer.py` - Error message updated
+  - `src/honegumi_rag_assistant/extractors.py` - Error message updated
+  - `src/honegumi_rag_assistant/build_vector_store.py` - Environment variable check updated
+  - `scripts/test_vector_store.py` - Environment variable check updated
+  - `scripts/run_rag_experiments.py` - Documentation comments updated
+
 ### Added
 - **Problem statement collection**: Created `data/raw/problem_statements.yaml` with initial problem statement for ceramic sintering optimization. Includes natural version (underspecified), corrected version (conversational with density units), Honegumi-specific grid selections (objective, model, task, constraints), links to relevant Honegumi tutorials (SOBO, Batch Fully Bayesian), and references to related Ax repository issues. Template for collecting 100 problem statements across different personas in physical sciences.
 - **RAG experiment infrastructure**: Created `data/raw/rag_assistant_runs.yaml` for tracking RAG assistant experiments with experiment IDs, prompts, results, and log correlations. Added `scripts/run_rag_experiments.py` to run experiments programmatically and capture intermediate grid selections, generated scripts, and terminal logs. Added `scripts/run_experiments_and_upload.sh` bash wrapper. Added `data/raw/README_RAG_EXPERIMENTS.md` documenting experiment structure and artifact locations. Updated to work with GitHub Actions environment secrets.
