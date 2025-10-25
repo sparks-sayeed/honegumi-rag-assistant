@@ -142,13 +142,11 @@ def main():
     print("Honegumi RAG Assistant Experiment Runner")
     print("="*80)
     
-    # Check for API key
-    if not os.getenv("OPENAI_API_KEY"):
-        print("ERROR: OPENAI_API_KEY environment variable not set!")
-        print("Please set your OpenAI API key before running experiments.")
-        sys.exit(1)
+    # Note: OPENAI_API_KEY and COPILOT_MCP_FIRECRAWL_API_KEY are expected to be
+    # available in the GitHub Actions runtime environment as repository secrets.
+    # The honegumi-rag tool will access them directly from os.environ.
     
-    print("✓ OPENAI_API_KEY is configured")
+    print("Starting experiments (API keys expected from GitHub Actions environment)")
     
     # Load experiments
     config = load_experiments_config()

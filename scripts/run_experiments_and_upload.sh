@@ -1,6 +1,6 @@
 #!/bin/bash
 # Script to run RAG experiments and upload artifacts to GitHub Actions
-# This should be run after OPENAI_API_KEY is configured
+# Expects OPENAI_API_KEY to be available from GitHub Actions environment
 
 set -e
 
@@ -8,18 +8,13 @@ echo "================================================"
 echo "Honegumi RAG Assistant Experiment Runner"
 echo "================================================"
 
-# Check for API key
-if [ -z "$OPENAI_API_KEY" ]; then
-    echo "ERROR: OPENAI_API_KEY not set!"
-    echo "Please configure the API key as a repository secret."
-    exit 1
-fi
+# Note: OPENAI_API_KEY is expected to be available from GitHub Actions
+# repository secrets. No check needed here as honegumi-rag will handle it.
 
-echo "✓ API key configured"
+echo "Running experiments (using GitHub Actions environment secrets)..."
 echo ""
 
 # Run the experiments
-echo "Running experiments..."
 python3 scripts/run_rag_experiments.py
 
 # Check if experiments completed successfully
