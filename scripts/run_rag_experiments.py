@@ -142,7 +142,7 @@ def main():
     print("Honegumi RAG Assistant Experiment Runner")
     print("="*80)
     
-    # Note: OPENAI_API_KEY and COPILOT_MCP_FIRECRAWL_API_KEY are expected to be
+    # Note: LLM_API_KEY and COPILOT_MCP_FIRECRAWL_API_KEY are expected to be
     # available in the GitHub Actions runtime environment as repository secrets.
     # The honegumi-rag tool will access them directly from os.environ.
     

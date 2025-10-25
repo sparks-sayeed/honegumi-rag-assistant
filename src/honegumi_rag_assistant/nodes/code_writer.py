@@ -73,7 +73,7 @@ class CodeWriterAgent:
             print()
         
         if not settings.openai_api_key:
-            raise RuntimeError("OPENAI_API_KEY is not set in environment or settings.")
+            raise RuntimeError("LLM_API_KEY is not set in environment or settings.")
         
         # Generate the code
         return CodeWriterAgent._generate_code(problem, bo_params, skeleton, contexts, review_feedback)
