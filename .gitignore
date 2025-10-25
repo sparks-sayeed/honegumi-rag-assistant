@@ -6,13 +6,16 @@
 !.isort.cfg
 !setup.cfg
 *.orig
-*.log
 *.pot
 __pycache__/*
 .cache/*
 .*.swp
 */.ipynb_checkpoints/*
 .DS_Store
+
+# RAG experiment logs and temporary files
+/tmp/rag_experiments/
+*.log
 
 # Environment variables (contains API keys - do not commit!)
 .env
