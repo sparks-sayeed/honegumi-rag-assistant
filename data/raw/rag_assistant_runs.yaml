@@ -23,6 +23,38 @@ experiments:
   log_artifact_url: null
   notes: Natural version - underspecified request from materials scientist
   log_path: /tmp/rag_experiments/logs/exp_001_natural_2025-10-27T22-17-25.537945.log
+  grid_validation:
+    matches:
+      categorical:
+        expected: false
+        actual: false
+      composition_constraint:
+        expected: false
+        actual: false
+      linear_constraint:
+        expected: false
+        actual: false
+      model:
+        expected: Default
+        actual: Default
+      objective:
+        expected: Single
+        actual: Single
+      order_constraint:
+        expected: false
+        actual: false
+      sum_constraint:
+        expected: false
+        actual: false
+      task:
+        expected: Single
+        actual: Single
+    mismatches: {}
+    summary:
+      total_parameters: 8
+      correct: 8
+      incorrect: 0
+      accuracy: 1.0
 - experiment_id: exp_002_corrected
   problem_statement_id: 1
   version: corrected
@@ -49,6 +81,38 @@ experiments:
   log_artifact_url: null
   notes: Corrected version - conversational with key details and units
   log_path: /tmp/rag_experiments/logs/exp_002_corrected_2025-10-27T22-19-24.941166.log
+  grid_validation:
+    matches:
+      categorical:
+        expected: false
+        actual: false
+      composition_constraint:
+        expected: false
+        actual: false
+      linear_constraint:
+        expected: false
+        actual: false
+      model:
+        expected: Default
+        actual: Default
+      objective:
+        expected: Single
+        actual: Single
+      order_constraint:
+        expected: false
+        actual: false
+      sum_constraint:
+        expected: false
+        actual: false
+      task:
+        expected: Single
+        actual: Single
+    mismatches: {}
+    summary:
+      total_parameters: 8
+      correct: 8
+      incorrect: 0
+      accuracy: 1.0
 - experiment_id: exp_003_solution
   problem_statement_id: 1
   version: solution
@@ -75,6 +139,38 @@ experiments:
   log_artifact_url: null
   notes: Solution-based version - explicit parameter specifications
   log_path: /tmp/rag_experiments/logs/exp_003_solution_2025-10-27T22-21-17.640193.log
+  grid_validation:
+    matches:
+      categorical:
+        expected: false
+        actual: false
+      composition_constraint:
+        expected: false
+        actual: false
+      linear_constraint:
+        expected: false
+        actual: false
+      model:
+        expected: Default
+        actual: Default
+      objective:
+        expected: Single
+        actual: Single
+      order_constraint:
+        expected: false
+        actual: false
+      sum_constraint:
+        expected: false
+        actual: false
+      task:
+        expected: Single
+        actual: Single
+    mismatches: {}
+    summary:
+      total_parameters: 8
+      correct: 8
+      incorrect: 0
+      accuracy: 1.0
 - experiment_id: exp_004_natural_p2
   problem_statement_id: 2
   version: natural
@@ -104,6 +200,38 @@ experiments:
   log_artifact_url: null
   notes: Problem 2 (Computational Intermediate) - Natural version
   log_path: /tmp/rag_experiments/logs/exp_004_natural_p2_2025-10-27T22-22-47.076375.log
+  grid_validation:
+    matches:
+      composition_constraint:
+        expected: true
+        actual: true
+      linear_constraint:
+        expected: false
+        actual: false
+      task:
+        expected: Single
+        actual: Single
+    mismatches:
+      categorical:
+        expected: false
+        actual: true
+      model:
+        expected: Fully Bayesian
+        actual: Default
+      objective:
+        expected: Single
+        actual: Multi
+      order_constraint:
+        expected: true
+        actual: false
+      sum_constraint:
+        expected: true
+        actual: false
+    summary:
+      total_parameters: 8
+      correct: 3
+      incorrect: 5
+      accuracy: 0.38
 - experiment_id: exp_005_corrected_p2
   problem_statement_id: 2
   version: corrected
@@ -134,6 +262,38 @@ experiments:
   log_artifact_url: null
   notes: Problem 2 (Computational Intermediate) - Corrected version
   log_path: /tmp/rag_experiments/logs/exp_005_corrected_p2_2025-10-27T22-29-03.148692.log
+  grid_validation:
+    matches:
+      categorical:
+        expected: false
+        actual: false
+      composition_constraint:
+        expected: true
+        actual: true
+      linear_constraint:
+        expected: false
+        actual: false
+      objective:
+        expected: Single
+        actual: Single
+      task:
+        expected: Single
+        actual: Single
+    mismatches:
+      model:
+        expected: Fully Bayesian
+        actual: Default
+      order_constraint:
+        expected: true
+        actual: false
+      sum_constraint:
+        expected: true
+        actual: false
+    summary:
+      total_parameters: 8
+      correct: 5
+      incorrect: 3
+      accuracy: 0.62
 - experiment_id: exp_006_natural_p3
   problem_statement_id: 3
   version: natural
@@ -162,6 +322,38 @@ experiments:
   log_artifact_url: null
   notes: Problem 3 (Data Science Advanced) - Natural version
   log_path: /tmp/rag_experiments/logs/exp_006_natural_p3_2025-10-27T22-31-45.908257.log
+  grid_validation:
+    matches:
+      composition_constraint:
+        expected: true
+        actual: true
+      linear_constraint:
+        expected: false
+        actual: false
+      model:
+        expected: Default
+        actual: Default
+      order_constraint:
+        expected: false
+        actual: false
+      task:
+        expected: Single
+        actual: Single
+    mismatches:
+      categorical:
+        expected: false
+        actual: true
+      objective:
+        expected: Multi
+        actual: Single
+      sum_constraint:
+        expected: true
+        actual: false
+    summary:
+      total_parameters: 8
+      correct: 5
+      incorrect: 3
+      accuracy: 0.62
 - experiment_id: exp_007_corrected_p3
   problem_statement_id: 3
   version: corrected
@@ -193,3 +385,35 @@ experiments:
   log_artifact_url: null
   notes: Problem 3 (Data Science Advanced) - Corrected version
   log_path: /tmp/rag_experiments/logs/exp_007_corrected_p3_2025-10-27T22-33-52.468203.log
+  grid_validation:
+    matches:
+      categorical:
+        expected: false
+        actual: false
+      composition_constraint:
+        expected: true
+        actual: true
+      linear_constraint:
+        expected: false
+        actual: false
+      model:
+        expected: Default
+        actual: Default
+      objective:
+        expected: Multi
+        actual: Multi
+      order_constraint:
+        expected: false
+        actual: false
+      task:
+        expected: Single
+        actual: Single
+    mismatches:
+      sum_constraint:
+        expected: true
+        actual: false
+    summary:
+      total_parameters: 8
+      correct: 7
+      incorrect: 1
+      accuracy: 0.88
