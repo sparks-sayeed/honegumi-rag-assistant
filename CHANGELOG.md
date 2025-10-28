@@ -21,7 +21,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Parameter types**: Simplified to `continuous` and `categorical` (removed `integer`) to match solution format expectations.
 - **ParameterExtractor prompt**: Includes formatted table showing grid selection logic with pre-computed boolean flags for each constraint type based on extracted structure, making the mapping explicit and deterministic.
 - **Parameter selector workflow**: Two-stage extraction (structure → grid) with solution-format intermediate representation instead of direct natural language → grid mapping.
-
 ### Fixed
 - Removed API key existence checks from experiment runner scripts - secrets are available in GitHub Actions runtime but not in Copilot agent sandbox.
 

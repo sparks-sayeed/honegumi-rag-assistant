@@ -14,6 +14,8 @@ jobs:
     env:
       PIP_TIMEOUT: 600
       PIP_RETRIES: 2
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      COPILOT_MCP_FIRECRAWL_API_KEY: ${{ secrets.COPILOT_MCP_FIRECRAWL_API_KEY }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
