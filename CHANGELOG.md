@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Solution-format Pydantic models**: Added `SearchSpaceParameter`, `ObjectiveSpec`, `ConstraintSpec`, and `ProblemStructure` models that mirror the solution structure from test problems, ensuring perfect alignment between extraction and validation.
 - **Enhanced debug output**: Parameter selector now shows both Stage 1 (problem structure in solution format) and Stage 2 (grid selections) with clear formatting for better transparency and debugging.
 - **Detailed grid selection rules**: Enhanced prompt includes explicit lookup table mapping extracted structure to grid parameters with special emphasis on constraint type distinctions.
+- **Problem statement collection**: Created `data/raw/problem_statements.yaml` with initial problem statement for ceramic sintering optimization. Includes natural version (underspecified), corrected version (conversational with density units), Honegumi-specific grid selections (objective, model, task, constraints), links to relevant Honegumi tutorials (SOBO, Batch Fully Bayesian), and references to related Ax repository issues. Template for collecting 100 problem statements across different personas in physical sciences.
+- **RAG experiment infrastructure**: Created `data/raw/rag_assistant_runs.yaml` for tracking RAG assistant experiments with experiment IDs, prompts, results, and log correlations. Added `scripts/run_rag_experiments.py` to run experiments programmatically and capture intermediate grid selections, generated scripts, and terminal logs. Added `scripts/run_experiments_and_upload.sh` bash wrapper. Added `data/raw/README_RAG_EXPERIMENTS.md` documenting experiment structure and artifact locations. Updated to work with GitHub Actions environment secrets.
 
 ### Changed
 - **ProblemStructure schema**: Now follows exact solution format with `search_space` (list of parameters), `objective` (list of objectives), `budget`, `batch_size`, `noise_model`, `constraints`, `historical_data_points`, and `model_preference` - matching test problem structure.
@@ -19,6 +21,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Parameter types**: Simplified to `continuous` and `categorical` (removed `integer`) to match solution format expectations.
 - **ParameterExtractor prompt**: Includes formatted table showing grid selection logic with pre-computed boolean flags for each constraint type based on extracted structure, making the mapping explicit and deterministic.
 - **Parameter selector workflow**: Two-stage extraction (structure → grid) with solution-format intermediate representation instead of direct natural language → grid mapping.
+
+### Fixed
+- Removed API key existence checks from experiment runner scripts - secrets are available in GitHub Actions runtime but not in Copilot agent sandbox.
 
 ## [0.1.7] - 2025-10-20
 
