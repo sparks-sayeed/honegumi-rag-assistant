@@ -36,7 +36,7 @@ Simply describe your optimization problem in plain English, and the assistant pr
 ## Key Features
 
 ### Multi-Agent Architecture
-- **Parameter Selector**: Analyzes problem and extracts optimization parameters (objective, constraints, task type etc.)
+- **Intelligent Parameter Detection**: Two-stage extraction process with chain-of-thought reasoning for accurate grid parameter selection
 - **Skeleton Generator**: Uses [Honegumi](https://honegumi.readthedocs.io/en/latest/) to create deterministic code templates
 - **Retrieval Planner**: Intelligently generates retrieval queries based on problem complexity
 - **Parallel Retrievers**: For efficient documentation retrieval - multiple queries executed concurrently to minimize latency
