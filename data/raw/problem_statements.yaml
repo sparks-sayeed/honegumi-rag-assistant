@@ -168,7 +168,7 @@ problem_statements:
       batch_size: 6
       noise_model: true
       constraints:
-        - type: sum
+        - type: composition
           parameters: ["resin_fraction", "inhibitor_fraction", "insulator_fraction", "stabilizer_fraction"]
           total: 1.0
         - type: order
@@ -289,6 +289,6 @@ problem_statements:
       noise_model: false
       historical_data_points: 3
       constraints:
-        - type: sum
+        - type: composition
           parameters: ["monomer_a_fraction", "monomer_b_fraction", "monomer_c_fraction", "monomer_d_fraction", "monomer_e_fraction"]
           total: 1.0
