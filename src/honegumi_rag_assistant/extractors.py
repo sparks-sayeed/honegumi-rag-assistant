@@ -16,12 +16,131 @@ type coercion through Pydantic schemas.
 
 from __future__ import annotations
 
-from typing import Dict, Any, Literal
+from typing import Dict, Any, Literal, List, Optional
 
 from pydantic import BaseModel, Field, model_validator
 from langchain_openai import ChatOpenAI
 
 from .app_config import settings
+
+
+class SearchSpaceParameter(BaseModel):
+    """Represents a single parameter in the search space."""
+    name: str = Field(description="The parameter name (e.g., 'temperature', 'resin_fraction')")
+    type: Literal["continuous", "categorical"] = Field(
+        description="The type of parameter: continuous (real-valued) or categorical (discrete choices)"
+    )
+    bounds: Optional[List[float]] = Field(
+        default=None,
+        description="For continuous parameters: [lower_bound, upper_bound]. Leave None for categorical."
+    )
+    categories: Optional[List[str]] = Field(
+        default=None,
+        description="For categorical parameters: list of possible values. Leave None for continuous."
+    )
+    units: Optional[str] = Field(
+        default=None,
+        description="Units of measurement if applicable (e.g., '°C', 'hours', 'fraction', 'mm')"
+    )
+
+
+class ObjectiveSpec(BaseModel):
+    """Represents an optimization objective."""
+    name: str = Field(description="The objective name (e.g., 'density', 'strength', 'cost')")
+    goal: Literal["maximize", "minimize"] = Field(
+        description="Whether to maximize or minimize this objective"
+    )
+    threshold: Optional[float] = Field(
+        default=None,
+        description="Minimum acceptable value (for maximize) or maximum acceptable value (for minimize). Only for multi-objective."
+    )
+    units: Optional[str] = Field(
+        default=None,
+        description="Units of measurement if applicable"
+    )
+
+
+class ConstraintSpec(BaseModel):
+    """Represents an optimization constraint."""
+    type: Literal["sum", "order", "linear", "composition"] = Field(
+        description=(
+            "Type of constraint:\n"
+            "- sum: parameters sum to a specific value (e.g., x1 + x2 + x3 <= 100)\n"
+            "- order: one parameter must be >= another (e.g., x1 >= x2)\n"
+            "- linear: linear combination inequality (e.g., 0.2*x1 + x2 <= 0.5)\n"
+            "- composition: fractions sum to 1 (special case for material compositions, e.g., monomer fractions)"
+        )
+    )
+    parameters: List[str] = Field(
+        description="List of parameter names involved in this constraint"
+    )
+    description: str = Field(
+        description="Human-readable description of the constraint (e.g., 'resin_fraction >= inhibitor_fraction')"
+    )
+    total: Optional[float] = Field(
+        default=None,
+        description="Target value for sum/composition constraints (e.g., 1.0 for composition, 100 for sum)"
+    )
+
+
+class ProblemStructure(BaseModel):
+    """Structured representation of the optimization problem following the solution format.
+    
+    This intermediate representation extracts the key elements of the optimization problem
+    in the same structure as the 'solution' field in test problems. This ensures consistency
+    and makes validation straightforward.
+    
+    Structure matches:
+      solution:
+        search_space: [...]
+        objective: {...} or [{...}, ...]
+        budget: int
+        batch_size: int (optional)
+        noise_model: bool
+        constraints: [...]
+    """
+    
+    search_space: List[SearchSpaceParameter] = Field(
+        description="List of all parameters to optimize over (search space definition)"
+    )
+    
+    objective: List[ObjectiveSpec] = Field(
+        description=(
+            "List of objectives to optimize. "
+            "Single-objective: list with 1 objective. "
+            "Multi-objective: list with 2+ objectives."
+        )
+    )
+    
+    budget: Optional[int] = Field(
+        default=None,
+        description="Total number of experiments/trials planned"
+    )
+    
+    batch_size: Optional[int] = Field(
+        default=None,
+        description="Number of experiments to run in parallel (omit or set to 1 for sequential)"
+    )
+    
+    noise_model: bool = Field(
+        default=True,
+        description="Whether measurements are expected to have noise/variability"
+    )
+    
+    constraints: List[ConstraintSpec] = Field(
+        default_factory=list,
+        description="List of constraints on parameters (empty list if no constraints)"
+    )
+    
+    historical_data_points: Optional[int] = Field(
+        default=None,
+        description="Number of historical/existing data points to incorporate (None if no existing data)"
+    )
+    
+    model_preference: Optional[Literal["Default", "Fully Bayesian", "Custom"]] = Field(
+        default=None,
+        description="User's explicit model preference if stated (None means use Default)"
+    )
 
 
 class OptimizationParameters(BaseModel):
@@ -190,14 +309,91 @@ class OptimizationParameters(BaseModel):
         return self
 
 
+class ProblemStructureExtractor:
+    """Extract structured problem representation from natural language.
+    
+    This is the first stage of a two-stage extraction process. It extracts
+    the explicit problem structure (parameters, objectives, constraints)
+    before making grid selections. This intermediate representation helps
+    improve accuracy by forcing explicit reasoning about problem elements.
+    """
+
+    @classmethod
+    def invoke(cls, prompt: str) -> Dict[str, Any]:
+        """Extract problem structure from natural language description.
+
+        Parameters
+        ----------
+        prompt : str
+            The user's problem description in natural language.
+
+        Returns
+        -------
+        Dict[str, Any]
+            A dictionary with a 'problem_structure' key containing the
+            extracted structure, or an 'error' key if extraction failed.
+        """
+        if not settings.openai_api_key:
+            raise RuntimeError(
+                "OPENAI_API_KEY is not set. Provide an API key via the environment or settings."
+            )
+
+        try:
+            llm = ChatOpenAI(
+                model=settings.model_name,
+                api_key=settings.openai_api_key,
+            )
+            
+            structured_llm = llm.with_structured_output(
+                ProblemStructure,
+                method="function_calling",
+                include_raw=False,
+            )
+            
+            # Enhanced prompt that encourages thorough extraction
+            enhanced_prompt = f"""Analyze the following optimization problem and extract its structure in the standard solution format.
+
+Pay special attention to:
+- All parameters in the search space (continuous or categorical)
+- Number of objectives (1 = single-objective, 2+ = multi-objective)  
+- Constraints: Distinguish carefully between:
+  * composition: Material fractions that must sum to 1.0 (e.g., monomer_a + monomer_b + monomer_c = 1)
+  * sum: General sum constraints (e.g., x1 + x2 <= 100, budget allocation)
+  * order: Ordering constraints (e.g., x1 >= x2)
+  * linear: Linear combination inequalities (e.g., 0.2*x1 + x2 <= 0.5)
+- Batch size: Number of parallel experiments (omit if sequential/not mentioned)
+- Budget: Total number of trials/experiments
+- Noise model: Whether measurements have variability/noise (default: true)
+- Historical data: Whether existing data points are mentioned
+- Model preference: Default, Fully Bayesian, or Custom (only if explicitly requested)
+
+Problem description:
+{prompt}
+
+Extract the complete problem structure following the solution format with search_space, objective, budget, batch_size (if applicable), noise_model, constraints, historical_data_points (if applicable), and model_preference (if specified)."""
+            
+            result: ProblemStructure = structured_llm.invoke(enhanced_prompt)
+            
+            return {"problem_structure": result.model_dump()}
+            
+        except Exception as exc:
+            return {"problem_structure": None, "error": f"Problem structure extraction failed: {exc}"}
+
+
 class ParameterExtractor:
     """Extract optimisation parameters using structured output.
 
     This class uses LangChain's ChatOpenAI with structured output to
     reliably extract Bayesian optimization parameters from a natural
-    language problem description. The structured output approach provides
-    automatic validation via Pydantic, retry logic on validation failures,
-    and type coercion, making it more robust than manual JSON parsing.
+    language problem description. 
+    
+    This is the second stage of a two-stage extraction process. It can
+    optionally accept a ProblemStructure from the first stage to improve
+    grid selection accuracy by reasoning over explicit problem elements.
+    
+    The structured output approach provides automatic validation via 
+    Pydantic, retry logic on validation failures, and type coercion, 
+    making it more robust than manual JSON parsing.
     
     Note: LangChain's with_structured_output() internally uses validation
     and retry mechanisms similar to TrustCall when method='function_calling'
@@ -205,7 +401,7 @@ class ParameterExtractor:
     """
 
     @classmethod
-    def invoke(cls, prompt: str) -> Dict[str, Any]:
+    def invoke(cls, prompt: str, problem_structure: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """Invoke the LLM with a problem description and parse the result.
 
         Parameters
@@ -213,6 +409,10 @@ class ParameterExtractor:
         prompt : str
             The user's problem description. This text should explain the
             optimisation task in natural language.
+        problem_structure : Optional[Dict[str, Any]], optional
+            The extracted problem structure from ProblemStructureExtractor.
+            If provided, this will be included in the prompt to improve
+            grid selection accuracy.
 
         Returns
         -------
@@ -246,10 +446,107 @@ class ParameterExtractor:
                 include_raw=False,  # Return only the validated Pydantic model
             )
             
+            # Build the prompt, optionally including problem structure
+            if problem_structure:
+                # Extract key information from the solution-format structure
+                num_params = len(problem_structure.get('search_space', []))
+                num_objectives = len(problem_structure.get('objective', []))
+                num_constraints = len(problem_structure.get('constraints', []))
+                
+                param_names = [p['name'] for p in problem_structure.get('search_space', [])]
+                param_types = [p['type'] for p in problem_structure.get('search_space', [])]
+                has_categorical = 'categorical' in param_types
+                
+                objectives_info = [
+                    f"{o['name']} ({o['goal']})" + (f", threshold: {o['threshold']}" if o.get('threshold') else "")
+                    for o in problem_structure.get('objective', [])
+                ]
+                
+                constraints_info = []
+                has_sum_constraint = False
+                has_order_constraint = False
+                has_linear_constraint = False
+                has_composition_constraint = False
+                
+                for c in problem_structure.get('constraints', []):
+                    constraint_type = c['type']
+                    if constraint_type == 'sum':
+                        has_sum_constraint = True
+                    elif constraint_type == 'order':
+                        has_order_constraint = True
+                    elif constraint_type == 'linear':
+                        has_linear_constraint = True
+                    elif constraint_type == 'composition':
+                        has_composition_constraint = True
+                    
+                    constraints_info.append(f"{c['type']}: {c['description']}")
+                
+                batch_size = problem_structure.get('batch_size')
+                is_batch = batch_size is not None and batch_size > 1
+                model_pref = problem_structure.get('model_preference', 'Default')
+                historical_data = problem_structure.get('historical_data_points')
+                has_existing = historical_data is not None and historical_data > 0
+                
+                enhanced_prompt = f"""Based on the following problem description and its extracted structure, select the appropriate grid parameters for Honegumi optimization.
+
+Problem Description:
+{prompt}
+
+Extracted Problem Structure (Solution Format):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SEARCH SPACE ({num_params} parameters):
+{chr(10).join(f"  • {p['name']} ({p['type']}): {p.get('bounds', p.get('categories', 'N/A'))}" for p in problem_structure.get('search_space', []))}
+
+OBJECTIVES ({num_objectives}):
+{chr(10).join(f"  • {info}" for info in objectives_info)}
+
+CONSTRAINTS ({num_constraints}):
+{chr(10).join(f"  • {info}" for info in constraints_info) if constraints_info else '  (none)'}
+
+EXPERIMENTAL SETUP:
+  • Budget: {problem_structure.get('budget', 'Not specified')}
+  • Batch size: {batch_size if batch_size else 'Sequential (1)'}
+  • Noise model: {problem_structure.get('noise_model', True)}
+  • Historical data points: {problem_structure.get('historical_data_points', 0)}
+  • Model preference: {model_pref or 'Default'}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+GRID SELECTION RULES (apply based on extracted structure above):
+┌─────────────────────────┬──────────────────────────────────────────────────┐
+│ Grid Parameter          │ Selection Logic                                  │
+├─────────────────────────┼──────────────────────────────────────────────────┤
+│ objective               │ "Single" if 1 objective, "Multi" if 2+           │
+│ model                   │ Use model_preference ({model_pref or 'Default'})                    │
+│ task                    │ "Single" (Multi only for multi-task learning)    │
+│ existing_data           │ {has_existing} (historical_data_points > 0)                │
+│ categorical             │ {has_categorical} (any categorical parameters)              │
+│ sum_constraint          │ {has_sum_constraint} (constraint type = "sum")                │
+│ order_constraint        │ {has_order_constraint} (constraint type = "order")              │
+│ linear_constraint       │ {has_linear_constraint} (constraint type = "linear")            │
+│ composition_constraint  │ {has_composition_constraint} (constraint type = "composition")      │
+│ custom_threshold        │ True if any objective has threshold (Multi only) │
+│ synchrony               │ "Batch" if batch_size > 1, else "Single"         │
+│ visualize               │ True (default for tracking progress)             │
+└─────────────────────────┴──────────────────────────────────────────────────┘
+
+CRITICAL: Constraint Type Distinction
+• composition_constraint: ONLY for material fractions summing to 1.0 
+  Example: monomer_a + monomer_b + monomer_c = 1 (materials composition)
+  
+• sum_constraint: General sum constraints NOT equal to 1.0
+  Example: x1 + x2 <= 100 (budget), allocation sums, etc.
+
+These are MUTUALLY EXCLUSIVE - check the constraint type and total value!
+
+Select the grid parameters following the rules above."""
+                final_prompt = enhanced_prompt
+            else:
+                final_prompt = prompt
+            
             # Invoke the LLM with the problem description
             # If the LLM returns invalid data, it will automatically retry with
             # the validation error message to get corrected output
-            result: OptimizationParameters = structured_llm.invoke(prompt)
+            result: OptimizationParameters = structured_llm.invoke(final_prompt)
             
             # Convert the Pydantic model to a dict
             bo_params = result.model_dump()
@@ -259,3 +556,4 @@ class ParameterExtractor:
         except Exception as exc:
             # Surface the exception in the error field
             return {"bo_params": None, "error": f"LLM invocation failed: {exc}"}
+
