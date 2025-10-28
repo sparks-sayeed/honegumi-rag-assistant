@@ -112,7 +112,7 @@ problem_statements:
       model: Fully Bayesian
       task: Single
       categorical: False
-      sum_constraint: True
+      sum_constraint: False
       order_constraint: True
       linear_constraint: False
       composition_constraint: True
@@ -219,7 +219,7 @@ problem_statements:
       model: Default
       task: Single
       categorical: False
-      sum_constraint: True
+      sum_constraint: False
       order_constraint: False
       linear_constraint: False
       composition_constraint: True
