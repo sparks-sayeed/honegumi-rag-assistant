@@ -4,173 +4,170 @@ experiments:
   version: natural
   prompt: "I need to find the best temperature and time for sintering ceramic samples\
     \ to get maximum density. \nI can run about 20-30 experiments.\n"
-  timestamp: '2025-10-26T01:37:44.094663'
+  timestamp: '2025-10-29T00:20:48.637271'
   status: success
   grid_selections:
-    objective: Single
-    model: Default
-    task: Single
-    existing_data: false
-    sum_constraint: false
-    order_constraint: false
-    linear_constraint: false
-    composition_constraint: false
-    categorical: false
-    custom_threshold: false
-    synchrony: Batch
-    visualize: true
+    note: Grid selections would be extracted from debug output
+    parsed: true
   generated_script_path: /tmp/rag_experiments/scripts/exp_001_natural/honegumi_generated_bc6d3669ace1.py
   log_artifact_url: null
   notes: Natural version - underspecified request from materials scientist
-  log_path: /tmp/rag_experiments/logs/exp_001_natural_2025-10-27T22-17-25.537945.log
+  log_path: /tmp/rag_experiments/logs/exp_001_natural_2025-10-29T00-20-48.637271.log
   grid_validation:
     matches:
-      categorical:
-        expected: false
-        actual: false
-      composition_constraint:
-        expected: false
-        actual: false
-      linear_constraint:
-        expected: false
-        actual: false
-      model:
-        expected: Default
-        actual: Default
       objective:
-        expected: Single
         actual: Single
-      order_constraint:
-        expected: false
-        actual: false
-      sum_constraint:
-        expected: false
-        actual: false
+        expected: Single
+      model:
+        actual: Default
+        expected: Default
       task:
-        expected: Single
         actual: Single
+        expected: Single
+      categorical:
+        actual: false
+        expected: false
+      sum_constraint:
+        actual: false
+        expected: false
+      order_constraint:
+        actual: false
+        expected: false
+      linear_constraint:
+        actual: false
+        expected: false
+      composition_constraint:
+        actual: false
+        expected: false
     mismatches: {}
     summary:
       total_parameters: 8
       correct: 8
       incorrect: 0
-      accuracy: 1.0
+      accuracy_percent: 100.0
+  actual_grid_selections:
+    objective: Single
+    model: Default
+    task: Single
+    categorical: false
+    sum_constraint: false
+    order_constraint: false
+    linear_constraint: false
+    composition_constraint: false
 - experiment_id: exp_002_corrected
   problem_statement_id: 1
   version: corrected
   prompt: "I want to optimize sintering conditions for ceramic samples to maximize\
-    \ density (g/cm³). \nThe temperature can range from 800 to 1200°C, and sintering\
+    \ density (g/cm\xB3). \nThe temperature can range from 800 to 1200\xB0C, and sintering\
     \ time from 1 to 6 hours. \nI have budget for about 20-30 experiments. The measurements\
     \ will have some noise since \ndensity measurements can vary a bit between samples.\n"
-  timestamp: '2025-10-26T01:39:57.975243'
+  timestamp: '2025-10-29T00:06:50.059046'
   status: success
   grid_selections:
-    objective: Single
-    model: Default
-    task: Single
-    existing_data: false
-    sum_constraint: false
-    order_constraint: false
-    linear_constraint: false
-    composition_constraint: false
-    categorical: false
-    custom_threshold: false
-    synchrony: Single
-    visualize: true
+    note: Grid selections would be extracted from debug output
+    parsed: true
   generated_script_path: /tmp/rag_experiments/scripts/exp_002_corrected/honegumi_generated_cf2fa317e78a.py
   log_artifact_url: null
   notes: Corrected version - conversational with key details and units
-  log_path: /tmp/rag_experiments/logs/exp_002_corrected_2025-10-27T22-19-24.941166.log
+  log_path: /tmp/rag_experiments/logs/exp_002_corrected_2025-10-29T00-06-50.059046.log
   grid_validation:
     matches:
-      categorical:
-        expected: false
-        actual: false
-      composition_constraint:
-        expected: false
-        actual: false
-      linear_constraint:
-        expected: false
-        actual: false
-      model:
-        expected: Default
-        actual: Default
       objective:
-        expected: Single
         actual: Single
-      order_constraint:
-        expected: false
-        actual: false
-      sum_constraint:
-        expected: false
-        actual: false
+        expected: Single
+      model:
+        actual: Default
+        expected: Default
       task:
-        expected: Single
         actual: Single
+        expected: Single
+      categorical:
+        actual: false
+        expected: false
+      sum_constraint:
+        actual: false
+        expected: false
+      order_constraint:
+        actual: false
+        expected: false
+      linear_constraint:
+        actual: false
+        expected: false
+      composition_constraint:
+        actual: false
+        expected: false
     mismatches: {}
     summary:
       total_parameters: 8
       correct: 8
       incorrect: 0
-      accuracy: 1.0
-- experiment_id: exp_003_solution
-  problem_statement_id: 1
-  version: solution
-  prompt: "I need to optimize two continuous parameters (temperature: 800-1200°C,\
-    \ time: 1-6 hours) \nto maximize density (g/cm³) of ceramic samples. This is a\
-    \ single-objective optimization \nwith noisy measurements. I have a budget of\
-    \ about 25 experiments.\n"
-  timestamp: '2025-10-26T01:42:29.114543'
-  status: success
-  grid_selections:
+      accuracy_percent: 100.0
+  actual_grid_selections:
     objective: Single
     model: Default
     task: Single
-    existing_data: false
+    categorical: false
     sum_constraint: false
     order_constraint: false
     linear_constraint: false
     composition_constraint: false
-    categorical: false
-    custom_threshold: false
-    synchrony: Single
-    visualize: true
+- experiment_id: exp_003_solution
+  problem_statement_id: 1
+  version: solution
+  prompt: "I need to optimize two continuous parameters (temperature: 800-1200\xB0\
+    C, time: 1-6 hours) \nto maximize density (g/cm\xB3) of ceramic samples. This\
+    \ is a single-objective optimization \nwith noisy measurements. I have a budget\
+    \ of about 25 experiments.\n"
+  timestamp: '2025-10-29T00:08:36.184972'
+  status: success
+  grid_selections:
+    note: Grid selections would be extracted from debug output
+    parsed: true
   generated_script_path: /tmp/rag_experiments/scripts/exp_003_solution/honegumi_generated_d62411905f93.py
   log_artifact_url: null
   notes: Solution-based version - explicit parameter specifications
-  log_path: /tmp/rag_experiments/logs/exp_003_solution_2025-10-27T22-21-17.640193.log
+  log_path: /tmp/rag_experiments/logs/exp_003_solution_2025-10-29T00-08-36.184972.log
   grid_validation:
     matches:
-      categorical:
-        expected: false
-        actual: false
-      composition_constraint:
-        expected: false
-        actual: false
-      linear_constraint:
-        expected: false
-        actual: false
-      model:
-        expected: Default
-        actual: Default
       objective:
-        expected: Single
         actual: Single
-      order_constraint:
-        expected: false
-        actual: false
-      sum_constraint:
-        expected: false
-        actual: false
+        expected: Single
+      model:
+        actual: Default
+        expected: Default
       task:
-        expected: Single
         actual: Single
+        expected: Single
+      categorical:
+        actual: false
+        expected: false
+      sum_constraint:
+        actual: false
+        expected: false
+      order_constraint:
+        actual: false
+        expected: false
+      linear_constraint:
+        actual: false
+        expected: false
+      composition_constraint:
+        actual: false
+        expected: false
     mismatches: {}
     summary:
       total_parameters: 8
       correct: 8
       incorrect: 0
-      accuracy: 1.0
+      accuracy_percent: 100.0
+  actual_grid_selections:
+    objective: Single
+    model: Default
+    task: Single
+    categorical: false
+    sum_constraint: false
+    order_constraint: false
+    linear_constraint: false
+    composition_constraint: false
 - experiment_id: exp_004_natural_p2
   problem_statement_id: 2
   version: natural
@@ -181,57 +178,56 @@ experiments:
     \ on the composition \nlike the resin fraction should be higher than inhibitor\
     \ and insulator, and the \nfractions need to sum to 1. Looking for the formulation\
     \ that minimizes corrosion damage.\n"
-  timestamp: '2025-10-26T01:46:26.209599'
+  timestamp: '2025-10-29T00:10:07.734904'
   status: success
   grid_selections:
+    note: Grid selections would be extracted from debug output
+    parsed: true
+  generated_script_path: /tmp/rag_experiments/scripts/exp_004_natural_p2/honegumi_generated_cce5498c7e1e.py
+  log_artifact_url: null
+  notes: Problem 2 (Computational Intermediate) - Natural version
+  log_path: /tmp/rag_experiments/logs/exp_004_natural_p2_2025-10-29T00-10-07.734904.log
+  grid_validation:
+    matches:
+      task:
+        actual: Single
+        expected: Single
+      categorical:
+        actual: false
+        expected: false
+      sum_constraint:
+        actual: false
+        expected: false
+      linear_constraint:
+        actual: false
+        expected: false
+      composition_constraint:
+        actual: true
+        expected: true
+    mismatches:
+      objective:
+        actual: Multi
+        expected: Single
+      model:
+        actual: Default
+        expected: Fully Bayesian
+      order_constraint:
+        actual: false
+        expected: true
+    summary:
+      total_parameters: 8
+      correct: 5
+      incorrect: 3
+      accuracy_percent: 62.5
+  actual_grid_selections:
     objective: Multi
     model: Default
     task: Single
-    existing_data: false
+    categorical: false
     sum_constraint: false
     order_constraint: false
     linear_constraint: false
     composition_constraint: true
-    categorical: true
-    custom_threshold: false
-    synchrony: Single
-    visualize: true
-  generated_script_path: /tmp/rag_experiments/scripts/exp_004_natural_p2/honegumi_generated_cce5498c7e1e.py
-  log_artifact_url: null
-  notes: Problem 2 (Computational Intermediate) - Natural version
-  log_path: /tmp/rag_experiments/logs/exp_004_natural_p2_2025-10-27T22-22-47.076375.log
-  grid_validation:
-    matches:
-      composition_constraint:
-        expected: true
-        actual: true
-      linear_constraint:
-        expected: false
-        actual: false
-      task:
-        expected: Single
-        actual: Single
-    mismatches:
-      categorical:
-        expected: false
-        actual: true
-      model:
-        expected: Fully Bayesian
-        actual: Default
-      objective:
-        expected: Single
-        actual: Multi
-      order_constraint:
-        expected: true
-        actual: false
-      sum_constraint:
-        expected: true
-        actual: false
-    summary:
-      total_parameters: 8
-      correct: 3
-      incorrect: 5
-      accuracy: 0.38
 - experiment_id: exp_005_corrected_p2
   problem_statement_id: 2
   version: corrected
@@ -243,57 +239,56 @@ experiments:
     \ parallel, planning around 15-20 batches total. \nMeasurements will have some\
     \ variability. I want to minimize corrosion damage score. \nI'd like to use a\
     \ fully Bayesian model if possible for better uncertainty handling.\n"
-  timestamp: '2025-10-27T22:29:03.148692'
+  timestamp: '2025-10-29T00:12:23.890765'
   status: success
   grid_selections:
+    note: Grid selections would be extracted from debug output
+    parsed: true
+  generated_script_path: /tmp/rag_experiments/scripts/exp_005_corrected_p2/honegumi_generated_8c0b5426c614.py
+  log_artifact_url: null
+  notes: Problem 2 (Computational Intermediate) - Corrected version
+  log_path: /tmp/rag_experiments/logs/exp_005_corrected_p2_2025-10-29T00-12-23.890765.log
+  grid_validation:
+    matches:
+      objective:
+        actual: Single
+        expected: Single
+      task:
+        actual: Single
+        expected: Single
+      categorical:
+        actual: false
+        expected: false
+      sum_constraint:
+        actual: false
+        expected: false
+      linear_constraint:
+        actual: false
+        expected: false
+      composition_constraint:
+        actual: true
+        expected: true
+    mismatches:
+      model:
+        actual: Default
+        expected: Fully Bayesian
+      order_constraint:
+        actual: false
+        expected: true
+    summary:
+      total_parameters: 8
+      correct: 6
+      incorrect: 2
+      accuracy_percent: 75.0
+  actual_grid_selections:
     objective: Single
     model: Default
     task: Single
-    existing_data: false
+    categorical: false
     sum_constraint: false
     order_constraint: false
     linear_constraint: false
     composition_constraint: true
-    categorical: false
-    custom_threshold: false
-    synchrony: Single
-    visualize: true
-  generated_script_path: /tmp/rag_experiments/scripts/exp_005_corrected_p2/honegumi_generated_8c0b5426c614.py
-  log_artifact_url: null
-  notes: Problem 2 (Computational Intermediate) - Corrected version
-  log_path: /tmp/rag_experiments/logs/exp_005_corrected_p2_2025-10-27T22-29-03.148692.log
-  grid_validation:
-    matches:
-      categorical:
-        expected: false
-        actual: false
-      composition_constraint:
-        expected: true
-        actual: true
-      linear_constraint:
-        expected: false
-        actual: false
-      objective:
-        expected: Single
-        actual: Single
-      task:
-        expected: Single
-        actual: Single
-    mismatches:
-      model:
-        expected: Fully Bayesian
-        actual: Default
-      order_constraint:
-        expected: true
-        actual: false
-      sum_constraint:
-        expected: true
-        actual: false
-    summary:
-      total_parameters: 8
-      correct: 5
-      incorrect: 3
-      accuracy: 0.62
 - experiment_id: exp_006_natural_p3
   problem_statement_id: 3
   version: natural
@@ -303,117 +298,115 @@ experiments:
     \ I have \nsome historical data from literature (3 data points) that could help\
     \ bootstrap \nthe model. This is clearly a multi-objective problem with a threshold\
     \ constraint \non strength. What's the best way to set this up in Ax?\n"
-  timestamp: '2025-10-27T22:31:45.908257'
+  timestamp: '2025-10-29T00:14:50.569881'
   status: success
   grid_selections:
-    objective: Single
-    model: Default
-    task: Single
-    existing_data: false
-    sum_constraint: false
-    order_constraint: false
-    linear_constraint: false
-    composition_constraint: true
-    categorical: true
-    custom_threshold: false
-    synchrony: Single
-    visualize: true
+    note: Grid selections would be extracted from debug output
+    parsed: true
   generated_script_path: /tmp/rag_experiments/scripts/exp_006_natural_p3/honegumi_generated_b6eda7cc33cb.py
   log_artifact_url: null
   notes: Problem 3 (Data Science Advanced) - Natural version
-  log_path: /tmp/rag_experiments/logs/exp_006_natural_p3_2025-10-27T22-31-45.908257.log
+  log_path: /tmp/rag_experiments/logs/exp_006_natural_p3_2025-10-29T00-14-50.569881.log
   grid_validation:
     matches:
-      composition_constraint:
-        expected: true
-        actual: true
-      linear_constraint:
-        expected: false
-        actual: false
       model:
-        expected: Default
         actual: Default
-      order_constraint:
-        expected: false
-        actual: false
+        expected: Default
       task:
+        actual: Single
         expected: Single
-        actual: Single
-    mismatches:
       categorical:
+        actual: false
         expected: false
-        actual: true
-      objective:
-        expected: Multi
-        actual: Single
       sum_constraint:
-        expected: true
         actual: false
-    summary:
-      total_parameters: 8
-      correct: 5
-      incorrect: 3
-      accuracy: 0.62
-- experiment_id: exp_007_corrected_p3
-  problem_statement_id: 3
-  version: corrected
-  prompt: "I'm setting up a multi-objective Bayesian optimization for polymer design\
-    \ with \ntwo objectives: maximize strength (MPa) with threshold ≥70, and maximize\
-    \ \nbiodegradability score. The search space has 7 parameters: 5 monomer fractions\
-    \ \n(each 0-1, must sum to 1), extrusion rate (0.01-0.1 mm/s), and temperature\
-    \ \n(120-200°C). I have 3 historical data points from literature that I'd like\
-    \ to \nincorporate via attach_trial. Planning to run about 35 trials total. I'm\
-    \ \ncomfortable with the default GP model and standard acquisition function for\
-    \ \nmulti-objective (EHVI). How should I structure the ObjectiveProperties for\
-    \ \nthe threshold constraint?\n"
-  timestamp: '2025-10-27T22:33:52.468203'
-  status: success
-  grid_selections:
-    objective: Multi
-    model: Default
-    task: Single
-    existing_data: false
-    sum_constraint: false
-    order_constraint: false
-    linear_constraint: false
-    composition_constraint: true
-    categorical: false
-    custom_threshold: false
-    synchrony: Single
-    visualize: true
-  generated_script_path: /tmp/rag_experiments/scripts/exp_007_corrected_p3/honegumi_generated_45857fb64770.py
-  log_artifact_url: null
-  notes: Problem 3 (Data Science Advanced) - Corrected version
-  log_path: /tmp/rag_experiments/logs/exp_007_corrected_p3_2025-10-27T22-33-52.468203.log
-  grid_validation:
-    matches:
-      categorical:
         expected: false
+      order_constraint:
         actual: false
-      composition_constraint:
-        expected: true
-        actual: true
+        expected: false
       linear_constraint:
-        expected: false
         actual: false
-      model:
-        expected: Default
-        actual: Default
-      objective:
-        expected: Multi
-        actual: Multi
-      order_constraint:
         expected: false
-        actual: false
-      task:
-        expected: Single
-        actual: Single
-    mismatches:
-      sum_constraint:
+      composition_constraint:
+        actual: true
         expected: true
-        actual: false
+    mismatches:
+      objective:
+        actual: Single
+        expected: Multi
     summary:
       total_parameters: 8
       correct: 7
       incorrect: 1
-      accuracy: 0.88
+      accuracy_percent: 87.5
+  actual_grid_selections:
+    objective: Single
+    model: Default
+    task: Single
+    categorical: false
+    sum_constraint: false
+    order_constraint: false
+    linear_constraint: false
+    composition_constraint: true
+- experiment_id: exp_007_corrected_p3
+  problem_statement_id: 3
+  version: corrected
+  prompt: "I'm setting up a multi-objective Bayesian optimization for polymer design\
+    \ with \ntwo objectives: maximize strength (MPa) with threshold \u226570, and\
+    \ maximize \nbiodegradability score. The search space has 7 parameters: 5 monomer\
+    \ fractions \n(each 0-1, must sum to 1), extrusion rate (0.01-0.1 mm/s), and temperature\
+    \ \n(120-200\xB0C). I have 3 historical data points from literature that I'd like\
+    \ to \nincorporate via attach_trial. Planning to run about 35 trials total. I'm\
+    \ \ncomfortable with the default GP model and standard acquisition function for\
+    \ \nmulti-objective (EHVI). How should I structure the ObjectiveProperties for\
+    \ \nthe threshold constraint?\n"
+  timestamp: '2025-10-29T00:16:42.015064'
+  status: success
+  grid_selections:
+    note: Grid selections would be extracted from debug output
+    parsed: true
+  generated_script_path: /tmp/rag_experiments/scripts/exp_007_corrected_p3/honegumi_generated_45857fb64770.py
+  log_artifact_url: null
+  notes: Problem 3 (Data Science Advanced) - Corrected version
+  log_path: /tmp/rag_experiments/logs/exp_007_corrected_p3_2025-10-29T00-16-42.015064.log
+  grid_validation:
+    matches:
+      objective:
+        actual: Multi
+        expected: Multi
+      model:
+        actual: Default
+        expected: Default
+      task:
+        actual: Single
+        expected: Single
+      categorical:
+        actual: false
+        expected: false
+      sum_constraint:
+        actual: false
+        expected: false
+      order_constraint:
+        actual: false
+        expected: false
+      linear_constraint:
+        actual: false
+        expected: false
+      composition_constraint:
+        actual: true
+        expected: true
+    mismatches: {}
+    summary:
+      total_parameters: 8
+      correct: 8
+      incorrect: 0
+      accuracy_percent: 100.0
+  actual_grid_selections:
+    objective: Multi
+    model: Default
+    task: Single
+    categorical: false
+    sum_constraint: false
+    order_constraint: false
+    linear_constraint: false
+    composition_constraint: true
