@@ -105,12 +105,12 @@ def main():
     args = parser.parse_args()
     
     # Check for OpenAI API key
-    openai_api_key = os.getenv("OPENAI_API_KEY")
+    openai_api_key = os.getenv("LLM_API_KEY")
     if not openai_api_key:
-        print("Error: OPENAI_API_KEY environment variable not set")
+        print("Error: LLM_API_KEY environment variable not set")
         print("\nSet your API key:")
-        print("  PowerShell: $env:OPENAI_API_KEY = 'your-key'")
-        print("  Bash: export OPENAI_API_KEY='your-key'")
+        print("  PowerShell: $env:LLM_API_KEY = 'your-key'")
+        print("  Bash: export LLM_API_KEY='your-key'")
         sys.exit(1)
     
     # Determine vector store path

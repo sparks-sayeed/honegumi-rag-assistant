@@ -16,7 +16,7 @@ The following configuration options are supported:
 ``openai_api_key``
     Your OpenAI API key.  The assistant will raise an exception if
     attempting to call the API when this value is empty.  Override via
-    the ``OPENAI_API_KEY`` environment variable.
+    the ``LLM_API_KEY`` environment variable.
 
 ``retrieval_vectorstore_path``
     Path to a serialized vector store (e.g. FAISS index) containing the
@@ -92,7 +92,7 @@ class Settings:
     code_writer_model: str = os.getenv("CODE_WRITER_MODEL", "gpt-5")
     reviewer_model: str = os.getenv("REVIEWER_MODEL", "gpt-4o")
     retrieval_planner_model: str = os.getenv("RETRIEVAL_PLANNER_MODEL", "gpt-5")
-    openai_api_key: str = os.getenv("OPENAI_API_KEY", "")
+    openai_api_key: str = os.getenv("LLM_API_KEY", "")
     retrieval_vectorstore_path: str = os.getenv("AX_DOCS_VECTORSTORE_PATH", "")
     retrieval_top_k: int = int(os.getenv("RETRIEVAL_TOP_K", "5"))
     output_dir: str = os.getenv("OUTPUT_DIR", "./honegumi_rag_output")
@@ -109,7 +109,7 @@ class Settings:
         self.code_writer_model = os.getenv("CODE_WRITER_MODEL", "gpt-5")
         self.reviewer_model = os.getenv("REVIEWER_MODEL", "gpt-4o")
         self.retrieval_planner_model = os.getenv("RETRIEVAL_PLANNER_MODEL", "gpt-5")
-        self.openai_api_key = os.getenv("OPENAI_API_KEY", "")
+        self.openai_api_key = os.getenv("LLM_API_KEY", "")
         self.retrieval_vectorstore_path = os.getenv("AX_DOCS_VECTORSTORE_PATH", "")
         self.retrieval_top_k = int(os.getenv("RETRIEVAL_TOP_K", "5"))
         self.output_dir = os.getenv("OUTPUT_DIR", "./honegumi_rag_output")

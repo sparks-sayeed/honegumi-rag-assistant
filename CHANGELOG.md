@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **API key environment variable**: Updated all code to use `LLM_API_KEY` instead of `OPENAI_API_KEY` for consistency with repository secrets configuration. This affects:
+  - `src/honegumi_rag_assistant/app_config.py` - Settings class now reads from `LLM_API_KEY`
+  - `src/honegumi_rag_assistant/nodes/code_writer.py` - Error message updated
+  - `src/honegumi_rag_assistant/extractors.py` - Error message updated
+  - `src/honegumi_rag_assistant/build_vector_store.py` - Environment variable check updated
+  - `scripts/test_vector_store.py` - Environment variable check updated
+  - `scripts/run_rag_experiments.py` - Documentation comments updated
+
 ### Added
 - **Two-stage parameter extraction with solution-format structure**: Implemented chain-of-thought reasoning for grid parameter selection. Stage 1 extracts explicit problem structure using `ProblemStructureExtractor` in the same format as test problem solutions (search_space, objective, budget, batch_size, noise_model, constraints). Stage 2 uses this structured representation to make grid selections via enhanced `ParameterExtractor`. This approach ensures consistency with validation expectations and improves accuracy through explicit reasoning.
 - **Solution-format Pydantic models**: Added `SearchSpaceParameter`, `ObjectiveSpec`, `ConstraintSpec`, and `ProblemStructure` models that mirror the solution structure from test problems, ensuring perfect alignment between extraction and validation.
