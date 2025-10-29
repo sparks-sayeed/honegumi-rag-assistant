@@ -473,3 +473,132 @@ experiments:
     \ objective_1 (maximize)\n  - objective_2 (maximize)\n\nCONSTRAINTS (0):\n  (none)\n\
     \nEXPERIMENTAL SETUP:\n  - Budget: None\n  - Batch size: None\n  - Noise model:\
     \ True\n  - Historical data points: None\n  - Model preference: None"
+- experiment_id: exp_008_natural_p4
+  problem_statement_id: 4
+  version: natural
+  prompt: "We need to optimize our ceramic sintering process for production. Looking\
+    \ at temperature \nand time - trying to get the densest parts possible. Cost is\
+    \ a concern so we can't run \ntoo many tests, maybe 25 max. The furnace can handle\
+    \ 800-1200\xB0C and we typically sinter \nbetween 1-6 hours. Density measurements\
+    \ are pretty consistent.\n"
+  status: pending
+  notes: Natural version - industrial_practitioner persona
+- experiment_id: exp_009_corrected_p4
+  problem_statement_id: 4
+  version: corrected
+  prompt: "We're optimizing our ceramic sintering line to maximize part density (g/cm\xB3\
+    ). Our \nfurnace operates between 800-1200\xB0C, and sintering time ranges from\
+    \ 1-6 hours. \nWe have budget for about 25 trials. Density measurements are fairly\
+    \ repeatable \nwith our QC process.\n"
+  status: pending
+  notes: Corrected version - industrial_practitioner persona
+- experiment_id: exp_010_natural_p5
+  problem_statement_id: 5
+  version: natural
+  prompt: "I'm investigating the sintering behavior of ceramic materials as part of\
+    \ a fundamental \nstudy. The parameters of interest are temperature and time,\
+    \ and I'm measuring the \nresulting density. Based on the literature, I expect\
+    \ to explore temperatures from \n800 to 1200\xB0C and times from 1 to 6 hours.\
+    \ I have funding for approximately 20-30 \nexperimental runs.\n"
+  status: pending
+  notes: Natural version - research_scientist persona
+- experiment_id: exp_011_corrected_p5
+  problem_statement_id: 5
+  version: corrected
+  prompt: "I'm conducting a systematic study of ceramic sintering to understand how\
+    \ temperature \n(800-1200\xB0C) and time (1-6 hours) affect density (g/cm\xB3\
+    ). Literature suggests these \nare the key parameters. I can perform 20-30 experiments.\
+    \ There will be some measurement \nvariability in the density values.\n"
+  status: pending
+  notes: Corrected version - research_scientist persona
+- experiment_id: exp_012_natural_p6
+  problem_statement_id: 6
+  version: natural
+  prompt: "We're developing a new anti-corrosion coating for our product line. The\
+    \ formulation \nhas resin, inhibitor, insulator, and stabilizer - they need to\
+    \ add up to 1. Plus we \ncontrol the coating thickness. We can test 6 samples\
+    \ at a time in our lab. Need the \nresin to be higher than inhibitor and insulator.\
+    \ Want to minimize corrosion damage. \nBudget is tight so maybe 15-20 batches\
+    \ max.\n"
+  status: pending
+  notes: Natural version - industrial_practitioner persona
+- experiment_id: exp_013_corrected_p6
+  problem_statement_id: 6
+  version: corrected
+  prompt: "We're optimizing our anti-corrosion coating with 5 parameters: resin fraction\
+    \ (0-1), \ninhibitor fraction (0-1), insulator fraction (0-1), stabilizer fraction\
+    \ (0-0.1), and \ncoating thickness (0.1-10 mm). The fractions must sum to 1, and\
+    \ resin needs to be \ngreater than both inhibitor and insulator. We can run 6\
+    \ samples per batch, planning \n15-20 batches total. Goal is to minimize corrosion\
+    \ damage score. Measurements have \nsome variability.\n"
+  status: pending
+  notes: Corrected version - industrial_practitioner persona
+- experiment_id: exp_014_natural_p7
+  problem_statement_id: 7
+  version: natural
+  prompt: "I'm investigating anti-corrosion coating formulations as part of my research\
+    \ program. \nThe system involves four compositional variables (resin, inhibitor,\
+    \ insulator, stabilizer) \nplus coating thickness. The composition components\
+    \ must sum to unity, and I hypothesize \nthat the resin fraction should exceed\
+    \ both inhibitor and insulator fractions based on \nthe literature. I have access\
+    \ to parallel testing equipment allowing 6 concurrent \nexperiments. The objective\
+    \ is to minimize corrosion damage.\n"
+  status: pending
+  notes: Natural version - research_scientist persona
+- experiment_id: exp_015_corrected_p7
+  problem_statement_id: 7
+  version: corrected
+  prompt: "I'm studying anti-corrosion coating optimization with 5 parameters: resin\
+    \ fraction (0-1), \ninhibitor fraction (0-1), insulator fraction (0-1), stabilizer\
+    \ fraction (0-0.1), and \ncoating thickness (0.1-10 mm). The fractions must sum\
+    \ to 1. Based on theoretical \nconsiderations, resin should be greater than both\
+    \ inhibitor and insulator. I can run \nbatches of 6 samples in parallel, planning\
+    \ 15-20 batches. The goal is to minimize \ncorrosion damage score. I'd like to\
+    \ use a robust Bayesian model given the measurement \nuncertainty.\n"
+  status: pending
+  notes: Corrected version - research_scientist persona
+- experiment_id: exp_016_natural_p8
+  problem_statement_id: 8
+  version: natural
+  prompt: "Our R&D team needs to develop a new polymer for a client. They want good\
+    \ strength \n(at least 70 MPa) and high biodegradability. We have 5 different\
+    \ monomers to work \nwith, plus extrusion rate and temperature. The monomers have\
+    \ to add up to 1. We have \nsome old test data (3 data points) that might be useful.\
+    \ This is a trade-off problem \n- both objectives matter. What's the best approach?\n"
+  status: pending
+  notes: Natural version - industrial_practitioner persona
+- experiment_id: exp_017_corrected_p8
+  problem_statement_id: 8
+  version: corrected
+  prompt: "We're developing a polymer formulation with two objectives: maximize strength\
+    \ (MPa, \nminimum 70) and maximize biodegradability score. We have 7 parameters:\
+    \ 5 monomer \nfractions (each 0-1, must sum to 1), extrusion rate (0.01-0.1 mm/s),\
+    \ and temperature \n(120-200\xB0C). We have 3 historical test results that could\
+    \ help. Planning about 35 \ntrials total. This is a multi-objective optimization\
+    \ where we need trade-offs between \nstrength and biodegradability.\n"
+  status: pending
+  notes: Corrected version - industrial_practitioner persona
+- experiment_id: exp_018_natural_p9
+  problem_statement_id: 9
+  version: natural
+  prompt: "I'm conducting research on biodegradable polymers and need to perform multi-objective\
+    \ \noptimization. The objectives are mechanical strength and biodegradability\
+    \ rate. The \nformulation space consists of five monomer fractions subject to\
+    \ a simplex constraint, \nplus two process parameters: extrusion rate and temperature.\
+    \ I have three literature \ndata points that I intend to incorporate as priors.\
+    \ There is a minimum strength \nrequirement of 70 MPa. What is the appropriate\
+    \ framework for this Pareto optimization?\n"
+  status: pending
+  notes: Natural version - research_scientist persona
+- experiment_id: exp_019_corrected_p9
+  problem_statement_id: 9
+  version: corrected
+  prompt: "I'm performing a multi-objective Bayesian optimization study on polymer\
+    \ formulations. \nThe two objectives are: maximize strength (MPa) with threshold\
+    \ \u226570, and maximize \nbiodegradability score. The design space has 7 parameters:\
+    \ 5 monomer fractions \n(each 0-1, constrained to sum to 1), extrusion rate (0.01-0.1\
+    \ mm/s), and temperature \n(120-200\xB0C). I have 3 literature data points to\
+    \ incorporate as initial observations. \nPlanning approximately 35 experiments.\
+    \ I'm interested in the Pareto frontier between \nstrength and biodegradability.\n"
+  status: pending
+  notes: Corrected version - research_scientist persona
