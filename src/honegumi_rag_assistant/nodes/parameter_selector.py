@@ -85,29 +85,29 @@ class ParameterSelector:
                 for p in problem_structure.get('search_space', []):
                     bounds_info = f"{p.get('bounds', p.get('categories', 'N/A'))}"
                     units = f" ({p.get('units')})" if p.get('units') else ""
-                    print(f"  • {p['name']} [{p['type']}]: {bounds_info}{units}")
+                    print(f"  - {p['name']} [{p['type']}]: {bounds_info}{units}")
                 
                 print(f"\nOBJECTIVES ({len(problem_structure.get('objective', []))}):")
                 for o in problem_structure.get('objective', []):
                     threshold_info = f", threshold: {o['threshold']}" if o.get('threshold') else ""
                     units = f" ({o.get('units')})" if o.get('units') else ""
-                    print(f"  • {o['name']} ({o['goal']}){threshold_info}{units}")
+                    print(f"  - {o['name']} ({o['goal']}){threshold_info}{units}")
                 
                 print(f"\nCONSTRAINTS ({len(problem_structure.get('constraints', []))}):")
                 if problem_structure.get('constraints'):
                     for c in problem_structure.get('constraints', []):
                         total_info = f" (total: {c.get('total')})" if c.get('total') is not None else ""
-                        print(f"  • {c['type']}{total_info}: {c['description']}")
+                        print(f"  - {c['type']}{total_info}: {c['description']}")
                         print(f"    Parameters: {', '.join(c['parameters'])}")
                 else:
                     print("  (none)")
                 
                 print(f"\nEXPERIMENTAL SETUP:")
-                print(f"  • Budget: {problem_structure.get('budget', 'Not specified')}")
-                print(f"  • Batch size: {problem_structure.get('batch_size', 'Sequential (1)')}")
-                print(f"  • Noise model: {problem_structure.get('noise_model', True)}")
-                print(f"  • Historical data points: {problem_structure.get('historical_data_points', 0)}")
-                print(f"  • Model preference: {problem_structure.get('model_preference', 'Default')}")
+                print(f"  - Budget: {problem_structure.get('budget', 'Not specified')}")
+                print(f"  - Batch size: {problem_structure.get('batch_size', 'Sequential (1)')}")
+                print(f"  - Noise model: {problem_structure.get('noise_model', True)}")
+                print(f"  - Historical data points: {problem_structure.get('historical_data_points', 0)}")
+                print(f"  - Model preference: {problem_structure.get('model_preference', 'Default')}")
             else:
                 print("Error: No problem structure extracted")
             print("="*80 + "\n")
