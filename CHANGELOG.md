@@ -8,9 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- **Extended problem set with 2 additional personas**: Added `industrial_practitioner` and `research_scientist` personas for all 3 existing problems, creating 6 new problem statements (IDs 4-9) and 12 new experiments (exp_008 through exp_019). This brings the total to 9 problem statements across 5 distinct personas, with 19 total experiments achieving 81.25% overall grid accuracy on the new experiments.
-- **Industrial practitioner persona**: Practical, cost-conscious user with production constraints and informal language style. Applied to ceramic sintering (Problem 4), anti-corrosion coating (Problem 6), and polymer formulation (Problem 8).
-- **Research scientist persona**: Academic researcher with formal, hypothesis-driven approach and scientific language. Applied to ceramic sintering (Problem 5), anti-corrosion coating (Problem 7), and polymer formulation (Problem 9).
+- **Extended problem set with 2 additional personas**: Added `industrial_practitioner` and `research_scientist` personas to all 3 existing problems. Problem statements now use a nested structure where each problem ID contains multiple persona variations under a `personas` key, making it easier to track different communication styles for the same underlying optimization problem. This brings the total to 3 problems with 3 personas each (9 persona-problem combinations).
+- **Industrial practitioner persona**: Practical, cost-conscious user with production constraints and informal language style. Applied to ceramic sintering (Problem 1), anti-corrosion coating (Problem 2), and polymer formulation (Problem 3).
+- **Research scientist persona**: Academic researcher with formal, hypothesis-driven approach and scientific language. Applied to ceramic sintering (Problem 1), anti-corrosion coating (Problem 2), and polymer formulation (Problem 3).
 
 ### Changed
 - **API key environment variable**: Updated all code to use `LLM_API_KEY` instead of `OPENAI_API_KEY` for consistency with repository secrets configuration. This affects:
