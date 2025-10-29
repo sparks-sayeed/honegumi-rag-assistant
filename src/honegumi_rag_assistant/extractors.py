@@ -141,6 +141,37 @@ class ProblemStructure(BaseModel):
         default=None,
         description="User's explicit model preference if stated (None means use Default)"
     )
+    
+    @model_validator(mode='after')
+    def validate_minimum_structure(self) -> 'ProblemStructure':
+        """Validate that the problem structure has minimum required elements.
+        
+        A valid optimization problem must have:
+        - At least 1 objective (what are we optimizing?)
+        - Ideally at least 1 parameter (what are we optimizing over?)
+        
+        This validator ensures the LLM extracted meaningful structure
+        and fails fast if extraction was incomplete.
+        
+        Raises
+        ------
+        ValueError
+            If the structure is missing critical elements.
+        """
+        if not self.objective or len(self.objective) == 0:
+            raise ValueError(
+                "Problem structure extraction failed: No objectives found. "
+                "An optimization problem must have at least one objective to optimize. "
+                "Please ensure the problem description clearly states what should be maximized or minimized."
+            )
+        
+        # Warning for missing parameters (not a hard error since some descriptions might be very high-level)
+        if not self.search_space or len(self.search_space) == 0:
+            # Don't fail here - the LLM might infer parameters in Stage 2
+            # But this indicates the extraction might be incomplete
+            pass
+        
+        return self
 
 
 class OptimizationParameters(BaseModel):
@@ -353,24 +384,32 @@ class ProblemStructureExtractor:
             # Enhanced prompt that encourages thorough extraction
             enhanced_prompt = f"""Analyze the following optimization problem and extract its structure in the standard solution format.
 
-Pay special attention to:
-- All parameters in the search space (continuous or categorical)
-- Number of objectives (1 = single-objective, 2+ = multi-objective)  
-- Constraints: Distinguish carefully between:
-  * composition: Material fractions that must sum to 1.0 (e.g., monomer_a + monomer_b + monomer_c = 1)
-  * sum: General sum constraints (e.g., x1 + x2 <= 100, budget allocation)
-  * order: Ordering constraints (e.g., x1 >= x2)
-  * linear: Linear combination inequalities (e.g., 0.2*x1 + x2 <= 0.5)
-- Batch size: Number of parallel experiments (omit if sequential/not mentioned)
-- Budget: Total number of trials/experiments
-- Noise model: Whether measurements have variability/noise (default: true)
-- Historical data: Whether existing data points are mentioned
-- Model preference: Default, Fully Bayesian, or Custom (only if explicitly requested)
+CRITICAL REQUIREMENTS:
+1. OBJECTIVE(S): You MUST identify at least one objective (what to maximize or minimize)
+   - Look for words like: maximize, minimize, optimize, improve, reduce, increase, best, highest, lowest
+   - Examples: "maximize yield", "minimize cost", "optimize performance"
+   
+2. SEARCH SPACE: Identify all parameters being optimized
+   - Look for: ranges, variables, factors, conditions, parameters
+   - Examples: "temperature (50-200°C)", "pressure (1-10 bar)", "composition fractions"
+
+3. CONSTRAINTS: Identify constraints on parameters
+   - composition: Material fractions that must sum to 1.0 (e.g., monomer_a + monomer_b + monomer_c = 1)
+   - sum: General sum constraints (e.g., x1 + x2 <= 100, budget allocation)
+   - order: Ordering constraints (e.g., x1 >= x2, "resin should be higher than inhibitor")
+   - linear: Linear combination inequalities (e.g., 0.2*x1 + x2 <= 0.5)
+
+4. EXPERIMENTAL SETUP:
+   - Batch size: Number of parallel experiments (look for: "parallel", "at a time", "batch")
+   - Budget: Total number of trials/experiments (look for: "budget", "number of experiments", "trials")
+   - Noise model: Whether measurements have variability (default: true unless stated otherwise)
+   - Historical data: Existing data points mentioned (look for: "historical", "previous", "existing data")
+   - Model preference: Default, Fully Bayesian, or Custom (only if explicitly mentioned)
 
 Problem description:
 {prompt}
 
-Extract the complete problem structure following the solution format with search_space, objective, budget, batch_size (if applicable), noise_model, constraints, historical_data_points (if applicable), and model_preference (if specified)."""
+Extract the complete problem structure. You MUST identify at least one objective."""
             
             result: ProblemStructure = structured_llm.invoke(enhanced_prompt)
             

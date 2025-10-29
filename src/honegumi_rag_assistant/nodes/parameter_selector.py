@@ -67,13 +67,39 @@ class ParameterSelector:
         if not settings.debug:
             print("Analyzing problem structure...")
         
-        # Stage 1: Extract problem structure
-        structure_result = ProblemStructureExtractor.invoke(problem_description)
+        # Stage 1: Extract problem structure with retry logic
+        max_retries = 2
+        problem_structure = None
         
-        if "error" in structure_result and structure_result["error"]:
-            return {"bo_params": None, "error": structure_result["error"]}
+        for attempt in range(max_retries):
+            structure_result = ProblemStructureExtractor.invoke(problem_description)
+            
+            if "error" in structure_result and structure_result["error"]:
+                if attempt == max_retries - 1:
+                    return {"bo_params": None, "error": structure_result["error"]}
+                continue
+            
+            problem_structure = structure_result.get("problem_structure")
+            
+            # Validate that we got meaningful structure
+            if problem_structure:
+                num_params = len(problem_structure.get('search_space', []))
+                num_objectives = len(problem_structure.get('objective', []))
+                
+                # Check if extraction is reasonable (at least has objectives)
+                if num_objectives > 0:
+                    break  # Good extraction, proceed
+                elif attempt < max_retries - 1:
+                    if settings.debug:
+                        print(f"\n⚠️ Stage 1 extraction incomplete (attempt {attempt + 1}/{max_retries}): {num_objectives} objectives, {num_params} parameters. Retrying...")
+                    continue
         
-        problem_structure = structure_result.get("problem_structure")
+        # If we still have empty/invalid structure after retries, proceed with warning
+        if problem_structure:
+            num_params = len(problem_structure.get('search_space', []))
+            num_objectives = len(problem_structure.get('objective', []))
+            if num_objectives == 0 and settings.debug:
+                print("\n⚠️ WARNING: Stage 1 extraction may be incomplete. Proceeding with Stage 2...")
         
         # Debug: Print extracted structure
         if settings.debug:
@@ -85,29 +111,29 @@ class ParameterSelector:
                 for p in problem_structure.get('search_space', []):
                     bounds_info = f"{p.get('bounds', p.get('categories', 'N/A'))}"
                     units = f" ({p.get('units')})" if p.get('units') else ""
-                    print(f"  • {p['name']} [{p['type']}]: {bounds_info}{units}")
+                    print(f"  - {p['name']} [{p['type']}]: {bounds_info}{units}")
                 
                 print(f"\nOBJECTIVES ({len(problem_structure.get('objective', []))}):")
                 for o in problem_structure.get('objective', []):
                     threshold_info = f", threshold: {o['threshold']}" if o.get('threshold') else ""
                     units = f" ({o.get('units')})" if o.get('units') else ""
-                    print(f"  • {o['name']} ({o['goal']}){threshold_info}{units}")
+                    print(f"  - {o['name']} ({o['goal']}){threshold_info}{units}")
                 
                 print(f"\nCONSTRAINTS ({len(problem_structure.get('constraints', []))}):")
                 if problem_structure.get('constraints'):
                     for c in problem_structure.get('constraints', []):
                         total_info = f" (total: {c.get('total')})" if c.get('total') is not None else ""
-                        print(f"  • {c['type']}{total_info}: {c['description']}")
+                        print(f"  - {c['type']}{total_info}: {c['description']}")
                         print(f"    Parameters: {', '.join(c['parameters'])}")
                 else:
                     print("  (none)")
                 
                 print(f"\nEXPERIMENTAL SETUP:")
-                print(f"  • Budget: {problem_structure.get('budget', 'Not specified')}")
-                print(f"  • Batch size: {problem_structure.get('batch_size', 'Sequential (1)')}")
-                print(f"  • Noise model: {problem_structure.get('noise_model', True)}")
-                print(f"  • Historical data points: {problem_structure.get('historical_data_points', 0)}")
-                print(f"  • Model preference: {problem_structure.get('model_preference', 'Default')}")
+                print(f"  - Budget: {problem_structure.get('budget', 'Not specified')}")
+                print(f"  - Batch size: {problem_structure.get('batch_size', 'Sequential (1)')}")
+                print(f"  - Noise model: {problem_structure.get('noise_model', True)}")
+                print(f"  - Historical data points: {problem_structure.get('historical_data_points', 0)}")
+                print(f"  - Model preference: {problem_structure.get('model_preference', 'Default')}")
             else:
                 print("Error: No problem structure extracted")
             print("="*80 + "\n")
