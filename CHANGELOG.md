@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- **Extended problem set with 2 additional personas**: Added `industrial_practitioner` and `research_scientist` personas for all 3 existing problems, creating 6 new problem statements (IDs 4-9) and 12 new experiments (exp_008 through exp_019). This brings the total to 9 problem statements across 5 distinct personas, with 19 total experiments achieving 81.2% overall grid accuracy on the new experiments.
+- **Extended problem set with 2 additional personas**: Added `industrial_practitioner` and `research_scientist` personas for all 3 existing problems, creating 6 new problem statements (IDs 4-9) and 12 new experiments (exp_008 through exp_019). This brings the total to 9 problem statements across 5 distinct personas, with 19 total experiments achieving 81.25% overall grid accuracy on the new experiments.
 - **Industrial practitioner persona**: Practical, cost-conscious user with production constraints and informal language style. Applied to ceramic sintering (Problem 4), anti-corrosion coating (Problem 6), and polymer formulation (Problem 8).
 - **Research scientist persona**: Academic researcher with formal, hypothesis-driven approach and scientific language. Applied to ceramic sintering (Problem 5), anti-corrosion coating (Problem 7), and polymer formulation (Problem 9).
 
