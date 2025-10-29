@@ -158,4 +158,7 @@ class ParameterSelector:
                 print("Error: No parameters extracted (bo_params is None)")
             print("="*80 + "\n")
         
+        # Add problem_structure to the result
+        result["problem_structure"] = problem_structure
+        
         return result

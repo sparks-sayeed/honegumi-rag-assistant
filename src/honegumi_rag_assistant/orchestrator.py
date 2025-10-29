@@ -397,6 +397,7 @@ def run_from_text_with_state(
         Dictionary containing:
         - problem: Original problem text
         - bo_params: Extracted parameters (dict)
+        - problem_structure: Stage 1 extracted structure (search space, objectives, constraints)
         - skeleton_code: Generated skeleton
         - retrieval_count: Number of retrievals performed
         - retrieval_queries: List of questions asked
@@ -453,6 +454,7 @@ def run_from_text_with_state(
             "problem": problem,
             "run_id": run_id,
             "bo_params": final_state.get("bo_params", {}),
+            "problem_structure": final_state.get("problem_structure", {}),
             "skeleton_code": final_state.get("skeleton_code", ""),
             "retrieval_count": final_state.get("retrieval_count", 0),
             "retrieval_queries": retrieval_queries,
@@ -476,6 +478,7 @@ def run_from_text_with_state(
             "problem": problem,
             "run_id": run_id,
             "bo_params": {},
+            "problem_structure": {},
             "skeleton_code": "",
             "retrieval_count": 0,
             "retrieval_queries": [],
