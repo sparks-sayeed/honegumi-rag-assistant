@@ -4,7 +4,7 @@ experiments:
   version: natural
   prompt: "I need to find the best temperature and time for sintering ceramic samples\
     \ to get maximum density. \nI can run about 20-30 experiments.\n"
-  timestamp: '2025-10-29T01:21:23.184509'
+  timestamp: '2025-10-29T04:47:19.889462'
   status: success
   grid_selections:
     note: Grid selections would be extracted from debug output
@@ -12,7 +12,7 @@ experiments:
   generated_script_path: /tmp/rag_experiments/scripts/exp_001_natural/honegumi_generated_bc6d3669ace1.py
   log_artifact_url: null
   notes: Natural version - underspecified request from materials scientist
-  log_path: /tmp/rag_experiments/logs/exp_001_natural_2025-10-29T01-21-23.184509.log
+  log_path: /tmp/rag_experiments/logs/exp_001_natural_2025-10-29T04-47-19.889462.log
   grid_validation:
     matches:
       objective:
@@ -58,11 +58,11 @@ experiments:
     custom_threshold: false
     synchrony: Single
     visualize: true
-  stage1_problem_structure: "SEARCH SPACE (2 parameters):\n  \u2022 temperature [continuous]:\
-    \ None (\xB0C)\n  \u2022 time [continuous]: None (hours)\n\nOBJECTIVES (1):\n\
-    \  \u2022 density (maximize)\n\nCONSTRAINTS (0):\n  (none)\n\nEXPERIMENTAL SETUP:\n\
-    \  \u2022 Budget: None\n  \u2022 Batch size: None\n  \u2022 Noise model: True\n\
-    \  \u2022 Historical data points: None\n  \u2022 Model preference: None"
+  stage1_problem_structure: "SEARCH SPACE (2 parameters):\n  - temperature [continuous]:\
+    \ None (\xB0C)\n  - time [continuous]: None (hours)\n\nOBJECTIVES (1):\n  - density\
+    \ (maximize) (g/cm^3)\n\nCONSTRAINTS (0):\n  (none)\n\nEXPERIMENTAL SETUP:\n \
+    \ - Budget: None\n  - Batch size: None\n  - Noise model: True\n  - Historical\
+    \ data points: None\n  - Model preference: None"
 - experiment_id: exp_002_corrected
   problem_statement_id: 1
   version: corrected
@@ -70,7 +70,7 @@ experiments:
     \ density (g/cm\xB3). \nThe temperature can range from 800 to 1200\xB0C, and sintering\
     \ time from 1 to 6 hours. \nI have budget for about 20-30 experiments. The measurements\
     \ will have some noise since \ndensity measurements can vary a bit between samples.\n"
-  timestamp: '2025-10-29T01:23:37.574400'
+  timestamp: '2025-10-29T04:49:16.380480'
   status: success
   grid_selections:
     note: Grid selections would be extracted from debug output
@@ -78,7 +78,7 @@ experiments:
   generated_script_path: /tmp/rag_experiments/scripts/exp_002_corrected/honegumi_generated_cf2fa317e78a.py
   log_artifact_url: null
   notes: Corrected version - conversational with key details and units
-  log_path: /tmp/rag_experiments/logs/exp_002_corrected_2025-10-29T01-23-37.574400.log
+  log_path: /tmp/rag_experiments/logs/exp_002_corrected_2025-10-29T04-49-16.380480.log
   grid_validation:
     matches:
       objective:
@@ -124,10 +124,10 @@ experiments:
     custom_threshold: false
     synchrony: Single
     visualize: true
-  stage1_problem_structure: "SEARCH SPACE (0 parameters):\n\nOBJECTIVES (1):\n  \u2022\
+  stage1_problem_structure: "SEARCH SPACE (0 parameters):\n\nOBJECTIVES (1):\n  -\
     \ density (maximize) (g/cm\xB3)\n\nCONSTRAINTS (0):\n  (none)\n\nEXPERIMENTAL\
-    \ SETUP:\n  \u2022 Budget: None\n  \u2022 Batch size: None\n  \u2022 Noise model:\
-    \ True\n  \u2022 Historical data points: None\n  \u2022 Model preference: None"
+    \ SETUP:\n  - Budget: None\n  - Batch size: None\n  - Noise model: True\n  - Historical\
+    \ data points: None\n  - Model preference: None"
 - experiment_id: exp_003_solution
   problem_statement_id: 1
   version: solution
@@ -135,7 +135,7 @@ experiments:
     C, time: 1-6 hours) \nto maximize density (g/cm\xB3) of ceramic samples. This\
     \ is a single-objective optimization \nwith noisy measurements. I have a budget\
     \ of about 25 experiments.\n"
-  timestamp: '2025-10-29T01:25:43.524721'
+  timestamp: '2025-10-29T04:51:37.408267'
   status: success
   grid_selections:
     note: Grid selections would be extracted from debug output
@@ -143,7 +143,7 @@ experiments:
   generated_script_path: /tmp/rag_experiments/scripts/exp_003_solution/honegumi_generated_d62411905f93.py
   log_artifact_url: null
   notes: Solution-based version - explicit parameter specifications
-  log_path: /tmp/rag_experiments/logs/exp_003_solution_2025-10-29T01-25-43.524721.log
+  log_path: /tmp/rag_experiments/logs/exp_003_solution_2025-10-29T04-51-37.408267.log
   grid_validation:
     matches:
       objective:
@@ -189,12 +189,11 @@ experiments:
     custom_threshold: false
     synchrony: Single
     visualize: true
-  stage1_problem_structure: "SEARCH SPACE (2 parameters):\n  \u2022 temperature [continuous]:\
-    \ [800.0, 1200.0] (\xB0C)\n  \u2022 time [continuous]: [1.0, 6.0] (hours)\n\n\
-    OBJECTIVES (1):\n  \u2022 target (maximize)\n\nCONSTRAINTS (0):\n  (none)\n\n\
-    EXPERIMENTAL SETUP:\n  \u2022 Budget: None\n  \u2022 Batch size: None\n  \u2022\
-    \ Noise model: True\n  \u2022 Historical data points: None\n  \u2022 Model preference:\
-    \ Default"
+  stage1_problem_structure: "SEARCH SPACE (2 parameters):\n  - temperature [continuous]:\
+    \ [800.0, 1200.0] (\xB0C)\n  - time [continuous]: [1.0, 6.0] (hours)\n\nOBJECTIVES\
+    \ (1):\n  - performance (maximize)\n\nCONSTRAINTS (0):\n  (none)\n\nEXPERIMENTAL\
+    \ SETUP:\n  - Budget: None\n  - Batch size: None\n  - Noise model: True\n  - Historical\
+    \ data points: None\n  - Model preference: None"
 - experiment_id: exp_004_natural_p2
   problem_statement_id: 2
   version: natural
@@ -205,7 +204,7 @@ experiments:
     \ on the composition \nlike the resin fraction should be higher than inhibitor\
     \ and insulator, and the \nfractions need to sum to 1. Looking for the formulation\
     \ that minimizes corrosion damage.\n"
-  timestamp: '2025-10-29T01:27:58.221945'
+  timestamp: '2025-10-29T04:53:27.478932'
   status: success
   grid_selections:
     note: Grid selections would be extracted from debug output
@@ -213,7 +212,7 @@ experiments:
   generated_script_path: /tmp/rag_experiments/scripts/exp_004_natural_p2/honegumi_generated_cce5498c7e1e.py
   log_artifact_url: null
   notes: Problem 2 (Computational Intermediate) - Natural version
-  log_path: /tmp/rag_experiments/logs/exp_004_natural_p2_2025-10-29T01-27-58.221945.log
+  log_path: /tmp/rag_experiments/logs/exp_004_natural_p2_2025-10-29T04-53-27.478932.log
   grid_validation:
     matches:
       task:
@@ -259,10 +258,10 @@ experiments:
     custom_threshold: false
     synchrony: Single
     visualize: true
-  stage1_problem_structure: "SEARCH SPACE (0 parameters):\n\nOBJECTIVES (0):\n\nCONSTRAINTS\
-    \ (0):\n  (none)\n\nEXPERIMENTAL SETUP:\n  \u2022 Budget: None\n  \u2022 Batch\
-    \ size: None\n  \u2022 Noise model: True\n  \u2022 Historical data points: None\n\
-    \  \u2022 Model preference: None"
+  stage1_problem_structure: "SEARCH SPACE (0 parameters):\n\nOBJECTIVES (1):\n  -\
+    \ corrosion_rate (minimize) (mm/year)\n\nCONSTRAINTS (0):\n  (none)\n\nEXPERIMENTAL\
+    \ SETUP:\n  - Budget: None\n  - Batch size: None\n  - Noise model: True\n  - Historical\
+    \ data points: None\n  - Model preference: Default"
 - experiment_id: exp_005_corrected_p2
   problem_statement_id: 2
   version: corrected
@@ -274,7 +273,7 @@ experiments:
     \ parallel, planning around 15-20 batches total. \nMeasurements will have some\
     \ variability. I want to minimize corrosion damage score. \nI'd like to use a\
     \ fully Bayesian model if possible for better uncertainty handling.\n"
-  timestamp: '2025-10-29T01:29:38.214418'
+  timestamp: '2025-10-29T04:55:40.018094'
   status: success
   grid_selections:
     note: Grid selections would be extracted from debug output
@@ -282,7 +281,7 @@ experiments:
   generated_script_path: /tmp/rag_experiments/scripts/exp_005_corrected_p2/honegumi_generated_8c0b5426c614.py
   log_artifact_url: null
   notes: Problem 2 (Computational Intermediate) - Corrected version
-  log_path: /tmp/rag_experiments/logs/exp_005_corrected_p2_2025-10-29T01-29-38.214418.log
+  log_path: /tmp/rag_experiments/logs/exp_005_corrected_p2_2025-10-29T04-55-40.018094.log
   grid_validation:
     matches:
       objective:
@@ -328,16 +327,15 @@ experiments:
     custom_threshold: false
     synchrony: Single
     visualize: true
-  stage1_problem_structure: "SEARCH SPACE (5 parameters):\n  \u2022 component_1 [continuous]:\
-    \ [0.0, 1.0] (fraction)\n  \u2022 component_2 [continuous]: [0.0, 1.0] (fraction)\n\
-    \  \u2022 component_3 [continuous]: [0.0, 1.0] (fraction)\n  \u2022 component_4\
-    \ [continuous]: [0.0, 1.0] (fraction)\n  \u2022 component_5 [continuous]: [0.0,\
-    \ 1.0] (fraction)\n\nOBJECTIVES (1):\n  \u2022 corrosion_rate (minimize)\n\nCONSTRAINTS\
-    \ (1):\n  \u2022 composition (total: 1.0): Component fractions sum to 1.0\n  \
-    \  Parameters: component_1, component_2, component_3, component_4, component_5\n\
-    \nEXPERIMENTAL SETUP:\n  \u2022 Budget: None\n  \u2022 Batch size: None\n  \u2022\
-    \ Noise model: True\n  \u2022 Historical data points: None\n  \u2022 Model preference:\
-    \ None"
+  stage1_problem_structure: "SEARCH SPACE (5 parameters):\n  - component_1 [continuous]:\
+    \ [0.0, 1.0] (fraction)\n  - component_2 [continuous]: [0.0, 1.0] (fraction)\n\
+    \  - component_3 [continuous]: [0.0, 1.0] (fraction)\n  - component_4 [continuous]:\
+    \ [0.0, 1.0] (fraction)\n  - component_5 [continuous]: [0.0, 1.0] (fraction)\n\
+    \nOBJECTIVES (1):\n  - corrosion_resistance (maximize)\n\nCONSTRAINTS (1):\n \
+    \ - composition (total: 1.0): Component fractions must sum to 1.0\n    Parameters:\
+    \ component_1, component_2, component_3, component_4, component_5\n\nEXPERIMENTAL\
+    \ SETUP:\n  - Budget: None\n  - Batch size: None\n  - Noise model: True\n  - Historical\
+    \ data points: None\n  - Model preference: None"
 - experiment_id: exp_006_natural_p3
   problem_statement_id: 3
   version: natural
@@ -347,7 +345,7 @@ experiments:
     \ I have \nsome historical data from literature (3 data points) that could help\
     \ bootstrap \nthe model. This is clearly a multi-objective problem with a threshold\
     \ constraint \non strength. What's the best way to set this up in Ax?\n"
-  timestamp: '2025-10-29T01:32:11.400065'
+  timestamp: '2025-10-29T04:57:56.886556'
   status: success
   grid_selections:
     note: Grid selections would be extracted from debug output
@@ -355,7 +353,7 @@ experiments:
   generated_script_path: /tmp/rag_experiments/scripts/exp_006_natural_p3/honegumi_generated_b6eda7cc33cb.py
   log_artifact_url: null
   notes: Problem 3 (Data Science Advanced) - Natural version
-  log_path: /tmp/rag_experiments/logs/exp_006_natural_p3_2025-10-29T01-32-11.400065.log
+  log_path: /tmp/rag_experiments/logs/exp_006_natural_p3_2025-10-29T04-57-56.886556.log
   grid_validation:
     matches:
       model:
@@ -401,10 +399,10 @@ experiments:
     custom_threshold: false
     synchrony: Single
     visualize: true
-  stage1_problem_structure: "SEARCH SPACE (0 parameters):\n\nOBJECTIVES (1):\n  \u2022\
+  stage1_problem_structure: "SEARCH SPACE (0 parameters):\n\nOBJECTIVES (1):\n  -\
     \ strength (maximize)\n\nCONSTRAINTS (0):\n  (none)\n\nEXPERIMENTAL SETUP:\n \
-    \ \u2022 Budget: None\n  \u2022 Batch size: None\n  \u2022 Noise model: True\n\
-    \  \u2022 Historical data points: None\n  \u2022 Model preference: Default"
+    \ - Budget: None\n  - Batch size: None\n  - Noise model: True\n  - Historical\
+    \ data points: None\n  - Model preference: None"
 - experiment_id: exp_007_corrected_p3
   problem_statement_id: 3
   version: corrected
@@ -417,7 +415,7 @@ experiments:
     \ \ncomfortable with the default GP model and standard acquisition function for\
     \ \nmulti-objective (EHVI). How should I structure the ObjectiveProperties for\
     \ \nthe threshold constraint?\n"
-  timestamp: '2025-10-29T01:34:23.383153'
+  timestamp: '2025-10-29T04:59:38.175392'
   status: success
   grid_selections:
     note: Grid selections would be extracted from debug output
@@ -425,7 +423,7 @@ experiments:
   generated_script_path: /tmp/rag_experiments/scripts/exp_007_corrected_p3/honegumi_generated_45857fb64770.py
   log_artifact_url: null
   notes: Problem 3 (Data Science Advanced) - Corrected version
-  log_path: /tmp/rag_experiments/logs/exp_007_corrected_p3_2025-10-29T01-34-23.383153.log
+  log_path: /tmp/rag_experiments/logs/exp_007_corrected_p3_2025-10-29T04-59-38.175392.log
   grid_validation:
     matches:
       objective:
@@ -471,7 +469,7 @@ experiments:
     custom_threshold: false
     synchrony: Single
     visualize: true
-  stage1_problem_structure: "SEARCH SPACE (0 parameters):\n\nOBJECTIVES (0):\n\nCONSTRAINTS\
-    \ (0):\n  (none)\n\nEXPERIMENTAL SETUP:\n  \u2022 Budget: None\n  \u2022 Batch\
-    \ size: None\n  \u2022 Noise model: True\n  \u2022 Historical data points: None\n\
-    \  \u2022 Model preference: None"
+  stage1_problem_structure: "SEARCH SPACE (0 parameters):\n\nOBJECTIVES (2):\n  -\
+    \ objective_1 (maximize)\n  - objective_2 (maximize)\n\nCONSTRAINTS (0):\n  (none)\n\
+    \nEXPERIMENTAL SETUP:\n  - Budget: None\n  - Batch size: None\n  - Noise model:\
+    \ True\n  - Historical data points: None\n  - Model preference: None"
