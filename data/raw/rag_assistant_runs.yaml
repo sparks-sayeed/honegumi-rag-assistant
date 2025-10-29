@@ -481,8 +481,60 @@ experiments:
     \ a concern so we can't run \ntoo many tests, maybe 25 max. The furnace can handle\
     \ 800-1200\xB0C and we typically sinter \nbetween 1-6 hours. Density measurements\
     \ are pretty consistent.\n"
-  status: pending
+  status: success
   notes: Natural version - industrial_practitioner persona
+  timestamp: '2025-10-29T22:14:57.014967'
+  log_path: /tmp/rag_experiments/logs/exp_008_natural_p4_2025-10-29T22-14-57.014967.log
+  generated_script_path: /tmp/rag_experiments/scripts/exp_008_natural_p4/honegumi_generated_06fcb48bd300.py
+  stage1_problem_structure: "SEARCH SPACE (1 parameters):\n  - temperature [continuous]:\
+    \ None (\xB0C)\n\nOBJECTIVES (1):\n  - quality (maximize)\n\nCONSTRAINTS (0):\n\
+    \  (none)\n\nEXPERIMENTAL SETUP:\n  - Budget: None\n  - Batch size: None\n  -\
+    \ Noise model: True\n  - Historical data points: None\n  - Model preference: Default"
+  actual_grid_selections:
+    objective: Single
+    model: Default
+    task: Single
+    existing_data: false
+    sum_constraint: false
+    order_constraint: false
+    linear_constraint: false
+    composition_constraint: false
+    categorical: false
+    custom_threshold: false
+    synchrony: Single
+    visualize: true
+  grid_validation:
+    matches:
+      objective:
+        actual: Single
+        expected: Single
+      model:
+        actual: Default
+        expected: Default
+      task:
+        actual: Single
+        expected: Single
+      categorical:
+        actual: false
+        expected: false
+      sum_constraint:
+        actual: false
+        expected: false
+      order_constraint:
+        actual: false
+        expected: false
+      linear_constraint:
+        actual: false
+        expected: false
+      composition_constraint:
+        actual: false
+        expected: false
+    mismatches: {}
+    summary:
+      total_parameters: 8
+      correct: 8
+      incorrect: 0
+      accuracy_percent: 100.0
 - experiment_id: exp_009_corrected_p4
   problem_statement_id: 4
   version: corrected
@@ -490,8 +542,60 @@ experiments:
     ). Our \nfurnace operates between 800-1200\xB0C, and sintering time ranges from\
     \ 1-6 hours. \nWe have budget for about 25 trials. Density measurements are fairly\
     \ repeatable \nwith our QC process.\n"
-  status: pending
+  status: success
   notes: Corrected version - industrial_practitioner persona
+  timestamp: '2025-10-29T22:17:11.324869'
+  log_path: /tmp/rag_experiments/logs/exp_009_corrected_p4_2025-10-29T22-17-11.324869.log
+  generated_script_path: /tmp/rag_experiments/scripts/exp_009_corrected_p4/honegumi_generated_e491504c09f9.py
+  stage1_problem_structure: "SEARCH SPACE (0 parameters):\n\nOBJECTIVES (1):\n  -\
+    \ part_density (maximize) (g/cm\xB3)\n\nCONSTRAINTS (0):\n  (none)\n\nEXPERIMENTAL\
+    \ SETUP:\n  - Budget: None\n  - Batch size: None\n  - Noise model: True\n  - Historical\
+    \ data points: None\n  - Model preference: None"
+  actual_grid_selections:
+    objective: Single
+    model: Default
+    task: Single
+    existing_data: false
+    sum_constraint: false
+    order_constraint: false
+    linear_constraint: false
+    composition_constraint: false
+    categorical: false
+    custom_threshold: false
+    synchrony: Single
+    visualize: true
+  grid_validation:
+    matches:
+      objective:
+        actual: Single
+        expected: Single
+      model:
+        actual: Default
+        expected: Default
+      task:
+        actual: Single
+        expected: Single
+      categorical:
+        actual: false
+        expected: false
+      sum_constraint:
+        actual: false
+        expected: false
+      order_constraint:
+        actual: false
+        expected: false
+      linear_constraint:
+        actual: false
+        expected: false
+      composition_constraint:
+        actual: false
+        expected: false
+    mismatches: {}
+    summary:
+      total_parameters: 8
+      correct: 8
+      incorrect: 0
+      accuracy_percent: 100.0
 - experiment_id: exp_010_natural_p5
   problem_statement_id: 5
   version: natural
@@ -500,8 +604,60 @@ experiments:
     \ and I'm measuring the \nresulting density. Based on the literature, I expect\
     \ to explore temperatures from \n800 to 1200\xB0C and times from 1 to 6 hours.\
     \ I have funding for approximately 20-30 \nexperimental runs.\n"
-  status: pending
+  status: success
   notes: Natural version - research_scientist persona
+  timestamp: '2025-10-29T22:19:27.095068'
+  log_path: /tmp/rag_experiments/logs/exp_010_natural_p5_2025-10-29T22-19-27.095068.log
+  generated_script_path: /tmp/rag_experiments/scripts/exp_010_natural_p5/honegumi_generated_279f4da8decb.py
+  stage1_problem_structure: "SEARCH SPACE (0 parameters):\n\nOBJECTIVES (1):\n  -\
+    \ relative_density (maximize) (%)\n\nCONSTRAINTS (0):\n  (none)\n\nEXPERIMENTAL\
+    \ SETUP:\n  - Budget: None\n  - Batch size: None\n  - Noise model: True\n  - Historical\
+    \ data points: None\n  - Model preference: Default"
+  actual_grid_selections:
+    objective: Single
+    model: Default
+    task: Single
+    existing_data: false
+    sum_constraint: false
+    order_constraint: false
+    linear_constraint: false
+    composition_constraint: false
+    categorical: false
+    custom_threshold: false
+    synchrony: Single
+    visualize: true
+  grid_validation:
+    matches:
+      objective:
+        actual: Single
+        expected: Single
+      model:
+        actual: Default
+        expected: Default
+      task:
+        actual: Single
+        expected: Single
+      categorical:
+        actual: false
+        expected: false
+      sum_constraint:
+        actual: false
+        expected: false
+      order_constraint:
+        actual: false
+        expected: false
+      linear_constraint:
+        actual: false
+        expected: false
+      composition_constraint:
+        actual: false
+        expected: false
+    mismatches: {}
+    summary:
+      total_parameters: 8
+      correct: 8
+      incorrect: 0
+      accuracy_percent: 100.0
 - experiment_id: exp_011_corrected_p5
   problem_statement_id: 5
   version: corrected
@@ -509,8 +665,61 @@ experiments:
     \ temperature \n(800-1200\xB0C) and time (1-6 hours) affect density (g/cm\xB3\
     ). Literature suggests these \nare the key parameters. I can perform 20-30 experiments.\
     \ There will be some measurement \nvariability in the density values.\n"
-  status: pending
+  status: success
   notes: Corrected version - research_scientist persona
+  timestamp: '2025-10-29T22:22:15.654996'
+  log_path: /tmp/rag_experiments/logs/exp_011_corrected_p5_2025-10-29T22-22-15.654996.log
+  generated_script_path: /tmp/rag_experiments/scripts/exp_011_corrected_p5/honegumi_generated_12d30b5a1627.py
+  stage1_problem_structure: "SEARCH SPACE (1 parameters):\n  - sintering_temperature\
+    \ [continuous]: None (\xB0C)\n\nOBJECTIVES (1):\n  - relative_density (maximize)\n\
+    \nCONSTRAINTS (0):\n  (none)\n\nEXPERIMENTAL SETUP:\n  - Budget: None\n  - Batch\
+    \ size: None\n  - Noise model: True\n  - Historical data points: None\n  - Model\
+    \ preference: None"
+  actual_grid_selections:
+    objective: Single
+    model: Default
+    task: Single
+    existing_data: false
+    sum_constraint: false
+    order_constraint: false
+    linear_constraint: false
+    composition_constraint: false
+    categorical: false
+    custom_threshold: false
+    synchrony: Single
+    visualize: true
+  grid_validation:
+    matches:
+      objective:
+        actual: Single
+        expected: Single
+      model:
+        actual: Default
+        expected: Default
+      task:
+        actual: Single
+        expected: Single
+      categorical:
+        actual: false
+        expected: false
+      sum_constraint:
+        actual: false
+        expected: false
+      order_constraint:
+        actual: false
+        expected: false
+      linear_constraint:
+        actual: false
+        expected: false
+      composition_constraint:
+        actual: false
+        expected: false
+    mismatches: {}
+    summary:
+      total_parameters: 8
+      correct: 8
+      incorrect: 0
+      accuracy_percent: 100.0
 - experiment_id: exp_012_natural_p6
   problem_statement_id: 6
   version: natural
@@ -520,8 +729,60 @@ experiments:
     \ at a time in our lab. Need the \nresin to be higher than inhibitor and insulator.\
     \ Want to minimize corrosion damage. \nBudget is tight so maybe 15-20 batches\
     \ max.\n"
-  status: pending
+  status: success
   notes: Natural version - industrial_practitioner persona
+  timestamp: '2025-10-29T22:24:52.551009'
+  log_path: /tmp/rag_experiments/logs/exp_012_natural_p6_2025-10-29T22-24-52.551009.log
+  generated_script_path: /tmp/rag_experiments/scripts/exp_012_natural_p6/honegumi_generated_445c14a9ff2e.py
+  stage1_problem_structure: "SEARCH SPACE (0 parameters):\n\nOBJECTIVES (1):\n  -\
+    \ corrosion_resistance (maximize)\n\nCONSTRAINTS (0):\n  (none)\n\nEXPERIMENTAL\
+    \ SETUP:\n  - Budget: None\n  - Batch size: None\n  - Noise model: True\n  - Historical\
+    \ data points: None\n  - Model preference: Default"
+  actual_grid_selections:
+    objective: Single
+    model: Default
+    task: Single
+    existing_data: false
+    sum_constraint: false
+    order_constraint: false
+    linear_constraint: false
+    composition_constraint: false
+    categorical: false
+    custom_threshold: false
+    synchrony: Single
+    visualize: true
+  grid_validation:
+    matches:
+      objective:
+        actual: Single
+        expected: Single
+      task:
+        actual: Single
+        expected: Single
+      categorical:
+        actual: false
+        expected: false
+      sum_constraint:
+        actual: false
+        expected: false
+      linear_constraint:
+        actual: false
+        expected: false
+    mismatches:
+      model:
+        actual: Default
+        expected: Fully Bayesian
+      order_constraint:
+        actual: false
+        expected: true
+      composition_constraint:
+        actual: false
+        expected: true
+    summary:
+      total_parameters: 8
+      correct: 5
+      incorrect: 3
+      accuracy_percent: 62.5
 - experiment_id: exp_013_corrected_p6
   problem_statement_id: 6
   version: corrected
@@ -531,8 +792,61 @@ experiments:
     \ resin needs to be \ngreater than both inhibitor and insulator. We can run 6\
     \ samples per batch, planning \n15-20 batches total. Goal is to minimize corrosion\
     \ damage score. Measurements have \nsome variability.\n"
-  status: pending
+  status: success
   notes: Corrected version - industrial_practitioner persona
+  timestamp: '2025-10-29T22:27:14.699841'
+  log_path: /tmp/rag_experiments/logs/exp_013_corrected_p6_2025-10-29T22-27-14.699841.log
+  generated_script_path: /tmp/rag_experiments/scripts/exp_013_corrected_p6/honegumi_generated_618f44d20417.py
+  stage1_problem_structure: "SEARCH SPACE (1 parameters):\n  - resin_fraction [continuous]:\
+    \ [0.0, 1.0] (fraction)\n\nOBJECTIVES (1):\n  - corrosion_resistance (maximize)\n\
+    \nCONSTRAINTS (0):\n  (none)\n\nEXPERIMENTAL SETUP:\n  - Budget: None\n  - Batch\
+    \ size: None\n  - Noise model: True\n  - Historical data points: None\n  - Model\
+    \ preference: None"
+  actual_grid_selections:
+    objective: Single
+    model: Default
+    task: Single
+    existing_data: false
+    sum_constraint: false
+    order_constraint: false
+    linear_constraint: false
+    composition_constraint: false
+    categorical: false
+    custom_threshold: false
+    synchrony: Single
+    visualize: true
+  grid_validation:
+    matches:
+      objective:
+        actual: Single
+        expected: Single
+      task:
+        actual: Single
+        expected: Single
+      categorical:
+        actual: false
+        expected: false
+      sum_constraint:
+        actual: false
+        expected: false
+      linear_constraint:
+        actual: false
+        expected: false
+    mismatches:
+      model:
+        actual: Default
+        expected: Fully Bayesian
+      order_constraint:
+        actual: false
+        expected: true
+      composition_constraint:
+        actual: false
+        expected: true
+    summary:
+      total_parameters: 8
+      correct: 5
+      incorrect: 3
+      accuracy_percent: 62.5
 - experiment_id: exp_014_natural_p7
   problem_statement_id: 7
   version: natural
@@ -543,8 +857,60 @@ experiments:
     \ both inhibitor and insulator fractions based on \nthe literature. I have access\
     \ to parallel testing equipment allowing 6 concurrent \nexperiments. The objective\
     \ is to minimize corrosion damage.\n"
-  status: pending
+  status: success
   notes: Natural version - research_scientist persona
+  timestamp: '2025-10-29T22:29:18.516540'
+  log_path: /tmp/rag_experiments/logs/exp_014_natural_p7_2025-10-29T22-29-18.516540.log
+  generated_script_path: /tmp/rag_experiments/scripts/exp_014_natural_p7/honegumi_generated_97a4a4a15dbc.py
+  stage1_problem_structure: "SEARCH SPACE (0 parameters):\n\nOBJECTIVES (1):\n  -\
+    \ corrosion_rate (minimize) (mm/year)\n\nCONSTRAINTS (0):\n  (none)\n\nEXPERIMENTAL\
+    \ SETUP:\n  - Budget: None\n  - Batch size: None\n  - Noise model: True\n  - Historical\
+    \ data points: None\n  - Model preference: Default"
+  actual_grid_selections:
+    objective: Single
+    model: Default
+    task: Single
+    existing_data: false
+    sum_constraint: false
+    order_constraint: false
+    linear_constraint: false
+    composition_constraint: false
+    categorical: false
+    custom_threshold: false
+    synchrony: Single
+    visualize: true
+  grid_validation:
+    matches:
+      objective:
+        actual: Single
+        expected: Single
+      task:
+        actual: Single
+        expected: Single
+      categorical:
+        actual: false
+        expected: false
+      sum_constraint:
+        actual: false
+        expected: false
+      linear_constraint:
+        actual: false
+        expected: false
+    mismatches:
+      model:
+        actual: Default
+        expected: Fully Bayesian
+      order_constraint:
+        actual: false
+        expected: true
+      composition_constraint:
+        actual: false
+        expected: true
+    summary:
+      total_parameters: 8
+      correct: 5
+      incorrect: 3
+      accuracy_percent: 62.5
 - experiment_id: exp_015_corrected_p7
   problem_statement_id: 7
   version: corrected
@@ -555,8 +921,61 @@ experiments:
     \ inhibitor and insulator. I can run \nbatches of 6 samples in parallel, planning\
     \ 15-20 batches. The goal is to minimize \ncorrosion damage score. I'd like to\
     \ use a robust Bayesian model given the measurement \nuncertainty.\n"
-  status: pending
+  status: success
   notes: Corrected version - research_scientist persona
+  timestamp: '2025-10-29T22:31:39.246634'
+  log_path: /tmp/rag_experiments/logs/exp_015_corrected_p7_2025-10-29T22-31-39.246634.log
+  generated_script_path: /tmp/rag_experiments/scripts/exp_015_corrected_p7/honegumi_generated_85a940f9bd16.py
+  stage1_problem_structure: "SEARCH SPACE (1 parameters):\n  - resin_fraction [continuous]:\
+    \ [0.0, 1.0] (fraction)\n\nOBJECTIVES (1):\n  - corrosion_rate (minimize) (mm/year)\n\
+    \nCONSTRAINTS (0):\n  (none)\n\nEXPERIMENTAL SETUP:\n  - Budget: None\n  - Batch\
+    \ size: None\n  - Noise model: True\n  - Historical data points: None\n  - Model\
+    \ preference: None"
+  actual_grid_selections:
+    objective: Single
+    model: Default
+    task: Single
+    existing_data: false
+    sum_constraint: false
+    order_constraint: false
+    linear_constraint: false
+    composition_constraint: false
+    categorical: false
+    custom_threshold: false
+    synchrony: Single
+    visualize: true
+  grid_validation:
+    matches:
+      objective:
+        actual: Single
+        expected: Single
+      task:
+        actual: Single
+        expected: Single
+      categorical:
+        actual: false
+        expected: false
+      sum_constraint:
+        actual: false
+        expected: false
+      linear_constraint:
+        actual: false
+        expected: false
+    mismatches:
+      model:
+        actual: Default
+        expected: Fully Bayesian
+      order_constraint:
+        actual: false
+        expected: true
+      composition_constraint:
+        actual: false
+        expected: true
+    summary:
+      total_parameters: 8
+      correct: 5
+      incorrect: 3
+      accuracy_percent: 62.5
 - experiment_id: exp_016_natural_p8
   problem_statement_id: 8
   version: natural
@@ -565,8 +984,60 @@ experiments:
     \ monomers to work \nwith, plus extrusion rate and temperature. The monomers have\
     \ to add up to 1. We have \nsome old test data (3 data points) that might be useful.\
     \ This is a trade-off problem \n- both objectives matter. What's the best approach?\n"
-  status: pending
+  status: success
   notes: Natural version - industrial_practitioner persona
+  timestamp: '2025-10-29T22:33:45.789587'
+  log_path: /tmp/rag_experiments/logs/exp_016_natural_p8_2025-10-29T22-33-45.789587.log
+  generated_script_path: /tmp/rag_experiments/scripts/exp_016_natural_p8/honegumi_generated_fad1763284bd.py
+  stage1_problem_structure: "SEARCH SPACE (0 parameters):\n\nOBJECTIVES (1):\n  -\
+    \ strength (maximize)\n\nCONSTRAINTS (0):\n  (none)\n\nEXPERIMENTAL SETUP:\n \
+    \ - Budget: None\n  - Batch size: None\n  - Noise model: True\n  - Historical\
+    \ data points: None\n  - Model preference: Default"
+  actual_grid_selections:
+    objective: Single
+    model: Default
+    task: Single
+    existing_data: false
+    sum_constraint: false
+    order_constraint: false
+    linear_constraint: false
+    composition_constraint: false
+    categorical: false
+    custom_threshold: false
+    synchrony: Single
+    visualize: true
+  grid_validation:
+    matches:
+      model:
+        actual: Default
+        expected: Default
+      task:
+        actual: Single
+        expected: Single
+      categorical:
+        actual: false
+        expected: false
+      sum_constraint:
+        actual: false
+        expected: false
+      order_constraint:
+        actual: false
+        expected: false
+      linear_constraint:
+        actual: false
+        expected: false
+    mismatches:
+      objective:
+        actual: Single
+        expected: Multi
+      composition_constraint:
+        actual: false
+        expected: true
+    summary:
+      total_parameters: 8
+      correct: 6
+      incorrect: 2
+      accuracy_percent: 75.0
 - experiment_id: exp_017_corrected_p8
   problem_statement_id: 8
   version: corrected
@@ -576,8 +1047,60 @@ experiments:
     \ and temperature \n(120-200\xB0C). We have 3 historical test results that could\
     \ help. Planning about 35 \ntrials total. This is a multi-objective optimization\
     \ where we need trade-offs between \nstrength and biodegradability.\n"
-  status: pending
+  status: success
   notes: Corrected version - industrial_practitioner persona
+  timestamp: '2025-10-29T22:36:06.162438'
+  log_path: /tmp/rag_experiments/logs/exp_017_corrected_p8_2025-10-29T22-36-06.162438.log
+  generated_script_path: /tmp/rag_experiments/scripts/exp_017_corrected_p8/honegumi_generated_2a47df79fc88.py
+  stage1_problem_structure: "SEARCH SPACE (0 parameters):\n\nOBJECTIVES (1):\n  -\
+    \ strength (maximize) (MPa)\n\nCONSTRAINTS (0):\n  (none)\n\nEXPERIMENTAL SETUP:\n\
+    \  - Budget: None\n  - Batch size: None\n  - Noise model: True\n  - Historical\
+    \ data points: None\n  - Model preference: None"
+  actual_grid_selections:
+    objective: Single
+    model: Default
+    task: Single
+    existing_data: false
+    sum_constraint: false
+    order_constraint: false
+    linear_constraint: false
+    composition_constraint: false
+    categorical: false
+    custom_threshold: false
+    synchrony: Single
+    visualize: true
+  grid_validation:
+    matches:
+      model:
+        actual: Default
+        expected: Default
+      task:
+        actual: Single
+        expected: Single
+      categorical:
+        actual: false
+        expected: false
+      sum_constraint:
+        actual: false
+        expected: false
+      order_constraint:
+        actual: false
+        expected: false
+      linear_constraint:
+        actual: false
+        expected: false
+    mismatches:
+      objective:
+        actual: Single
+        expected: Multi
+      composition_constraint:
+        actual: false
+        expected: true
+    summary:
+      total_parameters: 8
+      correct: 6
+      incorrect: 2
+      accuracy_percent: 75.0
 - experiment_id: exp_018_natural_p9
   problem_statement_id: 9
   version: natural
@@ -588,8 +1111,61 @@ experiments:
     \ I have three literature \ndata points that I intend to incorporate as priors.\
     \ There is a minimum strength \nrequirement of 70 MPa. What is the appropriate\
     \ framework for this Pareto optimization?\n"
-  status: pending
+  status: success
   notes: Natural version - research_scientist persona
+  timestamp: '2025-10-29T22:38:16.740624'
+  log_path: /tmp/rag_experiments/logs/exp_018_natural_p9_2025-10-29T22-38-16.740624.log
+  generated_script_path: /tmp/rag_experiments/scripts/exp_018_natural_p9/honegumi_generated_e9258395a074.py
+  stage1_problem_structure: "SEARCH SPACE (0 parameters):\n\nOBJECTIVES (2):\n  -\
+    \ tensile_strength (maximize) (MPa)\n  - biodegradation_rate (maximize) (%/day)\n\
+    \nCONSTRAINTS (0):\n  (none)\n\nEXPERIMENTAL SETUP:\n  - Budget: None\n  - Batch\
+    \ size: None\n  - Noise model: True\n  - Historical data points: None\n  - Model\
+    \ preference: None"
+  actual_grid_selections:
+    objective: Multi
+    model: Default
+    task: Single
+    existing_data: false
+    sum_constraint: false
+    order_constraint: false
+    linear_constraint: false
+    composition_constraint: false
+    categorical: false
+    custom_threshold: false
+    synchrony: Single
+    visualize: true
+  grid_validation:
+    matches:
+      objective:
+        actual: Multi
+        expected: Multi
+      model:
+        actual: Default
+        expected: Default
+      task:
+        actual: Single
+        expected: Single
+      categorical:
+        actual: false
+        expected: false
+      sum_constraint:
+        actual: false
+        expected: false
+      order_constraint:
+        actual: false
+        expected: false
+      linear_constraint:
+        actual: false
+        expected: false
+    mismatches:
+      composition_constraint:
+        actual: false
+        expected: true
+    summary:
+      total_parameters: 8
+      correct: 7
+      incorrect: 1
+      accuracy_percent: 87.5
 - experiment_id: exp_019_corrected_p9
   problem_statement_id: 9
   version: corrected
@@ -600,5 +1176,57 @@ experiments:
     \ mm/s), and temperature \n(120-200\xB0C). I have 3 literature data points to\
     \ incorporate as initial observations. \nPlanning approximately 35 experiments.\
     \ I'm interested in the Pareto frontier between \nstrength and biodegradability.\n"
-  status: pending
+  status: success
   notes: Corrected version - research_scientist persona
+  timestamp: '2025-10-29T22:41:10.902136'
+  log_path: /tmp/rag_experiments/logs/exp_019_corrected_p9_2025-10-29T22-41-10.902136.log
+  generated_script_path: /tmp/rag_experiments/scripts/exp_019_corrected_p9/honegumi_generated_70f7b5a3fbd6.py
+  stage1_problem_structure: "SEARCH SPACE (0 parameters):\n\nOBJECTIVES (2):\n  -\
+    \ property_1 (maximize)\n  - property_2 (maximize)\n\nCONSTRAINTS (0):\n  (none)\n\
+    \nEXPERIMENTAL SETUP:\n  - Budget: None\n  - Batch size: None\n  - Noise model:\
+    \ True\n  - Historical data points: None\n  - Model preference: None"
+  actual_grid_selections:
+    objective: Multi
+    model: Default
+    task: Single
+    existing_data: false
+    sum_constraint: false
+    order_constraint: false
+    linear_constraint: false
+    composition_constraint: false
+    categorical: false
+    custom_threshold: false
+    synchrony: Single
+    visualize: true
+  grid_validation:
+    matches:
+      objective:
+        actual: Multi
+        expected: Multi
+      model:
+        actual: Default
+        expected: Default
+      task:
+        actual: Single
+        expected: Single
+      categorical:
+        actual: false
+        expected: false
+      sum_constraint:
+        actual: false
+        expected: false
+      order_constraint:
+        actual: false
+        expected: false
+      linear_constraint:
+        actual: false
+        expected: false
+    mismatches:
+      composition_constraint:
+        actual: false
+        expected: true
+    summary:
+      total_parameters: 8
+      correct: 7
+      incorrect: 1
+      accuracy_percent: 87.5
