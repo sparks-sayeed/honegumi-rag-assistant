@@ -123,19 +123,48 @@ def extract_grid_selections_from_log(log_content):
     Extract grid selections from log content if available.
     This looks for parameter extraction or skeleton generation output.
     """
-    # This is a placeholder - actual implementation would parse the debug output
-    # to extract the grid selections made by the parameter selector
-    grid_selections = {
-        "note": "Grid selections would be extracted from debug output",
-        "parsed": False
+    import re
+    
+    result = {
+        "stage1_problem_structure": None,
+        "stage2_grid_parameters": None
     }
     
-    # Try to find parameter extraction in the log
-    if "Parameter Selector" in log_content or "Skeleton Generator" in log_content:
-        grid_selections["parsed"] = True
-        # Add actual parsing logic here
+    # Extract STAGE 1 - PROBLEM STRUCTURE
+    stage1_pattern = r'DEBUG: STAGE 1 - PROBLEM STRUCTURE \(Solution Format\)\n={80}\n(.*?)\n={80}'
+    stage1_match = re.search(stage1_pattern, log_content, re.DOTALL)
     
-    return grid_selections
+    if stage1_match:
+        stage1_text = stage1_match.group(1).strip()
+        result["stage1_problem_structure"] = stage1_text
+    
+    # Extract STAGE 2 - GRID PARAMETERS  
+    stage2_pattern = r'DEBUG: STAGE 2 - GRID PARAMETERS\n={80}\n(.*?)\n={80}'
+    stage2_match = re.search(stage2_pattern, log_content, re.DOTALL)
+    
+    if stage2_match:
+        stage2_text = stage2_match.group(1).strip()
+        # Parse grid parameters into structured format
+        grid_params = {}
+        for line in stage2_text.split('\n'):
+            line = line.strip()
+            if ':' in line and not line.startswith('Error'):
+                key, value = line.split(':', 1)
+                key = key.strip()
+                value = value.strip()
+                # Convert string boolean/None values
+                if value == 'True':
+                    value = True
+                elif value == 'False':
+                    value = False
+                elif value == 'None':
+                    value = None
+                grid_params[key] = value
+        
+        if grid_params:
+            result["stage2_grid_parameters"] = grid_params
+    
+    return result
 
 def main():
     """Main execution function."""
@@ -176,7 +205,15 @@ def main():
         if os.path.exists(result["log_path"]):
             with open(result["log_path"], 'r') as f:
                 log_content = f.read()
-                exp["grid_selections"] = extract_grid_selections_from_log(log_content)
+                extracted = extract_grid_selections_from_log(log_content)
+                
+                # Store stage 1 problem structure if found
+                if extracted.get("stage1_problem_structure"):
+                    exp["stage1_problem_structure"] = extracted["stage1_problem_structure"]
+                
+                # Store stage 2 grid parameters if found
+                if extracted.get("stage2_grid_parameters"):
+                    exp["actual_grid_selections"] = extracted["stage2_grid_parameters"]
         
         # Save progress after each experiment
         save_experiments_config(config)
