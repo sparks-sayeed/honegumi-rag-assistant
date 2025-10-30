@@ -315,7 +315,11 @@ problem_statements:
     noise_model: true
     constraints:
     - type: composition
-      parameters: [resin_fraction, inhibitor_fraction, insulator_fraction, stabilizer_fraction]
+      parameters:
+      - resin_fraction
+      - inhibitor_fraction
+      - insulator_fraction
+      - stabilizer_fraction
       total: 1.0
     - type: order
       description: resin_fraction >= inhibitor_fraction
@@ -524,8 +528,12 @@ problem_statements:
     historical_data_points: 3
     constraints:
     - type: composition
-      parameters: [monomer_a_fraction, monomer_b_fraction, monomer_c_fraction, monomer_d_fraction,
-        monomer_e_fraction]
+      parameters:
+      - monomer_a_fraction
+      - monomer_b_fraction
+      - monomer_c_fraction
+      - monomer_d_fraction
+      - monomer_e_fraction
       total: 1.0
 - id: 4
   domain: materials_science
@@ -645,7 +653,11 @@ problem_statements:
     noise_model: true
     constraints:
     - type: sum
-      parameters: [LiPF6_concentration, LiBF4_concentration, LiClO4_concentration, LiTFSI_concentration]
+      parameters:
+      - LiPF6_concentration
+      - LiBF4_concentration
+      - LiClO4_concentration
+      - LiTFSI_concentration
       total: 2.0
 - id: 5
   domain: pharmaceutical
@@ -787,8 +799,12 @@ problem_statements:
     noise_model: true
     constraints:
     - type: composition
-      parameters: [excipient_A_fraction, excipient_B_fraction, excipient_C_fraction,
-        excipient_D_fraction, excipient_E_fraction]
+      parameters:
+      - excipient_A_fraction
+      - excipient_B_fraction
+      - excipient_C_fraction
+      - excipient_D_fraction
+      - excipient_E_fraction
       total: 1.0
 - id: 6
   domain: chemistry
@@ -1007,7 +1023,10 @@ problem_statements:
     noise_model: true
     constraints:
     - type: sum
-      parameters: [Cr_content, Ni_content, Mo_content]
+      parameters:
+      - Cr_content
+      - Ni_content
+      - Mo_content
       total: 40.0
 - id: 8
   domain: bioengineering
@@ -1818,5 +1837,1718 @@ problem_statements:
     noise_model: true
     constraints:
     - type: composition
-      parameters: [red_fraction, yellow_fraction, blue_fraction]
+      parameters:
+      - red_fraction
+      - yellow_fraction
+      - blue_fraction
       total: 1.0
+- id: 15
+  domain: energy
+  complexity: simple
+  description: Solar cell fabrication optimization
+  personas:
+    experimentalist_basic:
+      natural_version:
+        description: Need to optimize solar cell fabrication for maximum efficiency.
+          Looking at annealing temperature and deposition rate. Can make about 25
+          cells.
+        notes: 'Basic solar cell optimization.
+
+          Missing: parameter bounds, efficiency units.
+
+          Two-parameter problem.'
+      corrected_version:
+        description: 'Optimizing solar cell fabrication to maximize power conversion
+          efficiency (%). Annealing temperature: 100-200°C, deposition rate: 0.5-3
+          nm/s. Budget: 25 cells. Efficiency measurements have some variability.'
+        notes: 'Complete specification with bounds and units.
+
+          Noise awareness.
+
+          Clear budget.'
+    industrial_practitioner:
+      natural_version:
+        description: Developing solar cell process for production. Need high efficiency
+          with annealing temp and deposition rate as key parameters. Budget for 25
+          ****** cells.
+        notes: 'Production focus.
+
+          Process parameters identified.
+
+          Cost awareness.'
+      corrected_version:
+        description: 'Solar cell production optimization for maximum efficiency (%).
+          Parameters: annealing temperature (100-200°C), deposition rate (0.5-3 nm/s).
+          Budget: 25 production cells with QC ******ing.'
+        notes: 'Production terminology.
+
+          QC context.
+
+          Clear parameters.'
+    research_scientist:
+      natural_version:
+        description: Investigating annealing and deposition effects on photovoltaic
+          efficiency. Two process parameters with efficiency maximization objective.
+          Planning 25 systematic trials.
+        notes: 'Research framing.
+
+          Process-property relationships.
+
+          Systematic approach.'
+      corrected_version:
+        description: 'Systematic study of solar cell efficiency optimization. Objective:
+          maximize PCE (%). Parameters: annealing temperature (100-200°C), deposition
+          rate (0.5-3 nm/s). Budget: 25 experiments with standard protocols.'
+        notes: 'Scientific methodology.
+
+          Standard protocols.
+
+          PCE metric.'
+  expected_grid_selections:
+    objective: Single
+    model: Default
+    task: Single
+    categorical: false
+    sum_constraint: false
+    order_constraint: false
+    linear_constraint: false
+    composition_constraint: false
+    notes: 'Simple single-objective maximization.
+
+      Two continuous process parameters.
+
+      No constraints.'
+    related_tutorials:
+    - name: Single-Objective Bayesian Optimization (SOBO)
+      url: https://honegumi.readthedocs.io/en/la******/curriculum/tutorials/sobo/sobo.html
+      description: 'Tutorial #1: Basic single-objective BO for solar cell optimization'
+  solution:
+    search_space:
+    - name: annealing_temperature
+      type: continuous
+      bounds:
+      - 100
+      - 200
+      units: °C
+    - name: deposition_rate
+      type: continuous
+      bounds:
+      - 0.5
+      - 3.0
+      units: nm/s
+    objective:
+      name: power_conversion_efficiency
+      goal: maximize
+      units: '%'
+    budget: 25
+    noise_model: true
+    constraints: []
+- id: 16
+  domain: food_science
+  complexity: intermediate
+  description: Protein bar formulation optimization
+  personas:
+    experimentalist_basic:
+      natural_version:
+        description: Optimizing protein bar recipe. Have 4 ingredients to balance.
+          Want good texture and taste scores. Maybe 35 recipes to ******.
+        notes: 'Food formulation with multi-objective.
+
+          Missing: composition constraint, ingredient ranges.
+
+          Aware of multiple quality metrics.'
+      corrected_version:
+        description: 'Optimizing protein bar formulation with 4 ingredients: protein
+          powder (20-40%), sweetener (5-15%), binder (10-25%), flavoring (2-8%). Objectives:
+          maximize texture score (1-10) and taste score (1-10). Ingredients sum to
+          total formulation. Budget: 35 formulations.'
+        notes: 'Multi-objective with composition awareness.
+
+          Score ranges specified.
+
+          Formulation constraint.'
+    industrial_practitioner:
+      natural_version:
+        description: Developing new protein bar for our product line. Four key ingredients
+          need optimization. Need balance between texture and taste - both matter
+          to customers. Can make 35 ******batches.
+        notes: 'Product development focus.
+
+          Customer awareness.
+
+          Trade-off recognition.'
+      corrected_version:
+        description: 'Protein bar product development. Dual objectives: maximize texture
+          (1-10), maximize taste (1-10). Four ingredients: protein (20-40%), sweetener
+          (5-15%), binder (10-25%), flavor (2-8%). Budget: 35 batches.'
+        notes: 'Product terminology.
+
+          Dual objectives clear.
+
+          Ingredient percentages.'
+    research_scientist:
+      natural_version:
+        description: Investigating multi-objective formulation optimization for protein-enriched
+          food products. Four component system with texture and palatability as competing
+          objectives. Composition constraint on ingredient fractions.
+        notes: 'Research with multi-objective awareness.
+
+          Competing objectives recognized.
+
+          Composition constraint terminology.'
+      corrected_version:
+        description: 'Multi-objective food formulation study. Objectives: maximize
+          texture score (1-10), maximize taste score (1-10). Four ingredients: protein
+          (20-40%), sweetener (5-15%), binder (10-25%), flavoring (2-8%). Composition
+          constraint. Budget: 35 samples.'
+        notes: 'Scientific approach.
+
+          Composition constraint explicit.
+
+          Multi-objective framework.'
+  expected_grid_selections:
+    objective: Multi
+    model: Default
+    task: Single
+    categorical: false
+    sum_constraint: false
+    order_constraint: false
+    linear_constraint: false
+    composition_constraint: true
+    notes: 'Multi-objective with composition constraint.
+
+      Four ingredient fractions.
+
+      Texture and taste trade-off.'
+    related_tutorials:
+    - name: Multi-Objective Optimization of Polymers
+      url: https://honegumi.readthedocs.io/en/la******/curriculum/tutorials/mobo/mobo.html
+      description: Tutorial on multi-objective BO applicable to food formulation
+  solution:
+    search_space:
+    - name: protein_fraction
+      type: continuous
+      bounds:
+      - 0.2
+      - 0.4
+      units: fraction
+    - name: sweetener_fraction
+      type: continuous
+      bounds:
+      - 0.05
+      - 0.15
+      units: fraction
+    - name: binder_fraction
+      type: continuous
+      bounds:
+      - 0.1
+      - 0.25
+      units: fraction
+    - name: flavoring_fraction
+      type: continuous
+      bounds:
+      - 0.02
+      - 0.08
+      units: fraction
+    objective:
+    - name: texture_score
+      goal: maximize
+      units: score (1-10)
+    - name: taste_score
+      goal: maximize
+      units: score (1-10)
+    budget: 35
+    noise_model: true
+    constraints:
+    - type: composition
+      parameters:
+      - protein_fraction
+      - sweetener_fraction
+      - binder_fraction
+      - flavoring_fraction
+      total: 1.0
+- id: 17
+  domain: manufacturing
+  complexity: simple
+  description: Laser cutting parameter optimization
+  personas:
+    experimentalist_basic:
+      natural_version:
+        description: Need to optimize laser cutting for clean edges. Power and speed
+          are the main parameters. Want minimal roughness. Can run 30 cuts.
+        notes: 'Manufacturing optimization.
+
+          Missing: parameter bounds, roughness units.
+
+          Two parameters.'
+      corrected_version:
+        description: 'Optimizing laser cutting for minimum edge roughness (μm). Laser
+          power: 500-2000 W, cutting speed: 10-100 mm/s. Budget: 30 cuts. Roughness
+          measurements are repeatable.'
+        notes: 'Minimization objective.
+
+          Parameter ranges specified.
+
+          Measurement quality noted.'
+    industrial_practitioner:
+      natural_version:
+        description: Optimizing laser parameters for our cutting line. Need smooth
+          edges with minimal roughness. Working with power and speed settings. Can
+          afford 30 ****** runs.
+        notes: 'Production line context.
+
+          Quality focus.
+
+          Budget constraint.'
+      corrected_version:
+        description: 'Laser cutting optimization for production. Objective: minimize
+          edge roughness (μm). Parameters: power (500-2000 W), speed (10-100 mm/s).
+          Budget: 30 ******runs with metrology.'
+        notes: 'Production optimization.
+
+          Metrology mentioned.
+
+          Clear objective.'
+    research_scientist:
+      natural_version:
+        description: 'Investigating laser-material interaction effects on edge quality.
+          Two process parameters: power and velocity. Objective is surface roughness
+          minimization. Planning 30 controlled experiments.'
+        notes: 'Research with process understanding.
+
+          Physics awareness.
+
+          Controlled experiments.'
+      corrected_version:
+        description: 'Study of laser cutting process optimization. Objective: minimize
+          edge roughness (μm). Parameters: laser power (500-2000 W), cutting speed
+          (10-100 mm/s). Budget: 30 experiments with profilometry.'
+        notes: 'Scientific methodology.
+
+          Profilometry measurement.
+
+          Process optimization.'
+  expected_grid_selections:
+    objective: Single
+    model: Default
+    task: Single
+    categorical: false
+    sum_constraint: false
+    order_constraint: false
+    linear_constraint: false
+    composition_constraint: false
+    notes: 'Single-objective minimization.
+
+      Two process parameters.
+
+      No constraints.'
+    related_tutorials:
+    - name: Single-Objective Bayesian Optimization (SOBO)
+      url: https://honegumi.readthedocs.io/en/la******/curriculum/tutorials/sobo/sobo.html
+      description: 'Tutorial #1: Single-objective BO for laser cutting'
+  solution:
+    search_space:
+    - name: laser_power
+      type: continuous
+      bounds:
+      - 500
+      - 2000
+      units: W
+    - name: cutting_speed
+      type: continuous
+      bounds:
+      - 10
+      - 100
+      units: mm/s
+    objective:
+      name: edge_roughness
+      goal: minimize
+      units: μm
+    budget: 30
+    noise_model: true
+    constraints: []
+- id: 18
+  domain: materials_science
+  complexity: advanced
+  description: Structural adhesive formulation optimization
+  personas:
+    experimentalist_basic:
+      natural_version:
+        description: Formulating adhesive with 3 resins plus hardener. Need high bond
+          strength and good cure time. About 40 formulations to ******.
+        notes: 'Multi-component formulation.
+
+          Missing: composition constraint, multi-objective handling.
+
+          Dual objectives recognized.'
+      corrected_version:
+        description: 'Optimizing adhesive with 3 resins (each 10-40%) and hardener
+          (20-50%). Objectives: maximize bond strength (MPa) and minimize cure time
+          (hours). Components must sum to 100%. Budget: 40 formulations.'
+        notes: 'Multi-objective with composition.
+
+          Trade-off between strength and cure time.
+
+          Composition constraint.'
+    industrial_practitioner:
+      natural_version:
+        description: Developing adhesive formulation for our applications. Three resins
+          plus hardener - need to balance strength against cure time. Can make 40
+          batches for ******ing.
+        notes: 'Application-driven.
+
+          Trade-off awareness.
+
+          Production context.'
+      corrected_version:
+        description: 'Adhesive development for applications. Dual objectives: maximize
+          bond strength (MPa), minimize cure time (hrs). Four components: resin A/B/C
+          (10-40% each), hardener (20-50%). Budget: 40 batches.'
+        notes: 'Application focus.
+
+          Dual objectives with trade-off.
+
+          Component ranges.'
+    research_scientist:
+      natural_version:
+        description: 'Multi-objective adhesive formulation study. Four-component system
+          with competing objectives: mechanical performance and processing time. Composition
+          constraint on component fractions.'
+        notes: 'Research with multi-objective framework.
+
+          Competing objectives recognized.
+
+          Composition constraint.'
+      corrected_version:
+        description: 'Multi-objective adhesive optimization. Objectives: maximize
+          bond strength (MPa), minimize cure time (hrs). Four components: resin A/B/C
+          (10-40%), hardener (20-50%). Composition constraint. Budget: 40 samples.'
+        notes: 'Scientific multi-objective approach.
+
+          Composition constraint explicit.
+
+          Pareto optimization.'
+  expected_grid_selections:
+    objective: Multi
+    model: Default
+    task: Single
+    categorical: false
+    sum_constraint: false
+    order_constraint: false
+    linear_constraint: false
+    composition_constraint: true
+    notes: 'Multi-objective with composition constraint.
+
+      Four component fractions.
+
+      Strength vs cure time trade-off.'
+    related_tutorials:
+    - name: Multi-Objective Optimization of Polymers
+      url: https://honegumi.readthedocs.io/en/la******/curriculum/tutorials/mobo/mobo.html
+      description: Tutorial on multi-objective BO for adhesive formulation
+  solution:
+    search_space:
+    - name: resin_A_fraction
+      type: continuous
+      bounds:
+      - 0.1
+      - 0.4
+      units: fraction
+    - name: resin_B_fraction
+      type: continuous
+      bounds:
+      - 0.1
+      - 0.4
+      units: fraction
+    - name: resin_C_fraction
+      type: continuous
+      bounds:
+      - 0.1
+      - 0.4
+      units: fraction
+    - name: hardener_fraction
+      type: continuous
+      bounds:
+      - 0.2
+      - 0.5
+      units: fraction
+    objective:
+    - name: bond_strength
+      goal: maximize
+      units: MPa
+    - name: cure_time
+      goal: minimize
+      units: hours
+    budget: 40
+    noise_model: true
+    constraints:
+    - type: composition
+      parameters:
+      - resin_A_fraction
+      - resin_B_fraction
+      - resin_C_fraction
+      - hardener_fraction
+      total: 1.0
+- id: 19
+  domain: chemical_engineering
+  complexity: intermediate
+  description: Chemical reactor operating conditions optimization
+  personas:
+    experimentalist_basic:
+      natural_version:
+        description: 'Optimizing reactor for product yield. Three parameters: temperature,
+          pressure, and residence time. Can run 35 experiments.'
+        notes: 'Reactor optimization.
+
+          Missing: parameter bounds, yield units.
+
+          Three process parameters.'
+      corrected_version:
+        description: 'Optimizing chemical reactor for maximum yield (%). Temperature:
+          50-150°C, pressure: 1-5 bar, residence time: 10-60 min. Budget: 35 runs.
+          Yield measurements have some variance.'
+        notes: 'Complete specification.
+
+          Three process parameters.
+
+          Yield maximization.'
+    industrial_practitioner:
+      natural_version:
+        description: Optimizing reactor operation for our process. Need high yield
+          with temp, pressure, and time as variables. Safety limits must be respected.
+          Can do 35 ******runs.
+        notes: 'Production focus.
+
+          Safety awareness.
+
+          Process variables identified.'
+      corrected_version:
+        description: 'Reactor optimization for production. Objective: maximize yield
+          (%). Operating conditions: temperature (50-150°C), pressure (1-5 bar), residence
+          time (10-60 min). Budget: 35 runs within safety limits.'
+        notes: 'Production terminology.
+
+          Safety context.
+
+          Operating window.'
+    research_scientist:
+      natural_version:
+        description: Investigating optimal operating conditions for chemical conversion.
+          Three process parameters affecting yield. Planning systematic 35-experiment
+          campaign.
+        notes: 'Research framing.
+
+          Process-yield relationships.
+
+          Systematic approach.'
+      corrected_version:
+        description: 'Systematic reactor optimization study. Objective: maximize conversion
+          yield (%). Parameters: temperature (50-150°C), pressure (1-5 bar), residence
+          time (10-60 min). Budget: 35 experiments.'
+        notes: 'Scientific methodology.
+
+          Conversion focus.
+
+          Parametric study.'
+  expected_grid_selections:
+    objective: Single
+    model: Default
+    task: Single
+    categorical: false
+    sum_constraint: false
+    order_constraint: false
+    linear_constraint: false
+    composition_constraint: false
+    notes: 'Single-objective maximization.
+
+      Three continuous process parameters.
+
+      No constraints.'
+    related_tutorials:
+    - name: Single-Objective Bayesian Optimization (SOBO)
+      url: https://honegumi.readthedocs.io/en/la******/curriculum/tutorials/sobo/sobo.html
+      description: 'Tutorial #1: Single-objective BO for reactor optimization'
+  solution:
+    search_space:
+    - name: temperature
+      type: continuous
+      bounds:
+      - 50
+      - 150
+      units: °C
+    - name: pressure
+      type: continuous
+      bounds:
+      - 1
+      - 5
+      units: bar
+    - name: residence_time
+      type: continuous
+      bounds:
+      - 10
+      - 60
+      units: min
+    objective:
+      name: product_yield
+      goal: maximize
+      units: '%'
+    budget: 35
+    noise_model: true
+    constraints: []
+- id: 20
+  domain: electronics
+  complexity: simple
+  description: LED packaging thermal management optimization
+  personas:
+    experimentalist_basic:
+      natural_version:
+        description: 'Need to optimize LED package for low junction temperature. Two
+          parameters: heat sink size and thermal paste thickness. Can make 28 packages.'
+        notes: 'Thermal optimization.
+
+          Missing: parameter bounds, temperature units.
+
+          Minimization problem.'
+      corrected_version:
+        description: 'Optimizing LED packaging to minimize junction temperature (°C).
+          Heat sink area: 100-500 mm², thermal paste thickness: 50-200 μm. Budget:
+          28 packages. Temperature measurements are consistent.'
+        notes: 'Minimization objective.
+
+          Parameter ranges specified.
+
+          Measurement quality.'
+    industrial_practitioner:
+      natural_version:
+        description: Designing LED package for our lighting products. Need cool operation
+          with optimal heat sink and paste thickness. Can build 28 prototypes.
+        notes: 'Product design focus.
+
+          Thermal management.
+
+          Prototype budget.'
+      corrected_version:
+        description: 'LED package thermal design. Objective: minimize junction temperature
+          (°C). Parameters: heat sink area (100-500 mm²), paste thickness (50-200
+          μm). Budget: 28 prototypes.'
+        notes: 'Design terminology.
+
+          Thermal objective.
+
+          Prototype context.'
+    research_scientist:
+      natural_version:
+        description: Investigating thermal management strategies for LED packaging.
+          Two design parameters with junction temperature minimization. Planning 28
+          systematic trials.
+        notes: 'Research with thermal focus.
+
+          Design optimization.
+
+          Systematic approach.'
+      corrected_version:
+        description: 'LED thermal management optimization study. Objective: minimize
+          junction temperature (°C). Design parameters: heat sink area (100-500 mm²),
+          thermal paste thickness (50-200 μm). Budget: 28 experiments.'
+        notes: 'Scientific approach.
+
+          Thermal management focus.
+
+          Design optimization.'
+  expected_grid_selections:
+    objective: Single
+    model: Default
+    task: Single
+    categorical: false
+    sum_constraint: false
+    order_constraint: false
+    linear_constraint: false
+    composition_constraint: false
+    notes: 'Single-objective minimization.
+
+      Two design parameters.
+
+      No constraints.'
+    related_tutorials:
+    - name: Single-Objective Bayesian Optimization (SOBO)
+      url: https://honegumi.readthedocs.io/en/la******/curriculum/tutorials/sobo/sobo.html
+      description: 'Tutorial #1: Single-objective BO for thermal optimization'
+  solution:
+    search_space:
+    - name: heat_sink_area
+      type: continuous
+      bounds:
+      - 100
+      - 500
+      units: mm²
+    - name: thermal_paste_thickness
+      type: continuous
+      bounds:
+      - 50
+      - 200
+      units: μm
+    objective:
+      name: junction_temperature
+      goal: minimize
+      units: °C
+    budget: 28
+    noise_model: true
+    constraints: []
+- id: 21
+  domain: environmental_engineering
+  complexity: intermediate
+  description: Water treatment process optimization
+  personas:
+    experimentalist_basic:
+      natural_version:
+        description: Optimizing water treatment with three chemicals. Need to minimize
+          contaminant levels and minimize cost. Can run 32 ******s.
+        notes: 'Treatment optimization.
+
+          Missing: dosage ranges, multi-objective handling.
+
+          Dual objectives.'
+      corrected_version:
+        description: 'Optimizing water treatment. Three chemical dosages: coagulant
+          (5-20 mg/L), flocculant (1-8 mg/L), disinfectant (2-10 mg/L). Objectives:
+          minimize contaminant level (ppb), minimize total cost ($/m³). Budget: 32
+          ******s.'
+        notes: 'Multi-objective with cost trade-off.
+
+          Three dosage parameters.
+
+          Clear objectives.'
+    industrial_practitioner:
+      natural_version:
+        description: Optimizing treatment plant operation. Three chemical doses -
+          need clean water but control costs. Can do 32 ******runs.
+        notes: 'Plant operation focus.
+
+          Cost awareness.
+
+          Quality-cost trade-off.'
+      corrected_version:
+        description: 'Treatment plant optimization. Objectives: minimize contaminants
+          (ppb), minimize cost ($/m³). Dosages: coagulant (5-20 mg/L), flocculant
+          (1-8 mg/L), disinfectant (2-10 mg/L). Budget: 32 runs.'
+        notes: 'Plant operations.
+
+          Dual objectives.
+
+          Dosage optimization.'
+    research_scientist:
+      natural_version:
+        description: 'Multi-objective water treatment optimization. Three dosage parameters
+          with competing objectives: contaminant removal and operational cost. Planning
+          32-experiment study.'
+        notes: 'Research with multi-objective.
+
+          Competing objectives.
+
+          Dosage study.'
+      corrected_version:
+        description: 'Multi-objective treatment optimization. Objectives: minimize
+          contaminant level (ppb), minimize treatment cost ($/m³). Parameters: coagulant/flocculant/disinfectant
+          dosages (5-20, 1-8, 2-10 mg/L). Budget: 32 experiments.'
+        notes: 'Scientific approach.
+
+          Multi-objective framework.
+
+          Parametric study.'
+  expected_grid_selections:
+    objective: Multi
+    model: Default
+    task: Single
+    categorical: false
+    sum_constraint: false
+    order_constraint: false
+    linear_constraint: false
+    composition_constraint: false
+    notes: 'Multi-objective minimization.
+
+      Three dosage parameters.
+
+      Quality vs cost trade-off.'
+    related_tutorials:
+    - name: Multi-Objective Optimization of Polymers
+      url: https://honegumi.readthedocs.io/en/la******/curriculum/tutorials/mobo/mobo.html
+      description: Tutorial on multi-objective BO for treatment optimization
+  solution:
+    search_space:
+    - name: coagulant_dose
+      type: continuous
+      bounds:
+      - 5
+      - 20
+      units: mg/L
+    - name: flocculant_dose
+      type: continuous
+      bounds:
+      - 1
+      - 8
+      units: mg/L
+    - name: disinfectant_dose
+      type: continuous
+      bounds:
+      - 2
+      - 10
+      units: mg/L
+    objective:
+    - name: contaminant_level
+      goal: minimize
+      units: ppb
+    - name: treatment_cost
+      goal: minimize
+      units: $/m³
+    budget: 32
+    noise_model: true
+    constraints: []
+- id: 22
+  domain: manufacturing
+  complexity: simple
+  description: Spray coating uniformity optimization
+  personas:
+    experimentalist_basic:
+      natural_version:
+        description: Optimizing spray coating for uniform thickness. Distance and
+          pressure are key. Want minimal variation. 25 samples.
+        notes: 'Coating optimization.
+
+          Missing: parameter bounds, variation metric.
+
+          Minimization problem.'
+      corrected_version:
+        description: 'Optimizing spray coating for minimum thickness variation (%).
+          Spray distance: 10-30 cm, air pressure: 1-4 bar. Budget: 25 samples. Thickness
+          measurements are repeatable.'
+        notes: 'Minimization objective.
+
+          Two process parameters.
+
+          Measurement quality.'
+    industrial_practitioner:
+      natural_version:
+        description: Need uniform coating for production. Spray distance and pressure
+          need optimization. Can make 25 ******samples.
+        notes: 'Production focus.
+
+          Uniformity goal.
+
+          Sample budget.'
+      corrected_version:
+        description: 'Production coating optimization. Objective: minimize thickness
+          variation (%). Parameters: spray distance (10-30 cm), pressure (1-4 bar).
+          Budget: 25 ******samples.'
+        notes: 'Production terminology.
+
+          Uniformity focus.
+
+          Process parameters.'
+    research_scientist:
+      natural_version:
+        description: Investigating spray parameters for coating uniformity. Two process
+          variables affecting thickness distribution. Planning 25 experiments.
+        notes: 'Research approach.
+
+          Process-property focus.
+
+          Systematic experiments.'
+      corrected_version:
+        description: 'Spray coating uniformity study. Objective: minimize thickness
+          variation (%). Parameters: spray distance (10-30 cm), air pressure (1-4
+          bar). Budget: 25 experiments.'
+        notes: 'Scientific methodology.
+
+          Uniformity metric.
+
+          Process optimization.'
+  expected_grid_selections:
+    objective: Single
+    model: Default
+    task: Single
+    categorical: false
+    sum_constraint: false
+    order_constraint: false
+    linear_constraint: false
+    composition_constraint: false
+    notes: 'Single-objective minimization.
+
+      Two process parameters.
+
+      No constraints.'
+    related_tutorials:
+    - name: Single-Objective Bayesian Optimization (SOBO)
+      url: https://honegumi.readthedocs.io/en/la******/curriculum/tutorials/sobo/sobo.html
+      description: 'Tutorial #1: Single-objective BO for coating optimization'
+  solution:
+    search_space:
+    - name: spray_distance
+      type: continuous
+      bounds:
+      - 10
+      - 30
+      units: cm
+    - name: air_pressure
+      type: continuous
+      bounds:
+      - 1
+      - 4
+      units: bar
+    objective:
+      name: thickness_variation
+      goal: minimize
+      units: '%'
+    budget: 25
+    noise_model: true
+    constraints: []
+- id: 23
+  domain: computational
+  complexity: intermediate
+  description: Neural network hyperparameter optimization
+  personas:
+    experimentalist_basic:
+      natural_version:
+        description: 'Tuning neural network hyperparameters. Three parameters: learning
+          rate, batch size, dropout. Want high accuracy. Can train 40 models.'
+        notes: 'ML hyperparameter tuning.
+
+          Missing: parameter ranges.
+
+          Accuracy maximization.'
+      corrected_version:
+        description: 'Optimizing neural network for maximum validation accuracy (%).
+          Learning rate: 0.0001-0.01, batch size: 16-128, dropout: 0.1-0.5. Budget:
+          40 training runs. Accuracy has some variance across runs.'
+        notes: 'Hyperparameter optimization.
+
+          Three continuous parameters.
+
+          Validation metric.'
+    industrial_practitioner:
+      natural_version:
+        description: Tuning ML model for our application. Need good accuracy with
+          learning rate, batch size, dropout as tuning knobs. Can train 40 models.
+        notes: 'Application focus.
+
+          Model tuning.
+
+          Training budget.'
+      corrected_version:
+        description: 'ML model optimization for application. Objective: maximize validation
+          accuracy (%). Parameters: learning rate (0.0001-0.01), batch size (16-128),
+          dropout (0.1-0.5). Budget: 40 training runs.'
+        notes: 'Application terminology.
+
+          Hyperparameter ranges.
+
+          Validation focus.'
+    research_scientist:
+      natural_version:
+        description: Investigating optimal hyperparameter configuration for neural
+          network training. Three tuning parameters affecting generalization. Planning
+          40-model systematic study.
+        notes: 'Research with ML focus.
+
+          Generalization awareness.
+
+          Systematic tuning.'
+      corrected_version:
+        description: 'Neural network hyperparameter optimization study. Objective:
+          maximize validation accuracy (%). Parameters: learning rate (0.0001-0.01),
+          batch size (16-128), dropout (0.1-0.5). Budget: 40 experiments.'
+        notes: 'Scientific ML approach.
+
+          Hyperparameter study.
+
+          Validation metric.'
+  expected_grid_selections:
+    objective: Single
+    model: Default
+    task: Single
+    categorical: false
+    sum_constraint: false
+    order_constraint: false
+    linear_constraint: false
+    composition_constraint: false
+    notes: 'Single-objective maximization.
+
+      Three continuous hyperparameters.
+
+      No constraints.'
+    related_tutorials:
+    - name: Single-Objective Bayesian Optimization (SOBO)
+      url: https://honegumi.readthedocs.io/en/la******/curriculum/tutorials/sobo/sobo.html
+      description: 'Tutorial #1: Single-objective BO for hyperparameter tuning'
+  solution:
+    search_space:
+    - name: learning_rate
+      type: continuous
+      bounds:
+      - 0.0001
+      - 0.01
+      units: null
+    - name: batch_size
+      type: continuous
+      bounds:
+      - 16
+      - 128
+      units: samples
+    - name: dropout_rate
+      type: continuous
+      bounds:
+      - 0.1
+      - 0.5
+      units: fraction
+    objective:
+      name: validation_accuracy
+      goal: maximize
+      units: '%'
+    budget: 40
+    noise_model: true
+    constraints: []
+- id: 24
+  domain: printing
+  complexity: advanced
+  description: Conductive ink formulation optimization
+  personas:
+    experimentalist_basic:
+      natural_version:
+        description: Formulating conductive ink with 4 components. Need high conductivity
+          and good printability. Maybe 45 formulations.
+        notes: 'Ink formulation.
+
+          Missing: composition constraint, dual objectives.
+
+          Four components.'
+      corrected_version:
+        description: 'Optimizing conductive ink. Four components: silver particles
+          (40-70%), solvent (15-35%), binder (5-20%), additive (2-10%). Objectives:
+          maximize conductivity (S/m), maximize printability score (1-10). Components
+          sum to 100%. Budget: 45 formulations.'
+        notes: 'Multi-objective with composition.
+
+          Dual objectives.
+
+          Composition constraint.'
+    industrial_practitioner:
+      natural_version:
+        description: Developing ink for our printing process. Four ingredients need
+          balancing for conductivity and printability. Can make 45 batches.
+        notes: 'Process development.
+
+          Property trade-off.
+
+          Batch budget.'
+      corrected_version:
+        description: 'Ink development for printing. Dual objectives: maximize conductivity
+          (S/m), maximize printability (1-10). Four components: silver (40-70%), solvent
+          (15-35%), binder (5-20%), additive (2-10%). Budget: 45 batches.'
+        notes: 'Development terminology.
+
+          Dual objectives.
+
+          Component ranges.'
+    research_scientist:
+      natural_version:
+        description: 'Multi-objective conductive ink formulation study. Four-component
+          system with competing objectives: electrical and rheological properties.
+          Composition constraint.'
+        notes: 'Research multi-objective.
+
+          Property competition.
+
+          Composition constraint.'
+      corrected_version:
+        description: 'Multi-objective ink formulation. Objectives: maximize conductivity
+          (S/m), maximize printability (1-10). Four components: silver particles/solvent/binder/additive
+          (40-70%, 15-35%, 5-20%, 2-10%). Composition constraint. Budget: 45 samples.'
+        notes: 'Scientific approach.
+
+          Multi-objective framework.
+
+          Composition explicit.'
+  expected_grid_selections:
+    objective: Multi
+    model: Default
+    task: Single
+    categorical: false
+    sum_constraint: false
+    order_constraint: false
+    linear_constraint: false
+    composition_constraint: true
+    notes: 'Multi-objective with composition constraint.
+
+      Four component fractions.
+
+      Conductivity vs printability trade-off.'
+    related_tutorials:
+    - name: Multi-Objective Optimization of Polymers
+      url: https://honegumi.readthedocs.io/en/la******/curriculum/tutorials/mobo/mobo.html
+      description: Tutorial on multi-objective BO for ink formulation
+  solution:
+    search_space:
+    - name: silver_fraction
+      type: continuous
+      bounds:
+      - 0.4
+      - 0.7
+      units: fraction
+    - name: solvent_fraction
+      type: continuous
+      bounds:
+      - 0.15
+      - 0.35
+      units: fraction
+    - name: binder_fraction
+      type: continuous
+      bounds:
+      - 0.05
+      - 0.2
+      units: fraction
+    - name: additive_fraction
+      type: continuous
+      bounds:
+      - 0.02
+      - 0.1
+      units: fraction
+    objective:
+    - name: electrical_conductivity
+      goal: maximize
+      units: S/m
+    - name: printability_score
+      goal: maximize
+      units: score (1-10)
+    budget: 45
+    noise_model: true
+    constraints:
+    - type: composition
+      parameters:
+      - silver_fraction
+      - solvent_fraction
+      - binder_fraction
+      - additive_fraction
+      total: 1.0
+- id: 25
+  domain: biotechnology
+  complexity: intermediate
+  description: Fermentation medium composition optimization
+  personas:
+    experimentalist_basic:
+      natural_version:
+        description: 'Optimizing fermentation medium. Three nutrients to balance:
+          glucose, nitrogen source, and phosphate. Want high biomass yield. 30 cultures.'
+        notes: 'Medium optimization.
+
+          Missing: concentration ranges.
+
+          Yield maximization.'
+      corrected_version:
+        description: 'Optimizing fermentation for maximum biomass yield (g/L). Nutrients:
+          glucose (5-30 g/L), nitrogen source (1-8 g/L), phosphate (0.5-3 g/L). Budget:
+          30 cultures. Yield has biological variability.'
+        notes: 'Fermentation optimization.
+
+          Three nutrient parameters.
+
+          Biological variability.'
+    industrial_practitioner:
+      natural_version:
+        description: Optimizing medium for our fermentation process. Three key nutrients
+          - need high yield. Can run 30 batches.
+        notes: 'Process optimization.
+
+          Yield focus.
+
+          Batch budget.'
+      corrected_version:
+        description: 'Fermentation medium optimization. Objective: maximize biomass
+          yield (g/L). Concentrations: glucose (5-30 g/L), nitrogen (1-8 g/L), phosphate
+          (0.5-3 g/L). Budget: 30 batches.'
+        notes: 'Process terminology.
+
+          Nutrient concentrations.
+
+          Yield objective.'
+    research_scientist:
+      natural_version:
+        description: Investigating optimal nutrient composition for microbial fermentation.
+          Three concentration parameters affecting biomass production. Planning 30-culture
+          study.
+        notes: 'Research approach.
+
+          Nutrient study.
+
+          Biomass focus.'
+      corrected_version:
+        description: 'Fermentation medium optimization study. Objective: maximize
+          biomass yield (g/L). Nutrient concentrations: glucose (5-30 g/L), nitrogen
+          source (1-8 g/L), phosphate (0.5-3 g/L). Budget: 30 experiments.'
+        notes: 'Scientific methodology.
+
+          Nutrient optimization.
+
+          Systematic study.'
+  expected_grid_selections:
+    objective: Single
+    model: Default
+    task: Single
+    categorical: false
+    sum_constraint: false
+    order_constraint: false
+    linear_constraint: false
+    composition_constraint: false
+    notes: 'Single-objective maximization.
+
+      Three nutrient concentrations.
+
+      No constraints.'
+    related_tutorials:
+    - name: Single-Objective Bayesian Optimization (SOBO)
+      url: https://honegumi.readthedocs.io/en/la******/curriculum/tutorials/sobo/sobo.html
+      description: 'Tutorial #1: Single-objective BO for fermentation optimization'
+  solution:
+    search_space:
+    - name: glucose_concentration
+      type: continuous
+      bounds:
+      - 5
+      - 30
+      units: g/L
+    - name: nitrogen_concentration
+      type: continuous
+      bounds:
+      - 1
+      - 8
+      units: g/L
+    - name: phosphate_concentration
+      type: continuous
+      bounds:
+      - 0.5
+      - 3
+      units: g/L
+    objective:
+      name: biomass_yield
+      goal: maximize
+      units: g/L
+    budget: 30
+    noise_model: true
+    constraints: []
+- id: 26
+  domain: aerospace
+  complexity: simple
+  description: Carbon fiber composite curing optimization
+  personas:
+    experimentalist_basic:
+      natural_version:
+        description: Optimizing composite curing for maximum strength. Cure temperature
+          and time are variables. Can make 22 panels.
+        notes: 'Composite curing.
+
+          Missing: parameter bounds.
+
+          Strength maximization.'
+      corrected_version:
+        description: 'Optimizing carbon fiber composite curing for maximum tensile
+          strength (MPa). Cure temperature: 120-180°C, cure time: 2-8 hours. Budget:
+          22 panels. Strength ******ing is reliable.'
+        notes: 'Curing optimization.
+
+          Two process parameters.
+
+          Strength objective.'
+    industrial_practitioner:
+      natural_version:
+        description: Optimizing cure cycle for composite parts. Need high strength
+          with temp and time as parameters. Can cure 22 panels.
+        notes: 'Manufacturing focus.
+
+          Cure cycle.
+
+          Panel budget.'
+      corrected_version:
+        description: 'Composite cure cycle optimization. Objective: maximize tensile
+          strength (MPa). Parameters: cure temperature (120-180°C), cure time (2-8
+          hrs). Budget: 22 panels.'
+        notes: 'Manufacturing terminology.
+
+          Cure parameters.
+
+          Strength focus.'
+    research_scientist:
+      natural_version:
+        description: Investigating cure conditions for composite strength optimization.
+          Two thermal process parameters. Planning 22-specimen study.
+        notes: 'Research approach.
+
+          Thermal processing.
+
+          Mechanical properties.'
+      corrected_version:
+        description: 'Composite curing study. Objective: maximize tensile strength
+          (MPa). Cure parameters: temperature (120-180°C), time (2-8 hours). Budget:
+          22 specimens with mechanical ******ing.'
+        notes: 'Scientific methodology.
+
+          Cure parameter study.
+
+          Mechanical ******ing.'
+  expected_grid_selections:
+    objective: Single
+    model: Default
+    task: Single
+    categorical: false
+    sum_constraint: false
+    order_constraint: false
+    linear_constraint: false
+    composition_constraint: false
+    notes: 'Single-objective maximization.
+
+      Two cure parameters.
+
+      No constraints.'
+    related_tutorials:
+    - name: Single-Objective Bayesian Optimization (SOBO)
+      url: https://honegumi.readthedocs.io/en/la******/curriculum/tutorials/sobo/sobo.html
+      description: 'Tutorial #1: Single-objective BO for composite curing'
+  solution:
+    search_space:
+    - name: cure_temperature
+      type: continuous
+      bounds:
+      - 120
+      - 180
+      units: °C
+    - name: cure_time
+      type: continuous
+      bounds:
+      - 2
+      - 8
+      units: hours
+    objective:
+      name: tensile_strength
+      goal: maximize
+      units: MPa
+    budget: 22
+    noise_model: true
+    constraints: []
+- id: 27
+  domain: materials_science
+  complexity: intermediate
+  description: Optical glass composition optimization
+  personas:
+    experimentalist_basic:
+      natural_version:
+        description: Formulating optical glass with 3 oxides. Need high refractive
+          index and low dispersion. About 38 melts.
+        notes: 'Glass formulation.
+
+          Missing: composition constraint.
+
+          Dual objectives.'
+      corrected_version:
+        description: 'Optimizing optical glass. Three oxides: SiO2 (50-70%), Na2O
+          (15-25%), CaO (10-20%). Objectives: maximize refractive index, minimize
+          dispersion. Oxides sum to total. Budget: 38 melts.'
+        notes: 'Multi-objective glass.
+
+          Composition constraint.
+
+          Optical properties.'
+    industrial_practitioner:
+      natural_version:
+        description: Developing glass composition for optical applications. Three
+          oxide components - need good refractive index and low dispersion. Can melt
+          38 batches.
+        notes: 'Application focus.
+
+          Optical properties.
+
+          Melt budget.'
+      corrected_version:
+        description: 'Optical glass development. Dual objectives: maximize refractive
+          index, minimize dispersion. Three oxides: SiO2 (50-70%), Na2O (15-25%),
+          CaO (10-20%). Budget: 38 melts.'
+        notes: 'Development terminology.
+
+          Dual objectives.
+
+          Oxide composition.'
+    research_scientist:
+      natural_version:
+        description: Multi-objective glass composition study. Three-oxide system with
+          competing optical properties. Composition constraint on oxide fractions.
+        notes: 'Research multi-objective.
+
+          Optical properties.
+
+          Composition constraint.'
+      corrected_version:
+        description: 'Multi-objective optical glass study. Objectives: maximize refractive
+          index, minimize dispersion. Three oxides: SiO2/Na2O/CaO (50-70%, 15-25%,
+          10-20%). Composition constraint. Budget: 38 samples.'
+        notes: 'Scientific approach.
+
+          Multi-objective framework.
+
+          Composition explicit.'
+  expected_grid_selections:
+    objective: Multi
+    model: Default
+    task: Single
+    categorical: false
+    sum_constraint: false
+    order_constraint: false
+    linear_constraint: false
+    composition_constraint: true
+    notes: 'Multi-objective with composition constraint.
+
+      Three oxide fractions.
+
+      Refractive index vs dispersion trade-off.'
+    related_tutorials:
+    - name: Multi-Objective Optimization of Polymers
+      url: https://honegumi.readthedocs.io/en/la******/curriculum/tutorials/mobo/mobo.html
+      description: Tutorial on multi-objective BO for glass composition
+  solution:
+    search_space:
+    - name: SiO2_fraction
+      type: continuous
+      bounds:
+      - 0.5
+      - 0.7
+      units: fraction
+    - name: Na2O_fraction
+      type: continuous
+      bounds:
+      - 0.15
+      - 0.25
+      units: fraction
+    - name: CaO_fraction
+      type: continuous
+      bounds:
+      - 0.1
+      - 0.2
+      units: fraction
+    objective:
+    - name: refractive_index
+      goal: maximize
+      units: n_d
+    - name: dispersion
+      goal: minimize
+      units: Abbe number
+    budget: 38
+    noise_model: true
+    constraints:
+    - type: composition
+      parameters:
+      - SiO2_fraction
+      - Na2O_fraction
+      - CaO_fraction
+      total: 1.0
+- id: 28
+  domain: chemical_engineering
+  complexity: simple
+  description: Solvent extraction process optimization
+  personas:
+    experimentalist_basic:
+      natural_version:
+        description: Optimizing extraction process. Temperature and solvent ratio
+          are key. Want maximum extraction efficiency. 26 experiments.
+        notes: 'Extraction optimization.
+
+          Missing: parameter bounds.
+
+          Efficiency maximization.'
+      corrected_version:
+        description: 'Optimizing solvent extraction for maximum efficiency (%). Temperature:
+          20-60°C, solvent ratio: 1:1 to 1:5 (v/v). Budget: 26 experiments. Efficiency
+          measurements are consistent.'
+        notes: 'Extraction optimization.
+
+          Two process parameters.
+
+          Efficiency metric.'
+    industrial_practitioner:
+      natural_version:
+        description: Optimizing extraction for our separation process. Temperature
+          and solvent ratio need tuning for high efficiency. Can run 26 ******s.
+        notes: 'Process optimization.
+
+          Efficiency focus.
+
+          Test budget.'
+      corrected_version:
+        description: 'Extraction process optimization. Objective: maximize extraction
+          efficiency (%). Parameters: temperature (20-60°C), solvent ratio (1:1 to
+          1:5). Budget: 26 ******s.'
+        notes: 'Process terminology.
+
+          Efficiency objective.
+
+          Parameter ranges.'
+    research_scientist:
+      natural_version:
+        description: Investigating extraction efficiency as function of temperature
+          and solvent ratio. Two process parameters. Planning 26-experiment systematic
+          study.
+        notes: 'Research approach.
+
+          Process variables.
+
+          Systematic study.'
+      corrected_version:
+        description: 'Solvent extraction study. Objective: maximize efficiency (%).
+          Parameters: temperature (20-60°C), solvent/feed ratio (1:1 to 1:5 v/v).
+          Budget: 26 experiments.'
+        notes: 'Scientific methodology.
+
+          Process parameter study.
+
+          Efficiency focus.'
+  expected_grid_selections:
+    objective: Single
+    model: Default
+    task: Single
+    categorical: false
+    sum_constraint: false
+    order_constraint: false
+    linear_constraint: false
+    composition_constraint: false
+    notes: 'Single-objective maximization.
+
+      Two process parameters.
+
+      No constraints.'
+    related_tutorials:
+    - name: Single-Objective Bayesian Optimization (SOBO)
+      url: https://honegumi.readthedocs.io/en/la******/curriculum/tutorials/sobo/sobo.html
+      description: 'Tutorial #1: Single-objective BO for extraction optimization'
+  solution:
+    search_space:
+    - name: temperature
+      type: continuous
+      bounds:
+      - 20
+      - 60
+      units: °C
+    - name: solvent_ratio
+      type: continuous
+      bounds:
+      - 1
+      - 5
+      units: v/v ratio
+    objective:
+      name: extraction_efficiency
+      goal: maximize
+      units: '%'
+    budget: 26
+    noise_model: true
+    constraints: []
+- id: 29
+  domain: energy
+  complexity: intermediate
+  description: Battery fast charging protocol optimization
+  personas:
+    experimentalist_basic:
+      natural_version:
+        description: 'Optimizing battery charging. Need fast charging but preserve
+          cycle life. Three parameters: current, voltage limit, temperature. 35 cycles.'
+        notes: 'Charging optimization.
+
+          Missing: parameter bounds, multi-objective.
+
+          Dual objectives.'
+      corrected_version:
+        description: 'Optimizing fast charging. Three parameters: charge current (0.5-3
+          C), voltage limit (4.1-4.3 V), temperature (10-40°C). Objectives: minimize
+          charge time (min), maximize cycle life (cycles). Budget: 35 ******cycles.'
+        notes: 'Multi-objective charging.
+
+          Three parameters.
+
+          Time-life trade-off.'
+    industrial_practitioner:
+      natural_version:
+        description: Developing fast charging protocol. Three charging parameters
+          - need fast time but long battery life. Can ****** 35 cells.
+        notes: 'Protocol development.
+
+          Time-life trade-off.
+
+          Cell budget.'
+      corrected_version:
+        description: 'Charging protocol optimization. Dual objectives: minimize charge
+          time (min), maximize cycle life (cycles). Parameters: current (0.5-3 C),
+          voltage limit (4.1-4.3 V), temp (10-40°C). Budget: 35 cells.'
+        notes: 'Protocol terminology.
+
+          Dual objectives.
+
+          Parameter ranges.'
+    research_scientist:
+      natural_version:
+        description: 'Multi-objective battery charging optimization. Three protocol
+          parameters with competing objectives: charging speed and degradation. Planning
+          35-cell study.'
+        notes: 'Research multi-objective.
+
+          Competing objectives.
+
+          Degradation awareness.'
+      corrected_version:
+        description: 'Multi-objective charging study. Objectives: minimize charge
+          time (min), maximize cycle life (cycles). Parameters: charge current (0.5-3
+          C), voltage limit (4.1-4.3 V), temperature (10-40°C). Budget: 35 experiments.'
+        notes: 'Scientific approach.
+
+          Multi-objective framework.
+
+          Cycle life metric.'
+  expected_grid_selections:
+    objective: Multi
+    model: Default
+    task: Single
+    categorical: false
+    sum_constraint: false
+    order_constraint: false
+    linear_constraint: false
+    composition_constraint: false
+    notes: 'Multi-objective optimization.
+
+      Three charging parameters.
+
+      Speed vs longevity trade-off.'
+    related_tutorials:
+    - name: Multi-Objective Optimization of Polymers
+      url: https://honegumi.readthedocs.io/en/la******/curriculum/tutorials/mobo/mobo.html
+      description: Tutorial on multi-objective BO for battery charging
+  solution:
+    search_space:
+    - name: charge_current
+      type: continuous
+      bounds:
+      - 0.5
+      - 3.0
+      units: C-rate
+    - name: voltage_limit
+      type: continuous
+      bounds:
+      - 4.1
+      - 4.3
+      units: V
+    - name: temperature
+      type: continuous
+      bounds:
+      - 10
+      - 40
+      units: °C
+    objective:
+    - name: charge_time
+      goal: minimize
+      units: min
+    - name: cycle_life
+      goal: maximize
+      units: cycles
+    budget: 35
+    noise_model: true
+    constraints: []
+- id: 30
+  domain: packaging
+  complexity: simple
+  description: Food packaging barrier optimization
+  personas:
+    experimentalist_basic:
+      natural_version:
+        description: 'Optimizing packaging film. Two parameters: thickness and coating
+          weight. Want minimal oxygen permeability. 24 samples.'
+        notes: 'Packaging optimization.
+
+          Missing: parameter bounds.
+
+          Barrier minimization.'
+      corrected_version:
+        description: 'Optimizing packaging for minimum oxygen permeability (cc/m²/day).
+          Film thickness: 20-80 μm, coating weight: 2-10 g/m². Budget: 24 samples.
+          Permeability measurements are reproducible.'
+        notes: 'Barrier optimization.
+
+          Two design parameters.
+
+          Permeability metric.'
+    industrial_practitioner:
+      natural_version:
+        description: Designing packaging for our food products. Film thickness and
+          coating weight need optimization for low oxygen transmission. Can make 24
+          samples.
+        notes: 'Product packaging.
+
+          Barrier requirement.
+
+          Sample budget.'
+      corrected_version:
+        description: 'Packaging design optimization. Objective: minimize oxygen permeability
+          (cc/m²/day). Parameters: thickness (20-80 μm), coating weight (2-10 g/m²).
+          Budget: 24 samples.'
+        notes: 'Design terminology.
+
+          Barrier objective.
+
+          Parameter ranges.'
+    research_scientist:
+      natural_version:
+        description: Investigating barrier properties as function of film thickness
+          and coating. Two design parameters affecting oxygen transmission. Planning
+          24-sample study.
+        notes: 'Research approach.
+
+          Barrier properties.
+
+          Design study.'
+      corrected_version:
+        description: 'Packaging barrier study. Objective: minimize oxygen permeability
+          (cc/m²/day). Design parameters: film thickness (20-80 μm), coating weight
+          (2-10 g/m²). Budget: 24 experiments.'
+        notes: 'Scientific methodology.
+
+          Barrier characterization.
+
+          Design optimization.'
+  expected_grid_selections:
+    objective: Single
+    model: Default
+    task: Single
+    categorical: false
+    sum_constraint: false
+    order_constraint: false
+    linear_constraint: false
+    composition_constraint: false
+    notes: 'Single-objective minimization.
+
+      Two design parameters.
+
+      No constraints.'
+    related_tutorials:
+    - name: Single-Objective Bayesian Optimization (SOBO)
+      url: https://honegumi.readthedocs.io/en/la******/curriculum/tutorials/sobo/sobo.html
+      description: 'Tutorial #1: Single-objective BO for packaging optimization'
+  solution:
+    search_space:
+    - name: film_thickness
+      type: continuous
+      bounds:
+      - 20
+      - 80
+      units: μm
+    - name: coating_weight
+      type: continuous
+      bounds:
+      - 2
+      - 10
+      units: g/m²
+    objective:
+      name: oxygen_permeability
+      goal: minimize
+      units: cc/m²/day
+    budget: 24
+    noise_model: true
+    constraints: []
