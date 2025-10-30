@@ -315,11 +315,7 @@ problem_statements:
     noise_model: true
     constraints:
     - type: composition
-      parameters:
-      - resin_fraction
-      - inhibitor_fraction
-      - insulator_fraction
-      - stabilizer_fraction
+      parameters: [resin_fraction, inhibitor_fraction, insulator_fraction, stabilizer_fraction]
       total: 1.0
     - type: order
       description: resin_fraction >= inhibitor_fraction
@@ -528,10 +524,6 @@ problem_statements:
     historical_data_points: 3
     constraints:
     - type: composition
-      parameters:
-      - monomer_a_fraction
-      - monomer_b_fraction
-      - monomer_c_fraction
-      - monomer_d_fraction
-      - monomer_e_fraction
+      parameters: [monomer_a_fraction, monomer_b_fraction, monomer_c_fraction, monomer_d_fraction,
+        monomer_e_fraction]
       total: 1.0
