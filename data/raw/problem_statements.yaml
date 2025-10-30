@@ -315,11 +315,7 @@ problem_statements:
     noise_model: true
     constraints:
     - type: composition
-      parameters:
-      - resin_fraction
-      - inhibitor_fraction
-      - insulator_fraction
-      - stabilizer_fraction
+      parameters: [resin_fraction, inhibitor_fraction, insulator_fraction, stabilizer_fraction]
       total: 1.0
     - type: order
       description: resin_fraction >= inhibitor_fraction
@@ -528,12 +524,8 @@ problem_statements:
     historical_data_points: 3
     constraints:
     - type: composition
-      parameters:
-      - monomer_a_fraction
-      - monomer_b_fraction
-      - monomer_c_fraction
-      - monomer_d_fraction
-      - monomer_e_fraction
+      parameters: [monomer_a_fraction, monomer_b_fraction, monomer_c_fraction, monomer_d_fraction,
+        monomer_e_fraction]
       total: 1.0
 - id: 4
   domain: materials_science
@@ -653,11 +645,7 @@ problem_statements:
     noise_model: true
     constraints:
     - type: sum
-      parameters:
-      - LiPF6_concentration
-      - LiBF4_concentration
-      - LiClO4_concentration
-      - LiTFSI_concentration
+      parameters: [LiPF6_concentration, LiBF4_concentration, LiClO4_concentration, LiTFSI_concentration]
       total: 2.0
 - id: 5
   domain: pharmaceutical
@@ -799,12 +787,8 @@ problem_statements:
     noise_model: true
     constraints:
     - type: composition
-      parameters:
-      - excipient_A_fraction
-      - excipient_B_fraction
-      - excipient_C_fraction
-      - excipient_D_fraction
-      - excipient_E_fraction
+      parameters: [excipient_A_fraction, excipient_B_fraction, excipient_C_fraction,
+        excipient_D_fraction, excipient_E_fraction]
       total: 1.0
 - id: 6
   domain: chemistry
@@ -1023,10 +1007,7 @@ problem_statements:
     noise_model: true
     constraints:
     - type: sum
-      parameters:
-      - Cr_content
-      - Ni_content
-      - Mo_content
+      parameters: [Cr_content, Ni_content, Mo_content]
       total: 40.0
 - id: 8
   domain: bioengineering
@@ -1837,8 +1818,5 @@ problem_statements:
     noise_model: true
     constraints:
     - type: composition
-      parameters:
-      - red_fraction
-      - yellow_fraction
-      - blue_fraction
+      parameters: [red_fraction, yellow_fraction, blue_fraction]
       total: 1.0
