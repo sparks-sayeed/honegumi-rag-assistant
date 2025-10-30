@@ -615,6 +615,10 @@ problem_statements:
       Four continuous concentration parameters.
 
       No composition constraint since they don''t need to sum to 1.'
+    related_tutorials:
+    - name: Single-Objective Bayesian Optimization (SOBO)
+      url: https://honegumi.readthedocs.io/en/latest/curriculum/tutorials/sobo/sobo.html
+      description: 'Tutorial #1: Basic single-objective BO applicable to battery optimization'
   solution:
     search_space:
     - name: LiPF6_concentration
@@ -736,6 +740,10 @@ problem_statements:
       Composition constraint for excipient fractions.
 
       Seven parameters total (5 fractions + pH + temperature).'
+    related_tutorials:
+    - name: Multi-Objective Optimization of Polymers
+      url: https://honegumi.readthedocs.io/en/latest/curriculum/tutorials/mobo/mobo.html
+      description: Tutorial on multi-objective BO with composition constraints
   solution:
     search_space:
     - name: excipient_A_fraction
@@ -875,6 +883,10 @@ problem_statements:
       Two continuous parameters.
 
       No constraints.'
+    related_tutorials:
+    - name: Single-Objective Bayesian Optimization (SOBO)
+      url: https://honegumi.readthedocs.io/en/latest/curriculum/tutorials/sobo/sobo.html
+      description: 'Tutorial #1: Basic single-objective BO for catalyst optimization'
   solution:
     search_space:
     - name: calcination_temperature
@@ -976,6 +988,10 @@ problem_statements:
       Sum constraint on total alloying content.
 
       Three continuous composition parameters.'
+    related_tutorials:
+    - name: Multi-Objective Optimization of Polymers
+      url: https://honegumi.readthedocs.io/en/latest/curriculum/tutorials/mobo/mobo.html
+      description: Tutorial on multi-objective BO applicable to alloy design
   solution:
     search_space:
     - name: Cr_content
@@ -1090,6 +1106,10 @@ problem_statements:
       Three continuous process parameters.
 
       No constraints.'
+    related_tutorials:
+    - name: Single-Objective Bayesian Optimization (SOBO)
+      url: https://honegumi.readthedocs.io/en/latest/curriculum/tutorials/sobo/sobo.html
+      description: 'Tutorial #1: Basic single-objective BO for bioprocess optimization'
   solution:
     search_space:
     - name: temperature
@@ -1196,6 +1216,10 @@ problem_statements:
       Three continuous proportion parameters.
 
       Multiple ordering relationships.'
+    related_tutorials:
+    - name: Single-Objective Bayesian Optimization (SOBO)
+      url: https://honegumi.readthedocs.io/en/latest/curriculum/tutorials/sobo/sobo.html
+      description: 'Tutorial #1: Single-objective BO with order constraints'
   solution:
     search_space:
     - name: cement_fraction
@@ -1230,121 +1254,472 @@ problem_statements:
     - type: order
       description: aggregate_fraction >= water_fraction
 - id: 10
-  domain: analytical_chemistry
+  domain: pharmaceutical
   complexity: advanced
-  description: Chromatography separation optimization
+  description: Drug discovery pipeline optimization
   personas:
     experimentalist_basic:
       natural_version:
-        description: Optimizing HPLC method for separating compounds. Need good resolution
-          and fast run time. Can adjust flow rate, temperature, gradient slope, and
-          try different column types. Maybe 45 runs total.
-        notes: 'Analytical chemistry optimization.
+        description: Need to optimize drug candidate selection. Looking at molecular
+          properties like solubility, permeability, and binding affinity. Want candidates
+          with good ADME properties. Can evaluate maybe 50 compounds.
+        notes: 'Basic drug discovery request.
 
-          Multi-objective (resolution and speed).
+          Missing: specific property ranges, multi-objective handling.
 
-          Missing: ranges, categorical specification.'
+          Aware of ADME importance.'
       corrected_version:
-        description: 'Optimizing HPLC separation for resolution (Rs) and run time
-          (min). Parameters: flow rate (0.5-2 mL/min), column temperature (25-60°C),
-          gradient slope (1-10 %/min), and column type (C8, C18, or Phenyl). Want
-          high resolution and short time. Budget: 45 runs.'
-        notes: 'Multi-objective with trade-off.
+        description: 'Optimizing drug candidate selection with three objectives: maximize
+          binding affinity (pKi), maximize solubility (log S), minimize toxicity (LD50).
+          Molecular descriptors include MW (180-500), LogP (0-5), TPSA (20-140 Ų),
+          HBD (0-5), HBA (0-10). Can screen 50 compounds with ******ing.'
+        notes: 'Multi-objective drug optimization.
 
-          Categorical variable (column type).
+          Molecular descriptor ranges specified.
 
-          Complete specification.'
+          Budget and objectives clear.'
     industrial_practitioner:
       natural_version:
-        description: Developing QC method for production. Need baseline separation
-          of all peaks but keep run time under control for throughput. Testing flow
-          rate, temp, gradient, and 3 different columns. Budget for 45 method development
-          runs.
-        notes: 'QC focus with throughput concern.
+        description: Developing drug pipeline for our pharma company. Need molecules
+          with strong target binding, good solubility, and low toxicity - all three
+          are critical. Working within druglike space (MW under 500, reasonable LogP).
+          Can synthesize and ****** about 50 candidates.
+        notes: 'Industry focus on pipeline.
 
-          Trade-off awareness.
+          Druglike space awareness (Lipinski rules).
 
-          Production context.'
+          Practical synthesis constraints.'
       corrected_version:
-        description: 'HPLC method development for QC. Dual objectives: maximize resolution
-          (Rs), minimize run time (min). Parameters: flow rate (0.5-2 mL/min), temperature
-          (25-60°C), gradient (1-10 %/min), column type (C8/C18/Phenyl). Budget: 45
-          tests.'
-        notes: 'QC terminology.
+        description: 'Drug candidate optimization for pipeline development. Three
+          objectives: maximize binding (pKi), maximize solubility (log S), minimize
+          toxicity (LD50). Chemical space: MW (180-500), LogP (0-5), TPSA (20-140
+          Ų), HBD (0-5), HBA (0-10). Budget: 50 synthesis/****** cycles.'
+        notes: 'Industry pipeline terminology.
 
-          Dual objectives clear.
+          Druglike constraints explicit.
 
-          Categorical choice included.'
+          Multi-objective trade-offs.'
     research_scientist:
       natural_version:
-        description: 'Investigating Pareto-optimal conditions for chromatographic
-          separation. Two competing objectives: resolution and analysis time. Continuous
-          parameters (flow rate, temperature, gradient) plus categorical variable
-          (stationary phase chemistry). Planning systematic 45-experiment study.'
-        notes: 'Research with Pareto framework.
+        description: 'Investigating multi-objective optimization for lead compound
+          identification. Three competing objectives: target affinity, aqueous solubility,
+          and toxicity. Design space constrained by druglikeness criteria (Lipinski
+          space). Molecular descriptors as continuous parameters. Interested in Pareto-optimal
+          candidates.'
+        notes: 'Research framing with theoretical knowledge.
 
-          Technical terminology (stationary phase).
+          Lipinski rules reference.
 
-          Systematic approach with categorical.'
+          Pareto optimization framework.'
       corrected_version:
-        description: 'Multi-objective chromatography optimization study. Objectives:
-          maximize resolution (Rs), minimize run time (min). Search space: flow rate
-          (0.5-2 mL/min), temperature (25-60°C), gradient slope (1-10 %/min), column
-          chemistry (C8/C18/Phenyl categorical). Seeking Pareto frontier. Budget:
-          45 experiments.'
-        notes: 'Scientific multi-objective approach.
+        description: 'Multi-objective Bayesian optimization for drug discovery. Objectives:
+          maximize binding affinity (pKi), maximize solubility (log S), minimize toxicity
+          (LD50). Molecular descriptor space: MW (180-500 Da), LogP (0-5), TPSA (20-140
+          Ų), HBD (0-5), HBA (0-10). Seeking Pareto frontier in druglike space. Budget:
+          50 evaluations.'
+        notes: 'Scientific drug discovery approach.
 
-          Categorical variable explicitly stated.
+          Explicit Pareto frontier goal.
 
-          Pareto frontier goal.'
+          Druglike space formally defined.'
   expected_grid_selections:
     objective: Multi
     model: Default
     task: Single
-    categorical: true
+    categorical: false
     sum_constraint: false
     order_constraint: false
     linear_constraint: false
     composition_constraint: false
-    notes: 'Multi-objective optimization (resolution vs time).
+    notes: 'Multi-objective drug discovery optimization.
 
-      Mixed continuous and categorical variables.
+      Molecular descriptors as continuous parameters.
 
-      Categorical choice for column type.'
+      Three competing objectives (binding, solubility, toxicity).'
+    related_tutorials:
+    - name: Multi-Objective Optimization of Polymers
+      url: https://honegumi.readthedocs.io/en/latest/curriculum/tutorials/mobo/mobo.html
+      description: Tutorial on multi-objective BO applicable to drug discovery
   solution:
     search_space:
-    - name: flow_rate
+    - name: molecular_weight
       type: continuous
       bounds:
-      - 0.5
-      - 2.0
-      units: mL/min
-    - name: column_temperature
+      - 180
+      - 500
+      units: Da
+    - name: logP
       type: continuous
       bounds:
-      - 25
+      - 0
+      - 5
+      units: logP
+    - name: TPSA
+      type: continuous
+      bounds:
+      - 20
+      - 140
+      units: Ų
+    - name: hydrogen_bond_donors
+      type: continuous
+      bounds:
+      - 0
+      - 5
+      units: count
+    - name: hydrogen_bond_acceptors
+      type: continuous
+      bounds:
+      - 0
+      - 10
+      units: count
+    objective:
+    - name: binding_affinity
+      goal: maximize
+      units: pKi
+    - name: solubility
+      goal: maximize
+      units: log S
+    - name: toxicity
+      goal: minimize
+      units: LD50
+    budget: 50
+    noise_model: true
+    constraints: []
+- id: 11
+  domain: materials_science
+  complexity: advanced
+  description: MAX phase materials optimization with featurization
+  personas:
+    experimentalist_basic:
+      natural_version:
+        description: Need to find new MAX phase materials with high electrical conductivity.
+          Have a database of compositions and their properties. Want to use material
+          features to guide search. Can synthesize about 30 samples.
+        notes: 'Materials discovery with database.
+
+          Missing: specific features, featurization approach.
+
+          Understands data-driven discovery.'
+      corrected_version:
+        description: 'Optimizing MAX phase discovery for electrical conductivity (S/m).
+          Using compositional features: M-site electronegativity, A-site atomic radius,
+          X-site covalent radius, formation energy. Have historical database of 20
+          known MAX phases. Budget: 30 new syntheses.'
+        notes: 'Feature-based materials discovery.
+
+          Historical data for transfer learning.
+
+          Clear objective and budget.'
+    industrial_practitioner:
+      natural_version:
+        description: Looking for high-conductivity MAX phases for our electronics
+          application. Have data on existing materials - want to use their properties
+          to find better ones. Can afford 30 synthesis runs.
+        notes: 'Application-driven search.
+
+          Practical use of existing data.
+
+          Budget constraint.'
+      corrected_version:
+        description: 'MAX phase discovery for electronics (target: high conductivity
+          S/m). Leveraging compositional features and 20 historical measurements.
+          Features: elemental properties (electronegativity, radii, formation energy).
+          Budget: 30 production syntheses.'
+        notes: 'Application focus with data leverage.
+
+          Production terminology.
+
+          Feature-based approach.'
+    research_scientist:
+      natural_version:
+        description: Investigating MAX phase composition-property relationships using
+          featurization. Objective is electrical conductivity maximization. Leveraging
+          historical dataset with compositional and structural descriptors. Planning
+          data-driven discovery campaign with approximately 30 experiments.
+        notes: 'Research framing with featurization.
+
+          Composition-property relationships.
+
+          Data-driven methodology.'
+      corrected_version:
+        description: 'Featurization-based BO for MAX phase discovery. Objective: maximize
+          electrical conductivity (S/m). Features: M-site electronegativity, A-site
+          radius, X-site radius, DFT formation energy. Transfer learning from 20 literature
+          compounds. Budget: 30 experiments.'
+        notes: 'Scientific methodology with transfer learning.
+
+          DFT integration.
+
+          Featurization approach explicit.'
+  expected_grid_selections:
+    objective: Single
+    model: Default
+    task: Single
+    categorical: false
+    sum_constraint: false
+    order_constraint: false
+    linear_constraint: false
+    composition_constraint: false
+    notes: 'Feature-based materials discovery.
+
+      Transfer learning from historical data.
+
+      Continuous compositional features.'
+    related_tutorials:
+    - name: Optimizing MAX Phases with Featurization
+      url: https://honegumi.readthedocs.io/en/latest/curriculum/tutorials/featurization/featurization.html
+      description: Tutorial on using material features for BO-guided discovery
+  solution:
+    search_space:
+    - name: M_site_electronegativity
+      type: continuous
+      bounds:
+      - 1.2
+      - 2.5
+      units: Pauling
+    - name: A_site_atomic_radius
+      type: continuous
+      bounds:
+      - 140
+      - 220
+      units: pm
+    - name: X_site_covalent_radius
+      type: continuous
+      bounds:
       - 60
-      units: °C
-    - name: gradient_slope
+      - 110
+      units: pm
+    - name: formation_energy
+      type: continuous
+      bounds:
+      - -2.0
+      - -0.2
+      units: eV/atom
+    objective:
+      name: electrical_conductivity
+      goal: maximize
+      units: S/m
+    budget: 30
+    noise_model: true
+    historical_data_points: 20
+    constraints: []
+- id: 12
+  domain: materials_science
+  complexity: advanced
+  description: Multi-task ceramic binder optimization
+  personas:
+    experimentalist_basic:
+      natural_version:
+        description: Optimizing binder formulation for different ceramic systems.
+          Same binder needs to work for alumina, zirconia, and silicon carbide. Want
+          good green strength across all three. Maybe 40 experiments per ceramic type.
+        notes: 'Multi-task awareness.
+
+          Missing: task specification, parameter ranges.
+
+          Understands cross-system optimization.'
+      corrected_version:
+        description: 'Multi-task binder optimization across 3 ceramic systems (alumina,
+          zirconia, SiC). Parameters: binder concentration (1-10 wt%), plasticizer
+          (0-3 wt%), dispersant (0.1-1 wt%). Objective: maximize green strength (MPa)
+          for each system. Budget: 40 experiments per task (120 total).'
+        notes: 'Multi-task structure with shared parameters.
+
+          Three related tasks.
+
+          Clear budget per task.'
+    industrial_practitioner:
+      natural_version:
+        description: Developing universal binder system for our ceramic product line.
+          Need one formulation that works across alumina, zirconia, and SiC. Optimizing
+          for green strength in all three. Can run about 40 batches per material.
+        notes: 'Product line focus with universal formulation.
+
+          Practical multi-material need.
+
+          Batch budget per material.'
+      corrected_version:
+        description: 'Universal binder development for ceramic product line. Three
+          tasks: alumina/zirconia/SiC green strength (MPa). Shared parameters: binder
+          (1-10 wt%), plasticizer (0-3 wt%), dispersant (0.1-1 wt%). Budget: 40 batches
+          per ceramic (120 total).'
+        notes: 'Product development terminology.
+
+          Shared formulation space.
+
+          Multi-task structure.'
+    research_scientist:
+      natural_version:
+        description: Investigating multi-task Bayesian optimization for ceramic binder
+          systems. Three related tasks representing different ceramic matrices with
+          shared formulation space. Objective is green strength optimization with
+          knowledge transfer across tasks. Planning systematic 40-experiment campaign
+          per task.
+        notes: 'Research with multi-task framework.
+
+          Knowledge transfer awareness.
+
+          Systematic approach.'
+      corrected_version:
+        description: 'Multi-task BO study of ceramic binder formulations. Tasks: alumina/zirconia/SiC
+          green strength (MPa). Shared search space: binder concentration (1-10 wt%),
+          plasticizer (0-3 wt%), dispersant (0.1-1 wt%). Transfer learning across
+          tasks. Budget: 40 experiments per task.'
+        notes: 'Scientific multi-task methodology.
+
+          Transfer learning explicit.
+
+          Shared parameter space.'
+  expected_grid_selections:
+    objective: Single
+    model: Default
+    task: Multi
+    categorical: false
+    sum_constraint: false
+    order_constraint: false
+    linear_constraint: false
+    composition_constraint: false
+    notes: 'Multi-task optimization with knowledge transfer.
+
+      Three related ceramic systems.
+
+      Shared formulation space across tasks.'
+    related_tutorials:
+    - name: Multi-Task Optimization Across Ceramic Binder Systems
+      url: https://honegumi.readthedocs.io/en/latest/curriculum/tutorials/multitask/multitask.html
+      description: Tutorial on multi-task BO for related optimization problems
+  solution:
+    search_space:
+    - name: binder_concentration
       type: continuous
       bounds:
       - 1
       - 10
-      units: '%/min'
-    - name: column_type
-      type: categorical
-      values:
-      - C8
-      - C18
-      - Phenyl
+      units: wt%
+    - name: plasticizer_concentration
+      type: continuous
+      bounds:
+      - 0
+      - 3
+      units: wt%
+    - name: dispersant_concentration
+      type: continuous
+      bounds:
+      - 0.1
+      - 1
+      units: wt%
+    objective:
+      name: green_strength
+      goal: maximize
+      units: MPa
+    budget: 120
+    tasks:
+    - alumina
+    - zirconia
+    - silicon_carbide
+    noise_model: true
+    constraints: []
+- id: 13
+  domain: computational
+  complexity: simple
+  description: Acquisition function benchmarking on synthetic function
+  personas:
+    experimentalist_basic:
+      natural_version:
+        description: Want to compare different BO strategies on a ****** problem.
+          Using Branin function to see which acquisition function works best. Can
+          run multiple trials with different random seeds.
+        notes: 'Benchmarking awareness.
+
+          Missing: specific acquisition functions, trial count.
+
+          Synthetic function understanding.'
+      corrected_version:
+        description: 'Benchmarking acquisition functions (EI, UCB, Thompson Sampling)
+          on Branin-Hoo function. Two parameters: x1 (-5 to 10), x2 (0 to 15). Objective:
+          minimize Branin output. Running 20 trials per acquisition function with
+          30 evaluations each.'
+        notes: 'Specific acquisition functions.
+
+          Benchmark protocol defined.
+
+          Multiple trials for statistics.'
+    industrial_practitioner:
+      natural_version:
+        description: Testing which BO method works best for our type of problems.
+          Using Branin ****** function as proxy. Comparing different acquisition strategies.
+          Need robust results so running multiple trials.
+        notes: 'Practical method selection.
+
+          Proxy function for real problems.
+
+          Robustness awareness.'
+      corrected_version:
+        description: 'Method validation using Branin function benchmark. Comparing
+          EI, UCB, Thompson Sampling. Parameters: x1 (-5 to 10), x2 (0 to 15). Minimization
+          problem. Running 20 independent trials × 30 evaluations to assess reliability.'
+        notes: 'Validation terminology.
+
+          Reliability focus.
+
+          Multiple trials for statistics.'
+    research_scientist:
+      natural_version:
+        description: Systematic benchmarking study of acquisition functions. Using
+          Branin-Hoo as standard ****** function. Comparing Expected Improvement,
+          Upper Confidence Bound, and Thompson Sampling. Planning statistically rigorous
+          comparison with multiple random initializations.
+        notes: 'Research benchmarking methodology.
+
+          Standard ****** function.
+
+          Statistical rigor.'
+      corrected_version:
+        description: 'Acquisition function benchmark on Branin-Hoo function (minimize).
+          Comparing EI, UCB, Thompson Sampling strategies. Search space: x1 ∈ [-5,10],
+          x2 ∈ [0,15]. Protocol: 20 trials per method, 30 evaluations per trial. Statistical
+          analysis of convergence and performance.'
+        notes: 'Scientific benchmarking protocol.
+
+          Statistical analysis focus.
+
+          Rigorous comparison.'
+  expected_grid_selections:
+    objective: Single
+    model: Default
+    task: Single
+    categorical: false
+    sum_constraint: false
+    order_constraint: false
+    linear_constraint: false
+    composition_constraint: false
+    notes: 'Benchmarking problem on synthetic function.
+
+      Comparing different acquisition strategies.
+
+      Multiple trials for statistical comparison.'
+    related_tutorials:
+    - name: Benchmarking Acquisition Functions
+      url: https://honegumi.readthedocs.io/en/latest/curriculum/tutorials/benchmarking/benchmarking.html
+      description: Tutorial on systematic BO method comparison
+  solution:
+    search_space:
+    - name: x1
+      type: continuous
+      bounds:
+      - -5
+      - 10
+      units: null
+    - name: x2
+      type: continuous
+      bounds:
+      - 0
+      - 15
       units: null
     objective:
-    - name: resolution
-      goal: maximize
-      units: Rs
-    - name: run_time
+      name: branin_output
       goal: minimize
-      units: min
-    budget: 45
-    noise_model: true
+      units: null
+    budget: 30
+    noise_model: false
     constraints: []
