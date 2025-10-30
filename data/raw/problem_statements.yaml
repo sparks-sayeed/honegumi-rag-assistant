@@ -1723,3 +1723,122 @@ problem_statements:
     budget: 30
     noise_model: false
     constraints: []
+- id: 14
+  domain: robotics
+  complexity: simple
+  description: RGB liquid color matching optimization
+  personas:
+    experimentalist_basic:
+      natural_version:
+        description: Need to match a target color by mixing red, yellow, and blue
+          liquids. Have a color sensor that measures 8 spectral channels. Want to
+          minimize the difference between mixed color and target. Can make about 30
+          mixtures.
+        notes: 'Color mixing task.
+
+          Missing: specific channel wavelengths, mixture ratio bounds.
+
+          Understands spectral measurement.'
+      corrected_version:
+        description: 'Optimizing RGB liquid mixing to match target color spectrum.
+          Three parameters: red fraction (0-1), yellow fraction (0-1), blue fraction
+          (0-1), must sum to 1. AS7341 sensor measures 8 channels (415nm, 445nm, 480nm,
+          515nm, 555nm, 590nm, 630nm, 680nm). Objective: minimize spectral mismatch.
+          Budget: 30 mixtures.'
+        notes: 'Complete specification with composition constraint.
+
+          Spectral channels defined.
+
+          Minimization objective.'
+    industrial_practitioner:
+      natural_version:
+        description: Developing automated color matching system for our production
+          line. Mixing red, yellow, blue liquids to hit target colors. Using spectral
+          sensor with 8 channels. Need good matches with minimal waste. Can afford
+          30 ****** runs.
+        notes: 'Automation focus with production context.
+
+          Waste awareness.
+
+          Practical constraints.'
+      corrected_version:
+        description: 'Automated color matching for production. Parameters: R/Y/B fractions
+          (0-1, sum to 1). AS7341 8-channel spectral measurement (415-680nm). Objective:
+          minimize color mismatch (ΔE or spectral distance). Budget: 30 trials.'
+        notes: 'Production automation terminology.
+
+          Spectral distance metric.
+
+          Composition constraint.'
+    research_scientist:
+      natural_version:
+        description: Investigating optimal mixing strategies for liquid-based color
+          matching using subtractive color model. Three primary colorants (RYB) under
+          simplex constraint. Multispectral sensor provides 8-channel visible spectrum
+          measurements. Objective is spectral distance minimization.
+        notes: 'Scientific framing with color theory.
+
+          Simplex constraint terminology.
+
+          Multispectral measurement.'
+      corrected_version:
+        description: 'Bayesian optimization for liquid color matching. Search space:
+          red/yellow/blue fractions (0-1, composition constraint). Measurement: AS7341
+          8-channel spectrum (415, 445, 480, 515, 555, 590, 630, 680 nm). Objective:
+          minimize spectral mismatch vs target. Budget: 30 experiments.'
+        notes: 'Scientific approach with spectral details.
+
+          Composition constraint explicit.
+
+          BO methodology.'
+  expected_grid_selections:
+    objective: Single
+    model: Default
+    task: Single
+    categorical: false
+    sum_constraint: false
+    order_constraint: false
+    linear_constraint: false
+    composition_constraint: true
+    notes: 'Single-objective color matching minimization.
+
+      Composition constraint on RGB fractions.
+
+      Spectral mismatch as black-box objective.'
+    related_tutorials:
+    - name: Single-Objective Bayesian Optimization (SOBO)
+      url: https://honegumi.readthedocs.io/en/la******/curriculum/tutorials/sobo/sobo.html
+      description: 'Tutorial #1: Basic single-objective BO for color matching'
+  solution:
+    search_space:
+    - name: red_fraction
+      type: continuous
+      bounds:
+      - 0
+      - 1
+      units: fraction
+    - name: yellow_fraction
+      type: continuous
+      bounds:
+      - 0
+      - 1
+      units: fraction
+    - name: blue_fraction
+      type: continuous
+      bounds:
+      - 0
+      - 1
+      units: fraction
+    objective:
+      name: spectral_mismatch
+      goal: minimize
+      units: ΔE or L2 distance
+    budget: 30
+    noise_model: true
+    constraints:
+    - type: composition
+      parameters:
+      - red_fraction
+      - yellow_fraction
+      - blue_fraction
+      total: 1.0

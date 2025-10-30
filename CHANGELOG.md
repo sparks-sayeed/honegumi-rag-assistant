@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- **Expanded problem set to 13 diverse BO problems with full Honegumi tutorial coverage**: Added 10 new problems (IDs 4-13) covering diverse domains and complexity levels. Each problem includes 3 personas (experimentalist_basic, industrial_practitioner, research_scientist) providing 39 total persona-problem combinations. All 6 Honegumi tutorials are now represented.
+- **Expanded problem set to 14 diverse BO problems with full Honegumi tutorial coverage**: Added 11 new problems (IDs 4-14) covering diverse domains and complexity levels. Each problem includes 3 personas (experimentalist_basic, industrial_practitioner, research_scientist) providing 42 total persona-problem combinations. All 6 Honegumi tutorials are now represented.
 - **Problem 4 (Battery electrolyte)**: Intermediate complexity with sum constraint on total salt concentration.
 - **Problem 5 (Drug formulation)**: Advanced multi-objective optimization with composition constraint for excipients.
 - **Problem 6 (Catalyst synthesis)**: Simple two-parameter optimization for catalytic activity.
@@ -19,10 +19,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Problem 11 (MAX phase with featurization)**: Advanced materials discovery using compositional features and transfer learning.
 - **Problem 12 (Multi-task ceramic binder)**: Advanced multi-task optimization across three related ceramic systems.
 - **Problem 13 (Acquisition function benchmarking)**: Simple benchmarking problem on Branin-Hoo synthetic function.
+- **Problem 14 (RGB liquid color matching)**: Simple robotics application using AS7341 8-channel spectral sensor to minimize color mismatch with composition constraint on red/yellow/blue liquid fractions.
 - **Complete Honegumi tutorial coverage**: All problems now reference relevant tutorials (SOBO, MOBO, Batch, Featurization, Multi-Task, Benchmarking).
 - **Extended problem set with 2 additional personas**: Added `industrial_practitioner` and `research_scientist` personas to original 3 problems. Problem statements now use a nested structure where each problem ID contains multiple persona variations under a `personas` key, making it easier to track different communication styles for the same underlying optimization problem.
-- **Industrial practitioner persona**: Practical, cost-conscious user with production constraints and informal language style. Applied to all 13 problems.
-- **Research scientist persona**: Academic researcher with formal, hypothesis-driven approach and scientific language. Applied to all 13 problems.
+- **Industrial practitioner persona**: Practical, cost-conscious user with production constraints and informal language style. Applied to all 14 problems.
+- **Research scientist persona**: Academic researcher with formal, hypothesis-driven approach and scientific language. Applied to all 14 problems.
 
 ### Changed
 - **API key environment variable**: Updated all code to use `LLM_API_KEY` instead of `OPENAI_API_KEY` for consistency with repository secrets configuration. This affects:
