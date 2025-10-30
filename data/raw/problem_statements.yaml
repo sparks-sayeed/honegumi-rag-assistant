@@ -315,7 +315,11 @@ problem_statements:
     noise_model: true
     constraints:
     - type: composition
-      parameters: [resin_fraction, inhibitor_fraction, insulator_fraction, stabilizer_fraction]
+      parameters:
+      - resin_fraction
+      - inhibitor_fraction
+      - insulator_fraction
+      - stabilizer_fraction
       total: 1.0
     - type: order
       description: resin_fraction >= inhibitor_fraction
@@ -524,6 +528,823 @@ problem_statements:
     historical_data_points: 3
     constraints:
     - type: composition
-      parameters: [monomer_a_fraction, monomer_b_fraction, monomer_c_fraction, monomer_d_fraction,
-        monomer_e_fraction]
+      parameters:
+      - monomer_a_fraction
+      - monomer_b_fraction
+      - monomer_c_fraction
+      - monomer_d_fraction
+      - monomer_e_fraction
       total: 1.0
+- id: 4
+  domain: materials_science
+  complexity: intermediate
+  description: Battery electrolyte optimization
+  personas:
+    experimentalist_basic:
+      natural_version:
+        description: I need to optimize a battery electrolyte formulation. I have
+          4 salts to mix and need to maximize ionic conductivity. Can run maybe 30-40
+          experiments.
+        notes: 'Basic experimentalist with simple request.
+
+          Missing: bounds, concentration ranges, constraints, temperature conditions.
+
+          Focuses on practical goal without technical details.'
+      corrected_version:
+        description: 'I want to optimize a battery electrolyte with 4 salt concentrations
+          (LiPF6: 0-1.5 M, LiBF4: 0-0.5 M, LiClO4: 0-0.3 M, LiTFSI: 0-0.8 M) to maximize
+          ionic conductivity (mS/cm) at room temperature. The total salt concentration
+          should not exceed 2 M. I can run about 35 experiments.'
+        notes: 'Provides concentration ranges and constraint.
+
+          Specifies measurement units and conditions.
+
+          Maintains conversational tone.'
+    industrial_practitioner:
+      natural_version:
+        description: We need to formulate a battery electrolyte for our production
+          line. Have 4 different salts - need good conductivity but total concentration
+          can't go over 2 M or it gets too viscous. Budget for maybe 40 samples.
+        notes: 'Industrial focus with practical constraints.
+
+          Mentions production context and viscosity concerns.
+
+          Informal language ("can''t go over").'
+      corrected_version:
+        description: 'Optimizing battery electrolyte for production with 4 salts:
+          LiPF6 (0-1.5 M), LiBF4 (0-0.5 M), LiClO4 (0-0.3 M), LiTFSI (0-0.8 M). Goal
+          is maximize ionic conductivity (mS/cm). Total concentration must be ≤ 2
+          M. Can run 40 tests.'
+        notes: 'Structured with production focus.
+
+          Specifies constraint clearly.
+
+          Budget-conscious language.'
+    research_scientist:
+      natural_version:
+        description: I'm studying ionic transport in multi-salt electrolytes. The
+          system has four lithium salts with different anions. I need to maximize
+          ionic conductivity while maintaining total salt concentration below 2 M
+          to avoid viscosity issues. Planning approximately 35-40 trials.
+        notes: 'Academic framing with theoretical context.
+
+          Uses technical terminology ("ionic transport", "anions").
+
+          Explains the constraint rationale.'
+      corrected_version:
+        description: 'Conducting systematic study of ionic conductivity in multi-salt
+          electrolytes. Four salts: LiPF6 (0-1.5 M), LiBF4 (0-0.5 M), LiClO4 (0-0.3
+          M), LiTFSI (0-0.8 M). Objective: maximize ionic conductivity (mS/cm). Constraint:
+          total concentration ≤ 2 M. Budget: 35 experiments.'
+        notes: 'Systematic scientific approach.
+
+          Clear specification with rationale.
+
+          Formal language.'
+  expected_grid_selections:
+    objective: Single
+    model: Default
+    task: Single
+    categorical: false
+    sum_constraint: true
+    order_constraint: false
+    linear_constraint: false
+    composition_constraint: false
+    notes: 'Single-objective maximization with sum constraint (total ≤ 2 M).
+
+      Four continuous concentration parameters.
+
+      No composition constraint since they don''t need to sum to 1.'
+  solution:
+    search_space:
+    - name: LiPF6_concentration
+      type: continuous
+      bounds:
+      - 0
+      - 1.5
+      units: M
+    - name: LiBF4_concentration
+      type: continuous
+      bounds:
+      - 0
+      - 0.5
+      units: M
+    - name: LiClO4_concentration
+      type: continuous
+      bounds:
+      - 0
+      - 0.3
+      units: M
+    - name: LiTFSI_concentration
+      type: continuous
+      bounds:
+      - 0
+      - 0.8
+      units: M
+    objective:
+      name: ionic_conductivity
+      goal: maximize
+      units: mS/cm
+    budget: 35
+    noise_model: true
+    constraints:
+    - type: sum
+      parameters:
+      - LiPF6_concentration
+      - LiBF4_concentration
+      - LiClO4_concentration
+      - LiTFSI_concentration
+      total: 2.0
+- id: 5
+  domain: pharmaceutical
+  complexity: advanced
+  description: Drug formulation optimization
+  personas:
+    experimentalist_basic:
+      natural_version:
+        description: Need to optimize a drug formulation. Want good bioavailability
+          and long shelf life. Have 5 excipients to work with plus pH and temperature
+          to control.
+        notes: 'Basic request with dual objectives.
+
+          Missing: specific ranges, measurement units, multi-objective handling.
+
+          Understands need for multiple properties.'
+      corrected_version:
+        description: 'Optimizing drug formulation with two goals: maximize bioavailability
+          (%) and maximize shelf life (months). Have 5 excipient fractions (each 0-1,
+          must sum to 1), pH (3-7), and storage temperature (15-30°C). Can run 50
+          experiments.'
+        notes: 'Multi-objective with composition constraint.
+
+          Provides ranges and units.
+
+          Budget specified.'
+    industrial_practitioner:
+      natural_version:
+        description: Developing new formulation for our pharma pipeline. Need both
+          high bioavailability and good shelf stability - both are critical for approval.
+          Have 5 excipients that must add up to 100%, plus we can adjust pH and storage
+          temp. Can do about 50 formulations.
+        notes: 'Industry focus with regulatory awareness.
+
+          Practical language ("add up to 100%").
+
+          Recognizes trade-offs.'
+      corrected_version:
+        description: 'Optimizing pharmaceutical formulation for regulatory approval.
+          Two objectives: maximize bioavailability (%), maximize shelf life (months).
+          Parameters: 5 excipient fractions (0-1, sum to 1), pH (3-7), storage temperature
+          (15-30°C). Budget: 50 tests.'
+        notes: 'Industry-focused with regulatory context.
+
+          Clear multi-objective statement.
+
+          Practical constraints.'
+    research_scientist:
+      natural_version:
+        description: 'Investigating pharmaceutical formulation space using multi-objective
+          optimization. Two competing objectives: bioavailability and stability. Five
+          excipient fractions under simplex constraint, plus two process parameters
+          (pH and temperature). Interested in Pareto-optimal formulations.'
+        notes: 'Academic with multi-objective expertise.
+
+          Technical language ("simplex constraint", "Pareto-optimal").
+
+          Theoretical framing.'
+      corrected_version:
+        description: 'Multi-objective Bayesian optimization for drug formulation.
+          Objectives: maximize bioavailability (%), maximize shelf life (months).
+          Search space: 5 excipient fractions (0-1, composition constraint), pH (3-7),
+          storage temperature (15-30°C). Seeking Pareto frontier. Budget: 50 experiments.'
+        notes: 'Formal scientific approach.
+
+          Explicit multi-objective methodology.
+
+          Pareto frontier focus.'
+  expected_grid_selections:
+    objective: Multi
+    model: Default
+    task: Single
+    categorical: false
+    sum_constraint: false
+    order_constraint: false
+    linear_constraint: false
+    composition_constraint: true
+    notes: 'Multi-objective optimization (bioavailability and shelf life).
+
+      Composition constraint for excipient fractions.
+
+      Seven parameters total (5 fractions + pH + temperature).'
+  solution:
+    search_space:
+    - name: excipient_A_fraction
+      type: continuous
+      bounds:
+      - 0
+      - 1
+      units: fraction
+    - name: excipient_B_fraction
+      type: continuous
+      bounds:
+      - 0
+      - 1
+      units: fraction
+    - name: excipient_C_fraction
+      type: continuous
+      bounds:
+      - 0
+      - 1
+      units: fraction
+    - name: excipient_D_fraction
+      type: continuous
+      bounds:
+      - 0
+      - 1
+      units: fraction
+    - name: excipient_E_fraction
+      type: continuous
+      bounds:
+      - 0
+      - 1
+      units: fraction
+    - name: pH
+      type: continuous
+      bounds:
+      - 3
+      - 7
+      units: pH
+    - name: storage_temperature
+      type: continuous
+      bounds:
+      - 15
+      - 30
+      units: °C
+    objective:
+    - name: bioavailability
+      goal: maximize
+      units: '%'
+    - name: shelf_life
+      goal: maximize
+      units: months
+    budget: 50
+    noise_model: true
+    constraints:
+    - type: composition
+      parameters:
+      - excipient_A_fraction
+      - excipient_B_fraction
+      - excipient_C_fraction
+      - excipient_D_fraction
+      - excipient_E_fraction
+      total: 1.0
+- id: 6
+  domain: chemistry
+  complexity: simple
+  description: Catalyst synthesis optimization
+  personas:
+    experimentalist_basic:
+      natural_version:
+        description: I need to optimize catalyst synthesis. Looking at calcination
+          temperature and time to get maximum activity. Can run about 25 experiments.
+        notes: 'Simple two-parameter optimization request.
+
+          Missing: bounds, units, activity definition.
+
+          Typical experimentalist approach.'
+      corrected_version:
+        description: Optimizing catalyst synthesis to maximize catalytic activity
+          (μmol/g·s). Calcination temperature can range from 300-600°C, time from
+          2-8 hours. Budget for 25 experiments. Activity measurements have some variability.
+        notes: 'Provides bounds and units.
+
+          Mentions measurement noise.
+
+          Budget specified.'
+    industrial_practitioner:
+      natural_version:
+        description: Need to optimize our catalyst production process. Calcination
+          temp and time are the key variables - trying to maximize activity. Limited
+          to 25 batches due to cost.
+        notes: 'Production focus with cost awareness.
+
+          Practical language.
+
+          Budget constraint mentioned.'
+      corrected_version:
+        description: 'Optimizing catalyst production for maximum activity (μmol/g·s).
+          Calcination temperature: 300-600°C, time: 2-8 hours. Budget: 25 production
+          batches. Activity tests are reproducible.'
+        notes: 'Production terminology.
+
+          Cost-conscious.
+
+          Reproducibility noted.'
+    research_scientist:
+      natural_version:
+        description: 'Investigating the relationship between calcination conditions
+          and catalytic performance. Two process parameters: temperature and duration.
+          Objective is to maximize catalytic activity. Planning approximately 25 synthesis
+          runs.'
+        notes: 'Academic framing with research focus.
+
+          Formal language.
+
+          Systematic approach.'
+      corrected_version:
+        description: 'Systematic study of calcination effects on catalytic activity
+          (μmol/g·s). Parameters: temperature (300-600°C), time (2-8 hours). Objective:
+          maximization of activity. Budget: 25 experiments with standard measurement
+          protocols.'
+        notes: 'Scientific methodology.
+
+          Standard protocols mentioned.
+
+          Systematic approach.'
+  expected_grid_selections:
+    objective: Single
+    model: Default
+    task: Single
+    categorical: false
+    sum_constraint: false
+    order_constraint: false
+    linear_constraint: false
+    composition_constraint: false
+    notes: 'Simple single-objective optimization.
+
+      Two continuous parameters.
+
+      No constraints.'
+  solution:
+    search_space:
+    - name: calcination_temperature
+      type: continuous
+      bounds:
+      - 300
+      - 600
+      units: °C
+    - name: calcination_time
+      type: continuous
+      bounds:
+      - 2
+      - 8
+      units: hours
+    objective:
+      name: catalytic_activity
+      goal: maximize
+      units: μmol/g·s
+    budget: 25
+    noise_model: true
+    constraints: []
+- id: 7
+  domain: materials_science
+  complexity: intermediate
+  description: Alloy composition optimization
+  personas:
+    experimentalist_basic:
+      natural_version:
+        description: I want to optimize a steel alloy composition. Have 3 elements
+          (Cr, Ni, Mo) plus base Fe. Need good strength and corrosion resistance.
+          Can make about 40 samples.
+        notes: 'Multi-objective alloy design.
+
+          Missing: concentration ranges, composition constraint.
+
+          Understands dual objectives.'
+      corrected_version:
+        description: 'Optimizing steel alloy for strength (MPa) and corrosion resistance
+          (mpy). Three alloying elements: Cr (10-20 wt%), Ni (5-15 wt%), Mo (1-5 wt%),
+          with Fe as balance. Elements must maintain feasible total. Can prepare 40
+          samples.'
+        notes: 'Multi-objective with practical ranges.
+
+          Mentions Fe balance.
+
+          Budget specified.'
+    industrial_practitioner:
+      natural_version:
+        description: Developing new steel grade for our product line. Need both high
+          strength and corrosion resistance. Working with Cr, Ni, Mo additions to
+          Fe base. The alloying elements can't exceed certain limits. Can do 40 test
+          melts.
+        notes: 'Product development focus.
+
+          Practical constraints.
+
+          Production language ("test melts").'
+      corrected_version:
+        description: 'Steel grade development with dual objectives: maximize strength
+          (MPa) and corrosion resistance (mpy). Alloying: Cr (10-20 wt%), Ni (5-15
+          wt%), Mo (1-5 wt%). Total alloying content ≤ 40 wt%. Budget: 40 melts.'
+        notes: 'Product focus with clear objectives.
+
+          Practical constraint on total alloying.
+
+          Industrial terminology.'
+    research_scientist:
+      natural_version:
+        description: 'Investigating composition-property relationships in Fe-Cr-Ni-Mo
+          alloys. Two competing objectives: mechanical strength and corrosion performance.
+          Three independent composition variables within metallurgically feasible
+          ranges.'
+        notes: 'Research framing.
+
+          Technical alloy nomenclature.
+
+          Competing objectives recognized.'
+      corrected_version:
+        description: 'Multi-objective study of Fe-Cr-Ni-Mo alloy system. Objectives:
+          maximize tensile strength (MPa), maximize corrosion resistance (mpy). Composition
+          space: Cr (10-20 wt%), Ni (5-15 wt%), Mo (1-5 wt%) with constraint on total
+          alloying. Budget: 40 samples.'
+        notes: 'Scientific methodology.
+
+          Systematic nomenclature.
+
+          Composition constraint acknowledged.'
+  expected_grid_selections:
+    objective: Multi
+    model: Default
+    task: Single
+    categorical: false
+    sum_constraint: true
+    order_constraint: false
+    linear_constraint: false
+    composition_constraint: false
+    notes: 'Multi-objective optimization.
+
+      Sum constraint on total alloying content.
+
+      Three continuous composition parameters.'
+  solution:
+    search_space:
+    - name: Cr_content
+      type: continuous
+      bounds:
+      - 10
+      - 20
+      units: wt%
+    - name: Ni_content
+      type: continuous
+      bounds:
+      - 5
+      - 15
+      units: wt%
+    - name: Mo_content
+      type: continuous
+      bounds:
+      - 1
+      - 5
+      units: wt%
+    objective:
+    - name: tensile_strength
+      goal: maximize
+      units: MPa
+    - name: corrosion_resistance
+      goal: maximize
+      units: mpy
+    budget: 40
+    noise_model: true
+    constraints:
+    - type: sum
+      parameters:
+      - Cr_content
+      - Ni_content
+      - Mo_content
+      total: 40.0
+- id: 8
+  domain: bioengineering
+  complexity: intermediate
+  description: Bioreactor cultivation optimization
+  personas:
+    experimentalist_basic:
+      natural_version:
+        description: Need to optimize bioreactor conditions for protein production.
+          Can control temperature, pH, and agitation speed. Want to maximize yield.
+          Can run 30 fermentation batches.
+        notes: 'Bioprocess optimization request.
+
+          Missing: parameter ranges, units.
+
+          Three process parameters.'
+      corrected_version:
+        description: 'Optimizing bioreactor for protein yield (g/L). Parameters: temperature
+          (25-37°C), pH (6-8), agitation (100-400 rpm). Budget: 30 fermentation runs.
+          Yield measurements have biological variability.'
+        notes: 'Complete specification with ranges.
+
+          Biological variability mentioned.
+
+          Practical constraints.'
+    industrial_practitioner:
+      natural_version:
+        description: Optimizing our fermentation process for max protein production.
+          Key variables are temp, pH, and mixing speed. Need to stay within safe operating
+          ranges. Can afford 30 batch runs.
+        notes: 'Production optimization focus.
+
+          Safety awareness.
+
+          Cost consciousness.'
+      corrected_version:
+        description: 'Fermentation process optimization for maximum protein yield
+          (g/L). Operating parameters: temperature (25-37°C), pH (6-8), agitation
+          (100-400 rpm). Budget: 30 production batches. Standard sampling protocols.'
+        notes: 'Production terminology.
+
+          Operating constraints.
+
+          Standard protocols.'
+    research_scientist:
+      natural_version:
+        description: 'Investigating optimal cultivation conditions for recombinant
+          protein expression. Three process parameters: temperature, pH, and agitation
+          rate. Objective is to maximize volumetric productivity. Planning 30 controlled
+          fermentation experiments.'
+        notes: 'Research framing with technical terminology.
+
+          Systematic experimental approach.
+
+          Productivity focus.'
+      corrected_version:
+        description: 'Systematic study of bioreactor optimization for protein expression.
+          Objective: maximize volumetric productivity (g/L). Parameters: temperature
+          (25-37°C), pH (6-8), agitation rate (100-400 rpm). Budget: 30 experiments
+          with replicate sampling.'
+        notes: 'Scientific methodology.
+
+          Productivity metric.
+
+          Replicate sampling.'
+  expected_grid_selections:
+    objective: Single
+    model: Default
+    task: Single
+    categorical: false
+    sum_constraint: false
+    order_constraint: false
+    linear_constraint: false
+    composition_constraint: false
+    notes: 'Single-objective maximization.
+
+      Three continuous process parameters.
+
+      No constraints.'
+  solution:
+    search_space:
+    - name: temperature
+      type: continuous
+      bounds:
+      - 25
+      - 37
+      units: °C
+    - name: pH
+      type: continuous
+      bounds:
+      - 6
+      - 8
+      units: pH
+    - name: agitation_speed
+      type: continuous
+      bounds:
+      - 100
+      - 400
+      units: rpm
+    objective:
+      name: protein_yield
+      goal: maximize
+      units: g/L
+    budget: 30
+    noise_model: true
+    constraints: []
+- id: 9
+  domain: civil_engineering
+  complexity: simple
+  description: Concrete mix design optimization
+  personas:
+    experimentalist_basic:
+      natural_version:
+        description: Optimizing concrete mix with cement, water, and aggregate ratios.
+          Need high compressive strength. Cement should be more than water, and aggregate
+          should be the most. About 20 samples.
+        notes: 'Mix design with ordering constraints.
+
+          Missing: specific bounds, units.
+
+          Understands ordering relationships.'
+      corrected_version:
+        description: 'Optimizing concrete for compressive strength (MPa). Three components:
+          cement (15-25 wt%), water (5-15 wt%), aggregate (60-80 wt%). Constraints:
+          cement > water, aggregate > cement, aggregate > water. Budget: 20 mix designs.'
+        notes: 'Complete specification with order constraints.
+
+          Weight percentages provided.
+
+          Budget specified.'
+    industrial_practitioner:
+      natural_version:
+        description: Need to design high-strength concrete mix for construction project.
+          Balancing cement, water, and aggregate proportions. More cement than water
+          for strength, mostly aggregate for structure. Can make 20 test batches.
+        notes: 'Construction application focus.
+
+          Practical understanding of ratios.
+
+          Test batch budget.'
+      corrected_version:
+        description: 'High-strength concrete design for construction. Target: maximize
+          compressive strength (MPa). Mix proportions: cement (15-25 wt%), water (5-15
+          wt%), aggregate (60-80 wt%). Requirements: cement > water, aggregate > both.
+          Budget: 20 batches.'
+        notes: 'Construction context.
+
+          Clear requirements.
+
+          Practical constraints.'
+    research_scientist:
+      natural_version:
+        description: 'Investigating optimal mix proportions for high-performance concrete.
+          Three constituents with hierarchical relationships: aggregate content exceeds
+          cement content exceeds water content. Objective is compressive strength
+          maximization.'
+        notes: 'Research framing with hierarchical structure.
+
+          Technical understanding of relationships.
+
+          Optimization focus.'
+      corrected_version:
+        description: 'Systematic study of concrete mix design. Objective: maximize
+          28-day compressive strength (MPa). Components: cement (15-25 wt%), water
+          (5-15 wt%), aggregate (60-80 wt%). Order constraints: aggregate > cement
+          > water. Budget: 20 specimens.'
+        notes: 'Scientific approach with 28-day specification.
+
+          Hierarchical constraints.
+
+          Standard testing.'
+  expected_grid_selections:
+    objective: Single
+    model: Default
+    task: Single
+    categorical: false
+    sum_constraint: false
+    order_constraint: true
+    linear_constraint: false
+    composition_constraint: false
+    notes: 'Single-objective optimization with order constraints.
+
+      Three continuous proportion parameters.
+
+      Multiple ordering relationships.'
+  solution:
+    search_space:
+    - name: cement_fraction
+      type: continuous
+      bounds:
+      - 15
+      - 25
+      units: wt%
+    - name: water_fraction
+      type: continuous
+      bounds:
+      - 5
+      - 15
+      units: wt%
+    - name: aggregate_fraction
+      type: continuous
+      bounds:
+      - 60
+      - 80
+      units: wt%
+    objective:
+      name: compressive_strength
+      goal: maximize
+      units: MPa
+    budget: 20
+    noise_model: true
+    constraints:
+    - type: order
+      description: cement_fraction >= water_fraction
+    - type: order
+      description: aggregate_fraction >= cement_fraction
+    - type: order
+      description: aggregate_fraction >= water_fraction
+- id: 10
+  domain: analytical_chemistry
+  complexity: advanced
+  description: Chromatography separation optimization
+  personas:
+    experimentalist_basic:
+      natural_version:
+        description: Optimizing HPLC method for separating compounds. Need good resolution
+          and fast run time. Can adjust flow rate, temperature, gradient slope, and
+          try different column types. Maybe 45 runs total.
+        notes: 'Analytical chemistry optimization.
+
+          Multi-objective (resolution and speed).
+
+          Missing: ranges, categorical specification.'
+      corrected_version:
+        description: 'Optimizing HPLC separation for resolution (Rs) and run time
+          (min). Parameters: flow rate (0.5-2 mL/min), column temperature (25-60°C),
+          gradient slope (1-10 %/min), and column type (C8, C18, or Phenyl). Want
+          high resolution and short time. Budget: 45 runs.'
+        notes: 'Multi-objective with trade-off.
+
+          Categorical variable (column type).
+
+          Complete specification.'
+    industrial_practitioner:
+      natural_version:
+        description: Developing QC method for production. Need baseline separation
+          of all peaks but keep run time under control for throughput. Testing flow
+          rate, temp, gradient, and 3 different columns. Budget for 45 method development
+          runs.
+        notes: 'QC focus with throughput concern.
+
+          Trade-off awareness.
+
+          Production context.'
+      corrected_version:
+        description: 'HPLC method development for QC. Dual objectives: maximize resolution
+          (Rs), minimize run time (min). Parameters: flow rate (0.5-2 mL/min), temperature
+          (25-60°C), gradient (1-10 %/min), column type (C8/C18/Phenyl). Budget: 45
+          tests.'
+        notes: 'QC terminology.
+
+          Dual objectives clear.
+
+          Categorical choice included.'
+    research_scientist:
+      natural_version:
+        description: 'Investigating Pareto-optimal conditions for chromatographic
+          separation. Two competing objectives: resolution and analysis time. Continuous
+          parameters (flow rate, temperature, gradient) plus categorical variable
+          (stationary phase chemistry). Planning systematic 45-experiment study.'
+        notes: 'Research with Pareto framework.
+
+          Technical terminology (stationary phase).
+
+          Systematic approach with categorical.'
+      corrected_version:
+        description: 'Multi-objective chromatography optimization study. Objectives:
+          maximize resolution (Rs), minimize run time (min). Search space: flow rate
+          (0.5-2 mL/min), temperature (25-60°C), gradient slope (1-10 %/min), column
+          chemistry (C8/C18/Phenyl categorical). Seeking Pareto frontier. Budget:
+          45 experiments.'
+        notes: 'Scientific multi-objective approach.
+
+          Categorical variable explicitly stated.
+
+          Pareto frontier goal.'
+  expected_grid_selections:
+    objective: Multi
+    model: Default
+    task: Single
+    categorical: true
+    sum_constraint: false
+    order_constraint: false
+    linear_constraint: false
+    composition_constraint: false
+    notes: 'Multi-objective optimization (resolution vs time).
+
+      Mixed continuous and categorical variables.
+
+      Categorical choice for column type.'
+  solution:
+    search_space:
+    - name: flow_rate
+      type: continuous
+      bounds:
+      - 0.5
+      - 2.0
+      units: mL/min
+    - name: column_temperature
+      type: continuous
+      bounds:
+      - 25
+      - 60
+      units: °C
+    - name: gradient_slope
+      type: continuous
+      bounds:
+      - 1
+      - 10
+      units: '%/min'
+    - name: column_type
+      type: categorical
+      values:
+      - C8
+      - C18
+      - Phenyl
+      units: null
+    objective:
+    - name: resolution
+      goal: maximize
+      units: Rs
+    - name: run_time
+      goal: minimize
+      units: min
+    budget: 45
+    noise_model: true
+    constraints: []

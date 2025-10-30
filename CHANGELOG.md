@@ -8,9 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- **Extended problem set with 2 additional personas**: Added `industrial_practitioner` and `research_scientist` personas to all 3 existing problems. Problem statements now use a nested structure where each problem ID contains multiple persona variations under a `personas` key, making it easier to track different communication styles for the same underlying optimization problem. This brings the total to 3 problems with 3 personas each (9 persona-problem combinations).
-- **Industrial practitioner persona**: Practical, cost-conscious user with production constraints and informal language style. Applied to ceramic sintering (Problem 1), anti-corrosion coating (Problem 2), and polymer formulation (Problem 3).
-- **Research scientist persona**: Academic researcher with formal, hypothesis-driven approach and scientific language. Applied to ceramic sintering (Problem 1), anti-corrosion coating (Problem 2), and polymer formulation (Problem 3).
+- **Expanded problem set to 10 diverse BO problems**: Added 7 new problems (IDs 4-10) covering diverse domains and complexity levels. Each problem includes 3 personas (experimentalist_basic, industrial_practitioner, research_scientist) providing 30 total persona-problem combinations. New domains include pharmaceutical, chemistry, bioengineering, civil engineering, and analytical chemistry.
+- **Problem 4 (Battery electrolyte)**: Intermediate complexity with sum constraint on total salt concentration.
+- **Problem 5 (Drug formulation)**: Advanced multi-objective optimization with composition constraint for excipients.
+- **Problem 6 (Catalyst synthesis)**: Simple two-parameter optimization for catalytic activity.
+- **Problem 7 (Alloy composition)**: Intermediate multi-objective with sum constraint on alloying elements.
+- **Problem 8 (Bioreactor)**: Intermediate bioprocess optimization for protein yield.
+- **Problem 9 (Concrete mix)**: Simple optimization with order constraints on component ratios.
+- **Problem 10 (Chromatography)**: Advanced multi-objective with categorical variable for column type.
+- **Extended problem set with 2 additional personas**: Added `industrial_practitioner` and `research_scientist` personas to original 3 problems. Problem statements now use a nested structure where each problem ID contains multiple persona variations under a `personas` key, making it easier to track different communication styles for the same underlying optimization problem.
+- **Industrial practitioner persona**: Practical, cost-conscious user with production constraints and informal language style. Applied to all 10 problems.
+- **Research scientist persona**: Academic researcher with formal, hypothesis-driven approach and scientific language. Applied to all 10 problems.
 
 ### Changed
 - **API key environment variable**: Updated all code to use `LLM_API_KEY` instead of `OPENAI_API_KEY` for consistency with repository secrets configuration. This affects:
