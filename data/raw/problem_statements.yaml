@@ -315,11 +315,7 @@ problem_statements:
     noise_model: true
     constraints:
     - type: composition
-      parameters:
-      - resin_fraction
-      - inhibitor_fraction
-      - insulator_fraction
-      - stabilizer_fraction
+      parameters: [resin_fraction, inhibitor_fraction, insulator_fraction, stabilizer_fraction]
       total: 1.0
     - type: order
       description: resin_fraction >= inhibitor_fraction
@@ -528,12 +524,7 @@ problem_statements:
     historical_data_points: 3
     constraints:
     - type: composition
-      parameters:
-      - monomer_a_fraction
-      - monomer_b_fraction
-      - monomer_c_fraction
-      - monomer_d_fraction
-      - monomer_e_fraction
+      parameters: [monomer_a_fraction, monomer_b_fraction, monomer_c_fraction, monomer_d_fraction, monomer_e_fraction]
       total: 1.0
 - id: 4
   domain: materials_science
@@ -653,11 +644,7 @@ problem_statements:
     noise_model: true
     constraints:
     - type: sum
-      parameters:
-      - LiPF6_concentration
-      - LiBF4_concentration
-      - LiClO4_concentration
-      - LiTFSI_concentration
+      parameters: [LiPF6_concentration, LiBF4_concentration, LiClO4_concentration, LiTFSI_concentration]
       total: 2.0
 - id: 5
   domain: pharmaceutical
@@ -799,12 +786,7 @@ problem_statements:
     noise_model: true
     constraints:
     - type: composition
-      parameters:
-      - excipient_A_fraction
-      - excipient_B_fraction
-      - excipient_C_fraction
-      - excipient_D_fraction
-      - excipient_E_fraction
+      parameters: [excipient_A_fraction, excipient_B_fraction, excipient_C_fraction, excipient_D_fraction, excipient_E_fraction]
       total: 1.0
 - id: 6
   domain: chemistry
@@ -1023,10 +1005,7 @@ problem_statements:
     noise_model: true
     constraints:
     - type: sum
-      parameters:
-      - Cr_content
-      - Ni_content
-      - Mo_content
+      parameters: [Cr_content, Ni_content, Mo_content]
       total: 40.0
 - id: 8
   domain: bioengineering
@@ -1272,7 +1251,7 @@ problem_statements:
         description: 'Optimizing drug candidate selection with three objectives: maximize
           binding affinity (pKi), maximize solubility (log S), minimize toxicity (LD50).
           Molecular descriptors include MW (180-500), LogP (0-5), TPSA (20-140 Ų),
-          HBD (0-5), HBA (0-10). Can screen 50 compounds with ******ing.'
+          HBD (0-5), HBA (0-10). Can screen 50 compounds with testing.'
         notes: 'Multi-objective drug optimization.
 
           Molecular descriptor ranges specified.
@@ -1283,7 +1262,7 @@ problem_statements:
         description: Developing drug pipeline for our pharma company. Need molecules
           with strong target binding, good solubility, and low toxicity - all three
           are critical. Working within druglike space (MW under 500, reasonable LogP).
-          Can synthesize and ****** about 50 candidates.
+          Can synthesize and test about 50 candidates.
         notes: 'Industry focus on pipeline.
 
           Druglike space awareness (Lipinski rules).
@@ -1293,7 +1272,7 @@ problem_statements:
         description: 'Drug candidate optimization for pipeline development. Three
           objectives: maximize binding (pKi), maximize solubility (log S), minimize
           toxicity (LD50). Chemical space: MW (180-500), LogP (0-5), TPSA (20-140
-          Ų), HBD (0-5), HBA (0-10). Budget: 50 synthesis/****** cycles.'
+          Ų), HBD (0-5), HBA (0-10). Budget: 50 synthesis/testing cycles.'
         notes: 'Industry pipeline terminology.
 
           Druglike constraints explicit.
@@ -1626,7 +1605,7 @@ problem_statements:
   personas:
     experimentalist_basic:
       natural_version:
-        description: Want to compare different BO strategies on a ****** problem.
+        description: Want to compare different BO strategies on a benchmark problem.
           Using Branin function to see which acquisition function works best. Can
           run multiple trials with different random seeds.
         notes: 'Benchmarking awareness.
@@ -1647,7 +1626,7 @@ problem_statements:
     industrial_practitioner:
       natural_version:
         description: Testing which BO method works best for our type of problems.
-          Using Branin ****** function as proxy. Comparing different acquisition strategies.
+          Using Branin benchmark function as proxy. Comparing different acquisition strategies.
           Need robust results so running multiple trials.
         notes: 'Practical method selection.
 
@@ -1666,12 +1645,12 @@ problem_statements:
     research_scientist:
       natural_version:
         description: Systematic benchmarking study of acquisition functions. Using
-          Branin-Hoo as standard ****** function. Comparing Expected Improvement,
+          Branin-Hoo as standard benchmark function. Comparing Expected Improvement,
           Upper Confidence Bound, and Thompson Sampling. Planning statistically rigorous
           comparison with multiple random initializations.
         notes: 'Research benchmarking methodology.
 
-          Standard ****** function.
+          Standard benchmark function.
 
           Statistical rigor.'
       corrected_version:
@@ -1755,7 +1734,7 @@ problem_statements:
         description: Developing automated color matching system for our production
           line. Mixing red, yellow, blue liquids to hit target colors. Using spectral
           sensor with 8 channels. Need good matches with minimal waste. Can afford
-          30 ****** runs.
+          30 test runs.
         notes: 'Automation focus with production context.
 
           Waste awareness.
@@ -1807,7 +1786,7 @@ problem_statements:
       Spectral mismatch as black-box objective.'
     related_tutorials:
     - name: Single-Objective Bayesian Optimization (SOBO)
-      url: https://honegumi.readthedocs.io/en/la******/curriculum/tutorials/sobo/sobo.html
+      url: https://honegumi.readthedocs.io/en/latest/curriculum/tutorials/sobo/sobo.html
       description: 'Tutorial #1: Basic single-objective BO for color matching'
   solution:
     search_space:
@@ -1837,10 +1816,7 @@ problem_statements:
     noise_model: true
     constraints:
     - type: composition
-      parameters:
-      - red_fraction
-      - yellow_fraction
-      - blue_fraction
+      parameters: [red_fraction, yellow_fraction, blue_fraction]
       total: 1.0
 - id: 15
   domain: energy
@@ -1870,7 +1846,7 @@ problem_statements:
       natural_version:
         description: Developing solar cell process for production. Need high efficiency
           with annealing temp and deposition rate as key parameters. Budget for 25
-          ****** cells.
+          test cells.
         notes: 'Production focus.
 
           Process parameters identified.
@@ -1879,7 +1855,7 @@ problem_statements:
       corrected_version:
         description: 'Solar cell production optimization for maximum efficiency (%).
           Parameters: annealing temperature (100-200°C), deposition rate (0.5-3 nm/s).
-          Budget: 25 production cells with QC ******ing.'
+          Budget: 25 production cells with QC testing.'
         notes: 'Production terminology.
 
           QC context.
@@ -1920,7 +1896,7 @@ problem_statements:
       No constraints.'
     related_tutorials:
     - name: Single-Objective Bayesian Optimization (SOBO)
-      url: https://honegumi.readthedocs.io/en/la******/curriculum/tutorials/sobo/sobo.html
+      url: https://honegumi.readthedocs.io/en/latest/curriculum/tutorials/sobo/sobo.html
       description: 'Tutorial #1: Basic single-objective BO for solar cell optimization'
   solution:
     search_space:
@@ -1951,7 +1927,7 @@ problem_statements:
     experimentalist_basic:
       natural_version:
         description: Optimizing protein bar recipe. Have 4 ingredients to balance.
-          Want good texture and taste scores. Maybe 35 recipes to ******.
+          Want good texture and taste scores. Maybe 35 recipes to test.
         notes: 'Food formulation with multi-objective.
 
           Missing: composition constraint, ingredient ranges.
@@ -1971,7 +1947,7 @@ problem_statements:
       natural_version:
         description: Developing new protein bar for our product line. Four key ingredients
           need optimization. Need balance between texture and taste - both matter
-          to customers. Can make 35 ******batches.
+          to customers. Can make 35 test batches.
         notes: 'Product development focus.
 
           Customer awareness.
@@ -2022,7 +1998,7 @@ problem_statements:
       Texture and taste trade-off.'
     related_tutorials:
     - name: Multi-Objective Optimization of Polymers
-      url: https://honegumi.readthedocs.io/en/la******/curriculum/tutorials/mobo/mobo.html
+      url: https://honegumi.readthedocs.io/en/latest/curriculum/tutorials/mobo/mobo.html
       description: Tutorial on multi-objective BO applicable to food formulation
   solution:
     search_space:
@@ -2061,11 +2037,7 @@ problem_statements:
     noise_model: true
     constraints:
     - type: composition
-      parameters:
-      - protein_fraction
-      - sweetener_fraction
-      - binder_fraction
-      - flavoring_fraction
+      parameters: [protein_fraction, sweetener_fraction, binder_fraction, flavoring_fraction]
       total: 1.0
 - id: 17
   domain: manufacturing
@@ -2094,7 +2066,7 @@ problem_statements:
       natural_version:
         description: Optimizing laser parameters for our cutting line. Need smooth
           edges with minimal roughness. Working with power and speed settings. Can
-          afford 30 ****** runs.
+          afford 30 test runs.
         notes: 'Production line context.
 
           Quality focus.
@@ -2103,7 +2075,7 @@ problem_statements:
       corrected_version:
         description: 'Laser cutting optimization for production. Objective: minimize
           edge roughness (μm). Parameters: power (500-2000 W), speed (10-100 mm/s).
-          Budget: 30 ******runs with metrology.'
+          Budget: 30 test runs with metrology.'
         notes: 'Production optimization.
 
           Metrology mentioned.
@@ -2144,7 +2116,7 @@ problem_statements:
       No constraints.'
     related_tutorials:
     - name: Single-Objective Bayesian Optimization (SOBO)
-      url: https://honegumi.readthedocs.io/en/la******/curriculum/tutorials/sobo/sobo.html
+      url: https://honegumi.readthedocs.io/en/latest/curriculum/tutorials/sobo/sobo.html
       description: 'Tutorial #1: Single-objective BO for laser cutting'
   solution:
     search_space:
@@ -2175,7 +2147,7 @@ problem_statements:
     experimentalist_basic:
       natural_version:
         description: Formulating adhesive with 3 resins plus hardener. Need high bond
-          strength and good cure time. About 40 formulations to ******.
+          strength and good cure time. About 40 formulations to test.
         notes: 'Multi-component formulation.
 
           Missing: composition constraint, multi-objective handling.
@@ -2194,7 +2166,7 @@ problem_statements:
       natural_version:
         description: Developing adhesive formulation for our applications. Three resins
           plus hardener - need to balance strength against cure time. Can make 40
-          batches for ******ing.
+          batches for testing.
         notes: 'Application-driven.
 
           Trade-off awareness.
@@ -2244,7 +2216,7 @@ problem_statements:
       Strength vs cure time trade-off.'
     related_tutorials:
     - name: Multi-Objective Optimization of Polymers
-      url: https://honegumi.readthedocs.io/en/la******/curriculum/tutorials/mobo/mobo.html
+      url: https://honegumi.readthedocs.io/en/latest/curriculum/tutorials/mobo/mobo.html
       description: Tutorial on multi-objective BO for adhesive formulation
   solution:
     search_space:
@@ -2283,11 +2255,7 @@ problem_statements:
     noise_model: true
     constraints:
     - type: composition
-      parameters:
-      - resin_A_fraction
-      - resin_B_fraction
-      - resin_C_fraction
-      - hardener_fraction
+      parameters: [resin_A_fraction, resin_B_fraction, resin_C_fraction, hardener_fraction]
       total: 1.0
 - id: 19
   domain: chemical_engineering
@@ -2316,7 +2284,7 @@ problem_statements:
       natural_version:
         description: Optimizing reactor operation for our process. Need high yield
           with temp, pressure, and time as variables. Safety limits must be respected.
-          Can do 35 ******runs.
+          Can do 35 test runs.
         notes: 'Production focus.
 
           Safety awareness.
@@ -2366,7 +2334,7 @@ problem_statements:
       No constraints.'
     related_tutorials:
     - name: Single-Objective Bayesian Optimization (SOBO)
-      url: https://honegumi.readthedocs.io/en/la******/curriculum/tutorials/sobo/sobo.html
+      url: https://honegumi.readthedocs.io/en/latest/curriculum/tutorials/sobo/sobo.html
       description: 'Tutorial #1: Single-objective BO for reactor optimization'
   solution:
     search_space:
@@ -2471,7 +2439,7 @@ problem_statements:
       No constraints.'
     related_tutorials:
     - name: Single-Objective Bayesian Optimization (SOBO)
-      url: https://honegumi.readthedocs.io/en/la******/curriculum/tutorials/sobo/sobo.html
+      url: https://honegumi.readthedocs.io/en/latest/curriculum/tutorials/sobo/sobo.html
       description: 'Tutorial #1: Single-objective BO for thermal optimization'
   solution:
     search_space:
@@ -2502,7 +2470,7 @@ problem_statements:
     experimentalist_basic:
       natural_version:
         description: Optimizing water treatment with three chemicals. Need to minimize
-          contaminant levels and minimize cost. Can run 32 ******s.
+          contaminant levels and minimize cost. Can run 32 tests.
         notes: 'Treatment optimization.
 
           Missing: dosage ranges, multi-objective handling.
@@ -2512,7 +2480,7 @@ problem_statements:
         description: 'Optimizing water treatment. Three chemical dosages: coagulant
           (5-20 mg/L), flocculant (1-8 mg/L), disinfectant (2-10 mg/L). Objectives:
           minimize contaminant level (ppb), minimize total cost ($/m³). Budget: 32
-          ******s.'
+          tests.'
         notes: 'Multi-objective with cost trade-off.
 
           Three dosage parameters.
@@ -2521,7 +2489,7 @@ problem_statements:
     industrial_practitioner:
       natural_version:
         description: Optimizing treatment plant operation. Three chemical doses -
-          need clean water but control costs. Can do 32 ******runs.
+          need clean water but control costs. Can do 32 test runs.
         notes: 'Plant operation focus.
 
           Cost awareness.
@@ -2571,7 +2539,7 @@ problem_statements:
       Quality vs cost trade-off.'
     related_tutorials:
     - name: Multi-Objective Optimization of Polymers
-      url: https://honegumi.readthedocs.io/en/la******/curriculum/tutorials/mobo/mobo.html
+      url: https://honegumi.readthedocs.io/en/latest/curriculum/tutorials/mobo/mobo.html
       description: Tutorial on multi-objective BO for treatment optimization
   solution:
     search_space:
@@ -2629,7 +2597,7 @@ problem_statements:
     industrial_practitioner:
       natural_version:
         description: Need uniform coating for production. Spray distance and pressure
-          need optimization. Can make 25 ******samples.
+          need optimization. Can make 25 test samples.
         notes: 'Production focus.
 
           Uniformity goal.
@@ -2638,7 +2606,7 @@ problem_statements:
       corrected_version:
         description: 'Production coating optimization. Objective: minimize thickness
           variation (%). Parameters: spray distance (10-30 cm), pressure (1-4 bar).
-          Budget: 25 ******samples.'
+          Budget: 25 test samples.'
         notes: 'Production terminology.
 
           Uniformity focus.
@@ -2678,7 +2646,7 @@ problem_statements:
       No constraints.'
     related_tutorials:
     - name: Single-Objective Bayesian Optimization (SOBO)
-      url: https://honegumi.readthedocs.io/en/la******/curriculum/tutorials/sobo/sobo.html
+      url: https://honegumi.readthedocs.io/en/latest/curriculum/tutorials/sobo/sobo.html
       description: 'Tutorial #1: Single-objective BO for coating optimization'
   solution:
     search_space:
@@ -2777,7 +2745,7 @@ problem_statements:
       No constraints.'
     related_tutorials:
     - name: Single-Objective Bayesian Optimization (SOBO)
-      url: https://honegumi.readthedocs.io/en/la******/curriculum/tutorials/sobo/sobo.html
+      url: https://honegumi.readthedocs.io/en/latest/curriculum/tutorials/sobo/sobo.html
       description: 'Tutorial #1: Single-objective BO for hyperparameter tuning'
   solution:
     search_space:
@@ -2883,7 +2851,7 @@ problem_statements:
       Conductivity vs printability trade-off.'
     related_tutorials:
     - name: Multi-Objective Optimization of Polymers
-      url: https://honegumi.readthedocs.io/en/la******/curriculum/tutorials/mobo/mobo.html
+      url: https://honegumi.readthedocs.io/en/latest/curriculum/tutorials/mobo/mobo.html
       description: Tutorial on multi-objective BO for ink formulation
   solution:
     search_space:
@@ -2922,11 +2890,7 @@ problem_statements:
     noise_model: true
     constraints:
     - type: composition
-      parameters:
-      - silver_fraction
-      - solvent_fraction
-      - binder_fraction
-      - additive_fraction
+      parameters: [silver_fraction, solvent_fraction, binder_fraction, additive_fraction]
       total: 1.0
 - id: 25
   domain: biotechnology
@@ -3004,7 +2968,7 @@ problem_statements:
       No constraints.'
     related_tutorials:
     - name: Single-Objective Bayesian Optimization (SOBO)
-      url: https://honegumi.readthedocs.io/en/la******/curriculum/tutorials/sobo/sobo.html
+      url: https://honegumi.readthedocs.io/en/latest/curriculum/tutorials/sobo/sobo.html
       description: 'Tutorial #1: Single-objective BO for fermentation optimization'
   solution:
     search_space:
@@ -3050,7 +3014,7 @@ problem_statements:
       corrected_version:
         description: 'Optimizing carbon fiber composite curing for maximum tensile
           strength (MPa). Cure temperature: 120-180°C, cure time: 2-8 hours. Budget:
-          22 panels. Strength ******ing is reliable.'
+          22 panels. Strength testing is reliable.'
         notes: 'Curing optimization.
 
           Two process parameters.
@@ -3086,12 +3050,12 @@ problem_statements:
       corrected_version:
         description: 'Composite curing study. Objective: maximize tensile strength
           (MPa). Cure parameters: temperature (120-180°C), time (2-8 hours). Budget:
-          22 specimens with mechanical ******ing.'
+          22 specimens with mechanical testing.'
         notes: 'Scientific methodology.
 
           Cure parameter study.
 
-          Mechanical ******ing.'
+          Mechanical testing.'
   expected_grid_selections:
     objective: Single
     model: Default
@@ -3108,7 +3072,7 @@ problem_statements:
       No constraints.'
     related_tutorials:
     - name: Single-Objective Bayesian Optimization (SOBO)
-      url: https://honegumi.readthedocs.io/en/la******/curriculum/tutorials/sobo/sobo.html
+      url: https://honegumi.readthedocs.io/en/latest/curriculum/tutorials/sobo/sobo.html
       description: 'Tutorial #1: Single-objective BO for composite curing'
   solution:
     search_space:
@@ -3207,7 +3171,7 @@ problem_statements:
       Refractive index vs dispersion trade-off.'
     related_tutorials:
     - name: Multi-Objective Optimization of Polymers
-      url: https://honegumi.readthedocs.io/en/la******/curriculum/tutorials/mobo/mobo.html
+      url: https://honegumi.readthedocs.io/en/latest/curriculum/tutorials/mobo/mobo.html
       description: Tutorial on multi-objective BO for glass composition
   solution:
     search_space:
@@ -3240,10 +3204,7 @@ problem_statements:
     noise_model: true
     constraints:
     - type: composition
-      parameters:
-      - SiO2_fraction
-      - Na2O_fraction
-      - CaO_fraction
+      parameters: [SiO2_fraction, Na2O_fraction, CaO_fraction]
       total: 1.0
 - id: 28
   domain: chemical_engineering
@@ -3271,7 +3232,7 @@ problem_statements:
     industrial_practitioner:
       natural_version:
         description: Optimizing extraction for our separation process. Temperature
-          and solvent ratio need tuning for high efficiency. Can run 26 ******s.
+          and solvent ratio need tuning for high efficiency. Can run 26 tests.
         notes: 'Process optimization.
 
           Efficiency focus.
@@ -3280,7 +3241,7 @@ problem_statements:
       corrected_version:
         description: 'Extraction process optimization. Objective: maximize extraction
           efficiency (%). Parameters: temperature (20-60°C), solvent ratio (1:1 to
-          1:5). Budget: 26 ******s.'
+          1:5). Budget: 26 tests.'
         notes: 'Process terminology.
 
           Efficiency objective.
@@ -3321,7 +3282,7 @@ problem_statements:
       No constraints.'
     related_tutorials:
     - name: Single-Objective Bayesian Optimization (SOBO)
-      url: https://honegumi.readthedocs.io/en/la******/curriculum/tutorials/sobo/sobo.html
+      url: https://honegumi.readthedocs.io/en/latest/curriculum/tutorials/sobo/sobo.html
       description: 'Tutorial #1: Single-objective BO for extraction optimization'
   solution:
     search_space:
@@ -3361,7 +3322,7 @@ problem_statements:
       corrected_version:
         description: 'Optimizing fast charging. Three parameters: charge current (0.5-3
           C), voltage limit (4.1-4.3 V), temperature (10-40°C). Objectives: minimize
-          charge time (min), maximize cycle life (cycles). Budget: 35 ******cycles.'
+          charge time (min), maximize cycle life (cycles). Budget: 35 test cycles.'
         notes: 'Multi-objective charging.
 
           Three parameters.
@@ -3370,7 +3331,7 @@ problem_statements:
     industrial_practitioner:
       natural_version:
         description: Developing fast charging protocol. Three charging parameters
-          - need fast time but long battery life. Can ****** 35 cells.
+          - need fast time but long battery life. Can test 35 cells.
         notes: 'Protocol development.
 
           Time-life trade-off.
@@ -3420,7 +3381,7 @@ problem_statements:
       Speed vs longevity trade-off.'
     related_tutorials:
     - name: Multi-Objective Optimization of Polymers
-      url: https://honegumi.readthedocs.io/en/la******/curriculum/tutorials/mobo/mobo.html
+      url: https://honegumi.readthedocs.io/en/latest/curriculum/tutorials/mobo/mobo.html
       description: Tutorial on multi-objective BO for battery charging
   solution:
     search_space:
@@ -3529,7 +3490,7 @@ problem_statements:
       No constraints.'
     related_tutorials:
     - name: Single-Objective Bayesian Optimization (SOBO)
-      url: https://honegumi.readthedocs.io/en/la******/curriculum/tutorials/sobo/sobo.html
+      url: https://honegumi.readthedocs.io/en/latest/curriculum/tutorials/sobo/sobo.html
       description: 'Tutorial #1: Single-objective BO for packaging optimization'
   solution:
     search_space:
