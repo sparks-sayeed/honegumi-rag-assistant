@@ -204,10 +204,8 @@ def main():
     
     print(f"\nValidation report written to: {output_file}")
     
-    # Exit with error code if any validation failed
-    if passed_files < total_files:
-        sys.exit(1)
-    
+    # Note: Not exiting with error code to allow workflow to commit report
+    # The validation results are in the YAML report
     sys.exit(0)
 
 
