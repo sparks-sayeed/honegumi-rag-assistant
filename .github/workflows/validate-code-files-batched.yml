@@ -1,5 +1,5 @@
 name: Validate Generated Code Files (Batched)
-# Validates Python files in batches with configurable batch size and 90-minute timeout
+# Validates Python files in batches with configurable batch size and 120-minute timeout
 
 on:
   workflow_dispatch:
