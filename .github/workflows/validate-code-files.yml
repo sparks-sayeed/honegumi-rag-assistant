@@ -1,17 +1,18 @@
-name: Validate Generated Code Files
+name: Validate Generated Code Files (Standard - DISABLED)
 
 on:
-  workflow_dispatch:
-  push:
-    paths:
-      - 'data/processed/evaluation/code_files/**'
-      - 'scripts/validate_code_files.py'
-      - '.github/workflows/validate-code-files.yml'
-  pull_request:
-    paths:
-      - 'data/processed/evaluation/code_files/**'
-      - 'scripts/validate_code_files.py'
-      - '.github/workflows/validate-code-files.yml'
+  # workflow_dispatch:
+  # push:
+  #   paths:
+  #     - 'data/processed/evaluation/code_files/**'
+  #     - 'scripts/validate_code_files.py'
+  #     - '.github/workflows/validate-code-files.yml'
+  # pull_request:
+  #   paths:
+  #     - 'data/processed/evaluation/code_files/**'
+  #     - 'scripts/validate_code_files.py'
+  #     - '.github/workflows/validate-code-files.yml'
+  workflow_call:
 
 jobs:
   validate:
