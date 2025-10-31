@@ -7,7 +7,7 @@ on:
       batch_size:
         description: 'Number of files per batch'
         required: false
-        default: '15'
+        default: '10'
   push:
     paths:
       - 'data/processed/evaluation/code_files/**'
@@ -44,21 +44,28 @@ jobs:
         run: |
           BATCH_SIZE=${{ github.event.inputs.batch_size || '15' }}
           
-          # Get list of all files
-          FILES=$(python scripts/validate_code_files.py --list-files)
-          echo "All files: $FILES"
+          # Get list of all files and save to a file to avoid shell escaping issues
+          python scripts/validate_code_files.py --list-files > /tmp/files.json
+          echo "Files list saved to /tmp/files.json"
+          cat /tmp/files.json
           
           # Create batches using Python
           python3 << 'EOF'
           import json
           import sys
+          import os
           
-          files = json.loads('$FILES')
-          batch_size = int('$BATCH_SIZE')
+          # Read files from file instead of shell variable
+          with open('/tmp/files.json', 'r') as f:
+              files = json.load(f)
+          
+          batch_size = int(os.environ.get('BATCH_SIZE', '10'))
           
           if not files:
-              print("batch_ids=[]", file=sys.stderr)
-              print("batches={}", file=sys.stderr)
+              with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+                  f.write("batch_ids=[]\n")
+                  f.write("batches={}\n")
+              print("No files to validate")
               sys.exit(0)
           
           # Create batches
@@ -70,18 +77,20 @@ jobs:
           
           batch_ids = list(range(len(batches)))
           
-          with open('$GITHUB_OUTPUT', 'a') as f:
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
               f.write(f"batch_ids={json.dumps(batch_ids)}\n")
               f.write(f"batches={json.dumps(batches)}\n")
           
           print(f"Created {len(batch_ids)} batches of up to {batch_size} files each")
+          print(f"Total files: {len(files)}")
+          EOF
           EOF
 
   validate:
     needs: prepare-batches
     if: needs.prepare-batches.outputs.batch_ids != '[]'
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 120
     strategy:
       fail-fast: false
       matrix:
@@ -108,10 +117,22 @@ jobs:
       
       - name: Validate batch
         run: |
+          set -e
           BATCHES='${{ needs.prepare-batches.outputs.batches }}'
-          BATCH_FILES=$(echo "$BATCHES" | python3 -c "import sys, json; batches=json.load(sys.stdin); print(batches['${{ matrix.batch_id }}'])")
+          echo "Batches data: $BATCHES"
+          BATCH_FILES=$(echo "$BATCHES" | python3 -c "import sys, json; batches=json.load(sys.stdin); print(batches.get('${{ matrix.batch_id }}', ''))")
+          
+          if [ -z "$BATCH_FILES" ]; then
+            echo "Error: No files found for batch ${{ matrix.batch_id }}"
+            exit 1
+          fi
+          
           echo "Validating batch ${{ matrix.batch_id }}: $BATCH_FILES"
+          mkdir -p batch-results
           python scripts/validate_code_files.py --batch "$BATCH_FILES" --batch-id ${{ matrix.batch_id }} --output-dir batch-results
+          
+          echo "Batch validation complete. Results:"
+          ls -la batch-results/
       
       - name: Upload batch result
         uses: actions/upload-artifact@v4

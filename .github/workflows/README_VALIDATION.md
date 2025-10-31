@@ -9,15 +9,16 @@ Sequential validation of all files in a single job. Suitable for small numbers o
 
 ### Batched Workflow (`validate-code-files-batched.yml`) **RECOMMENDED**
 **Recommended for 10+ files.** Uses batching with GitHub Actions matrix strategy:
-- **prepare-batches**: Creates batches of files (default: 15 files per batch)
-- **validate**: Runs validation in parallel (one job per batch, 90-minute timeout)
+- **prepare-batches**: Creates batches of files (default: 10 files per batch)
+- **validate**: Runs validation in parallel (one job per batch, 120-minute timeout)
 - **combine-results**: Aggregates all batch results into final report
 
 Benefits:
-- Reduces number of parallel jobs (e.g., 180 files → 12 batches instead of 180 jobs)
+- Reduces number of parallel jobs (e.g., 180 files → 18 batches instead of 180 jobs)
 - Includes all partial results and logs as artifacts
 - Configurable batch size via workflow_dispatch
-- 90-minute timeout per batch allows for long-running optimization scripts
+- 120-minute timeout per batch allows for long-running optimization scripts
+- Robust error handling and improved batch creation logic
 
 ### Parallel Workflow (`validate-code-files-parallel.yml`)
 Uses matrix strategy to validate each file separately (one job per file). Only use for small file sets as it creates one job per file.
