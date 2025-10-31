@@ -85,11 +85,6 @@ def run_file_in_subprocess(
         result["duration"] = round(duration, 2)
         result["status"] = "timeout"
         result["error_trace"] = f"Execution timed out after {timeout}s"
-        # Capture any partial output
-        if e.stdout:
-            result["stdout"] = e.stdout.decode() if isinstance(e.stdout, bytes) else e.stdout
-        if e.stderr:
-            result["stderr"] = e.stderr.decode() if isinstance(e.stderr, bytes) else e.stderr
             
     except Exception as e:
         duration = time.time() - start_time
