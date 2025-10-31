@@ -173,10 +173,13 @@ def main():
     """Main validation function."""
     parser = argparse.ArgumentParser(description="Validate Python code files")
     parser.add_argument('--file', type=str, help="Validate a single file (for parallel execution)")
+    parser.add_argument('--batch', type=str, help="Validate a batch of files (comma-separated)")
+    parser.add_argument('--batch-id', type=int, help="Batch ID for naming partial results")
     parser.add_argument('--output-dir', type=str, default="data/processed/evaluation",
                         help="Output directory for results")
     parser.add_argument('--combine', type=str, help="Combine partial results from directory")
     parser.add_argument('--list-files', action='store_true', help="List all files to validate as JSON")
+    parser.add_argument('--list-batches', type=int, help="List file batches with specified batch size")
     
     args = parser.parse_args()
     
@@ -191,9 +194,25 @@ def main():
         print(json.dumps(python_files))
         return
     
+    # List batches mode - output JSON array of batch IDs
+    if args.list_batches:
+        if not code_files_dir.exists():
+            print(json.dumps([]))
+            return
+        python_files = sorted([f.name for f in code_files_dir.glob("*.py")])
+        batch_size = args.list_batches
+        num_batches = (len(python_files) + batch_size - 1) // batch_size
+        print(json.dumps(list(range(num_batches))))
+        return
+    
     # Combine mode - aggregate partial results
     if args.combine:
         combine_results(args.combine, args.output_dir)
+        return
+    
+    # Batch mode - validate multiple files
+    if args.batch:
+        validate_batch(args.batch, args.batch_id, args.output_dir)
         return
     
     # Single file mode
@@ -227,6 +246,66 @@ def validate_single_file(filename: str, output_dir: str):
     print(f"Partial result written to: {output_path}")
 
 
+def validate_batch(batch_files: str, batch_id: int, output_dir: str):
+    """Validate a batch of files and save partial results."""
+    code_files_dir = Path("data/processed/evaluation/code_files")
+    filenames = [f.strip() for f in batch_files.split(',') if f.strip()]
+    
+    if not filenames:
+        print("Error: No files specified in batch")
+        sys.exit(1)
+    
+    print(f"Validating batch {batch_id} with {len(filenames)} file(s)")
+    
+    results = []
+    for filename in filenames:
+        file_path = code_files_dir / filename
+        if not file_path.exists():
+            print(f"Warning: File {file_path} does not exist, skipping")
+            continue
+        
+        print(f"\nValidating: {filename}")
+        result = validate_file(file_path)
+        results.append(result)
+    
+    # Save batch result
+    output_path = Path(output_dir) / f"batch_{batch_id}.yaml"
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    
+    batch_report = {
+        "batch_id": batch_id,
+        "files_validated": len(results),
+        "results": results
+    }
+    
+    with open(output_path, 'w') as f:
+        yaml.dump(batch_report, f, default_flow_style=False, sort_keys=False)
+    
+    print(f"\nBatch {batch_id} result written to: {output_path}")
+
+
+def validate_single_file(filename: str, output_dir: str):
+    """Validate a single file and save partial result."""
+    code_files_dir = Path("data/processed/evaluation/code_files")
+    file_path = code_files_dir / filename
+    
+    if not file_path.exists():
+        print(f"Error: File {file_path} does not exist")
+        sys.exit(1)
+    
+    print(f"Validating single file: {filename}")
+    result = validate_file(file_path)
+    
+    # Save partial result
+    output_path = Path(output_dir) / f"partial_{filename.replace('.py', '.yaml')}"
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    
+    with open(output_path, 'w') as f:
+        yaml.dump(result, f, default_flow_style=False, sort_keys=False)
+    
+    print(f"Partial result written to: {output_path}")
+
+
 def combine_results(partial_dir: str, output_dir: str):
     """Combine partial validation results into final report."""
     partial_path = Path(partial_dir)
@@ -235,19 +314,31 @@ def combine_results(partial_dir: str, output_dir: str):
         print(f"Error: Directory {partial_path} does not exist")
         sys.exit(1)
     
-    # Load all partial results
+    # Load all partial results (both single files and batches)
     results = []
+    
+    # Load single file results
     partial_files = sorted(partial_path.glob("partial_*.yaml"))
-    
-    print(f"Found {len(partial_files)} partial result(s) to combine")
-    
+    print(f"Found {len(partial_files)} partial file result(s)")
     for partial_file in partial_files:
         with open(partial_file, 'r') as f:
             result = yaml.safe_load(f)
             results.append(result)
     
+    # Load batch results
+    batch_files = sorted(partial_path.glob("batch_*.yaml"))
+    print(f"Found {len(batch_files)} batch result(s)")
+    for batch_file in batch_files:
+        with open(batch_file, 'r') as f:
+            batch_data = yaml.safe_load(f)
+            # Extract results from batch
+            if 'results' in batch_data:
+                results.extend(batch_data['results'])
+    
+    print(f"Total files to combine: {len(results)}")
+    
     if not results:
-        print("Warning: No partial results found")
+        print("Warning: No results found")
         results = []
     
     # Generate summary

@@ -7,11 +7,19 @@ This directory contains GitHub Actions workflows that automatically validate Pyt
 ### Standard Workflow (`validate-code-files.yml`)
 Sequential validation of all files in a single job. Suitable for small numbers of files (< 10).
 
+### Batched Workflow (`validate-code-files-batched.yml`) **RECOMMENDED**
+**Recommended for 10+ files.** Uses batching with GitHub Actions matrix strategy:
+- **prepare-batches**: Creates batches of files (default: 10 files per batch)
+- **validate**: Runs validation in parallel (one job per batch)
+- **combine-results**: Aggregates all batch results into final report
+
+Benefits:
+- Reduces number of parallel jobs (e.g., 180 files → 18 batches instead of 180 jobs)
+- Includes all partial results and logs as artifacts
+- Configurable batch size via workflow_dispatch
+
 ### Parallel Workflow (`validate-code-files-parallel.yml`)
-**Recommended for 10+ files.** Uses GitHub Actions matrix strategy to validate files in parallel:
-- **list-files**: Discovers all Python files to validate
-- **validate**: Runs validation in parallel (one job per file)
-- **combine-results**: Aggregates all results into final report
+Uses matrix strategy to validate each file separately (one job per file). Only use for small file sets as it creates one job per file.
 
 ## What It Does
 
@@ -79,9 +87,22 @@ python scripts/validate_code_files.py --file filename.py --output-dir ./results
 python scripts/validate_code_files.py --list-files
 ```
 
+### Batch Mode (for testing)
+```bash
+# Validate a batch of files
+python scripts/validate_code_files.py --batch "file1.py,file2.py,file3.py" --batch-id 0 --output-dir ./results
+```
+
+### List Batches Mode
+```bash
+# List batch IDs for a given batch size
+python scripts/validate_code_files.py --list-batches 10
+```
+
 ### Combine Partial Results
 ```bash
-python scripts/validate_code_files.py --combine ./partial-results --output-dir ./final
+# Combine results from batch validation
+python scripts/validate_code_files.py --combine ./batch-results --output-dir ./final
 ```
 
 The validation report will be generated at `data/processed/evaluation/validation_report.yaml`.
