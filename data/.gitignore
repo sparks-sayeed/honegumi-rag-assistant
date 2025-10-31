@@ -6,3 +6,9 @@
 !external
 !processed
 !interim
+
+# Allow specific evaluation code files for testing
+!processed/evaluation/
+!processed/evaluation/code_files/
+!processed/evaluation/code_files/honegumi_generated_1_experimentalist_basic_corrected.py
+!processed/evaluation/code_files/honegumi_generated_1_experimentalist_basic_natural.py
