@@ -6,7 +6,7 @@ on:
       batch_size:
         description: 'Number of files per batch'
         required: false
-        default: '10'
+        default: '15'
   push:
     paths:
       - 'data/processed/evaluation/code_files/**'
@@ -41,7 +41,7 @@ jobs:
       - name: Create batches
         id: create-batches
         run: |
-          BATCH_SIZE=${{ github.event.inputs.batch_size || '10' }}
+          BATCH_SIZE=${{ github.event.inputs.batch_size || '15' }}
           
           # Get list of all files
           FILES=$(python scripts/validate_code_files.py --list-files)
@@ -80,7 +80,7 @@ jobs:
     needs: prepare-batches
     if: needs.prepare-batches.outputs.batch_ids != '[]'
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 90
     strategy:
       fail-fast: false
       matrix:
