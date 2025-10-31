@@ -13,7 +13,7 @@ import subprocess
 import sys
 import time
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 import yaml
 
@@ -211,5 +211,4 @@ def main():
     sys.exit(0)
 
 
-if __name__ == "__main__":
-    main()
+main()
