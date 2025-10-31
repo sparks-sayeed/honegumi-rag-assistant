@@ -1,31 +1,30 @@
-validation_timestamp: 2025-10-31 04:02:44 UTC
-note: Quick validation - full checks run in GitHub Actions CI
+validation_timestamp: 2025-10-31 05:03:42 UTC
 summary:
   total_files: 2
-  syntax_passed: 2
-  full_validation_in_ci: true
+  passed_files: 0
+  failed_files: 2
 results:
 - file: data/processed/evaluation/code_files/honegumi_generated_1_experimentalist_basic_corrected.py
   syntax_check:
     passed: true
     error: null
   import_check:
-    passed: null
-    error: Skipped in quick test - will run in CI
+    passed: true
+    error: null
   runtime_check:
-    passed: null
-    error: Skipped in quick test - will run in CI
-    execution_time: null
-  overall_passed: true
+    passed: false
+    error: Execution timeout after 30s
+    execution_time: 30.04s
+  overall_passed: false
 - file: data/processed/evaluation/code_files/honegumi_generated_1_experimentalist_basic_natural.py
   syntax_check:
     passed: true
     error: null
   import_check:
-    passed: null
-    error: Skipped in quick test - will run in CI
+    passed: true
+    error: null
   runtime_check:
-    passed: null
-    error: Skipped in quick test - will run in CI
-    execution_time: null
-  overall_passed: true
+    passed: false
+    error: Execution timeout after 30s
+    execution_time: 30.04s
+  overall_passed: false
