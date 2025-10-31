@@ -2,7 +2,7 @@
 """Validate generated Python code files.
 
 This script performs three checks on each Python file:
-1. Syntax check using py_compile
+1. Syntax check using ast.parse()
 2. Import check by attempting to import the module
 3. Runtime execution with timeout
 """
@@ -13,12 +13,12 @@ import subprocess
 import sys
 import time
 from pathlib import Path
-from typing import Dict, List
+from typing import Any, Dict, List
 
 import yaml
 
 
-def check_syntax(file_path: Path) -> Dict[str, any]:
+def check_syntax(file_path: Path) -> Dict[str, Any]:
     """Check if the Python file has valid syntax.
     
     Args:
@@ -37,7 +37,7 @@ def check_syntax(file_path: Path) -> Dict[str, any]:
         return {"passed": False, "error": str(e)}
 
 
-def check_imports(file_path: Path) -> Dict[str, any]:
+def check_imports(file_path: Path) -> Dict[str, Any]:
     """Check if all imports in the Python file can be resolved.
     
     Args:
@@ -66,7 +66,7 @@ def check_imports(file_path: Path) -> Dict[str, any]:
         return {"passed": False, "error": str(e)}
 
 
-def check_runtime(file_path: Path, timeout: int = 30) -> Dict[str, any]:
+def check_runtime(file_path: Path, timeout: int = 30) -> Dict[str, Any]:
     """Execute the Python file with a timeout.
     
     Args:
@@ -111,7 +111,7 @@ def check_runtime(file_path: Path, timeout: int = 30) -> Dict[str, any]:
         }
 
 
-def validate_file(file_path: Path) -> Dict[str, any]:
+def validate_file(file_path: Path) -> Dict[str, Any]:
     """Run all validation checks on a single file.
     
     Args:

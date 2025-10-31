@@ -61,7 +61,7 @@ jobs:
       
       - name: Push changes
         if: always() && github.event_name == 'push'
-        uses: ad-m/github-push-action@master
+        uses: ad-m/github-push-action@v0.8.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: ${{ github.ref }}
