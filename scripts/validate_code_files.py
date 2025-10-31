@@ -140,7 +140,7 @@ def validate_file(file_path: Path) -> Dict[str, any]:
         print(f"    Execution time: {runtime_result['execution_time']}")
     
     return {
-        "file": str(file_path.relative_to(Path.cwd())),
+        "file": str(file_path),
         "syntax_check": syntax_result,
         "import_check": import_result,
         "runtime_check": runtime_result,
