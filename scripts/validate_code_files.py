@@ -5,15 +5,23 @@ This script performs three checks on each Python file:
 1. Syntax check using ast.parse()
 2. Import check by attempting to import the module
 3. Runtime execution with timeout
+
+Modes:
+- Default: Validate all files in directory and generate full report
+- Single file: Validate one file and output partial result (for parallel execution)
+- Combine: Aggregate partial results into final report
 """
+import argparse
 import ast
+import glob
 import importlib.util
+import json
 import os
 import subprocess
 import sys
 import time
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 import yaml
 
@@ -163,8 +171,117 @@ def validate_file(file_path: Path) -> Dict[str, Any]:
 
 def main():
     """Main validation function."""
+    parser = argparse.ArgumentParser(description="Validate Python code files")
+    parser.add_argument('--file', type=str, help="Validate a single file (for parallel execution)")
+    parser.add_argument('--output-dir', type=str, default="data/processed/evaluation",
+                        help="Output directory for results")
+    parser.add_argument('--combine', type=str, help="Combine partial results from directory")
+    parser.add_argument('--list-files', action='store_true', help="List all files to validate as JSON")
+    
+    args = parser.parse_args()
+    
     code_files_dir = Path("data/processed/evaluation/code_files")
-    output_file = Path("data/processed/evaluation/validation_report.yaml")
+    
+    # List files mode - output JSON list of all files
+    if args.list_files:
+        if not code_files_dir.exists():
+            print(json.dumps([]))
+            return
+        python_files = sorted([f.name for f in code_files_dir.glob("*.py")])
+        print(json.dumps(python_files))
+        return
+    
+    # Combine mode - aggregate partial results
+    if args.combine:
+        combine_results(args.combine, args.output_dir)
+        return
+    
+    # Single file mode
+    if args.file:
+        validate_single_file(args.file, args.output_dir)
+        return
+    
+    # Default mode - validate all files
+    validate_all_files(code_files_dir, args.output_dir)
+
+
+def validate_single_file(filename: str, output_dir: str):
+    """Validate a single file and save partial result."""
+    code_files_dir = Path("data/processed/evaluation/code_files")
+    file_path = code_files_dir / filename
+    
+    if not file_path.exists():
+        print(f"Error: File {file_path} does not exist")
+        sys.exit(1)
+    
+    print(f"Validating single file: {filename}")
+    result = validate_file(file_path)
+    
+    # Save partial result
+    output_path = Path(output_dir) / f"partial_{filename.replace('.py', '.yaml')}"
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    
+    with open(output_path, 'w') as f:
+        yaml.dump(result, f, default_flow_style=False, sort_keys=False)
+    
+    print(f"Partial result written to: {output_path}")
+
+
+def combine_results(partial_dir: str, output_dir: str):
+    """Combine partial validation results into final report."""
+    partial_path = Path(partial_dir)
+    
+    if not partial_path.exists():
+        print(f"Error: Directory {partial_path} does not exist")
+        sys.exit(1)
+    
+    # Load all partial results
+    results = []
+    partial_files = sorted(partial_path.glob("partial_*.yaml"))
+    
+    print(f"Found {len(partial_files)} partial result(s) to combine")
+    
+    for partial_file in partial_files:
+        with open(partial_file, 'r') as f:
+            result = yaml.safe_load(f)
+            results.append(result)
+    
+    if not results:
+        print("Warning: No partial results found")
+        results = []
+    
+    # Generate summary
+    total_files = len(results)
+    passed_files = sum(1 for r in results if r.get("overall_passed", False))
+    
+    print("\n" + "="*60)
+    print(f"Combined Validation Summary: {passed_files}/{total_files} files passed")
+    print("="*60)
+    
+    # Create final report
+    report = {
+        "validation_timestamp": time.strftime("%Y-%m-%d %H:%M:%S UTC", time.gmtime()),
+        "summary": {
+            "total_files": total_files,
+            "passed_files": passed_files,
+            "failed_files": total_files - passed_files
+        },
+        "results": results
+    }
+    
+    # Write final report
+    output_file = Path(output_dir) / "validation_report.yaml"
+    output_file.parent.mkdir(parents=True, exist_ok=True)
+    
+    with open(output_file, 'w') as f:
+        yaml.dump(report, f, default_flow_style=False, sort_keys=False)
+    
+    print(f"\nFinal validation report written to: {output_file}")
+
+
+def validate_all_files(code_files_dir: Path, output_dir: str):
+    """Validate all files in directory (default mode)."""
+    output_file = Path(output_dir) / "validation_report.yaml"
     
     if not code_files_dir.exists():
         print(f"Error: Directory {code_files_dir} does not exist")

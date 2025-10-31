@@ -1,6 +1,17 @@
 # Code Validation Workflow
 
-This directory contains a GitHub Actions workflow that automatically validates Python files in `data/processed/evaluation/code_files/`.
+This directory contains GitHub Actions workflows that automatically validate Python files in `data/processed/evaluation/code_files/`.
+
+## Workflows
+
+### Standard Workflow (`validate-code-files.yml`)
+Sequential validation of all files in a single job. Suitable for small numbers of files (< 10).
+
+### Parallel Workflow (`validate-code-files-parallel.yml`)
+**Recommended for 10+ files.** Uses GitHub Actions matrix strategy to validate files in parallel:
+- **list-files**: Discovers all Python files to validate
+- **validate**: Runs validation in parallel (one job per file)
+- **combine-results**: Aggregates all results into final report
 
 ## What It Does
 
@@ -48,13 +59,29 @@ results:
 
 ## Running Locally
 
+### Standard Mode (all files)
 ```bash
 # Install dependencies
 pip install -r requirements.txt
-pip install ax-platform==0.4.3 matplotlib pyyaml
+pip install -r requirements-validation.txt
 
 # Run validation
 python scripts/validate_code_files.py
+```
+
+### Single File Mode (for testing)
+```bash
+python scripts/validate_code_files.py --file filename.py --output-dir ./results
+```
+
+### List Files Mode
+```bash
+python scripts/validate_code_files.py --list-files
+```
+
+### Combine Partial Results
+```bash
+python scripts/validate_code_files.py --combine ./partial-results --output-dir ./final
 ```
 
 The validation report will be generated at `data/processed/evaluation/validation_report.yaml`.
