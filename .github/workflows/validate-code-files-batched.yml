@@ -42,7 +42,8 @@ jobs:
       - name: Create batches
         id: create-batches
         run: |
-          BATCH_SIZE=${{ github.event.inputs.batch_size || '15' }}
+          BATCH_SIZE=${{ github.event.inputs.batch_size || '10' }}
+          export BATCH_SIZE
           
           # Get list of all files and save to a file to avoid shell escaping issues
           python scripts/validate_code_files.py --list-files > /tmp/files.json
@@ -83,7 +84,6 @@ jobs:
           
           print(f"Created {len(batch_ids)} batches of up to {batch_size} files each")
           print(f"Total files: {len(files)}")
-          EOF
           EOF
 
   validate:
