@@ -81,6 +81,7 @@ class RetrievalPlannerAgent:
         """
         problem = state.get("problem", "")
         bo_params = state.get("bo_params", {})
+        problem_structure = state.get("problem_structure", {})
         skeleton = state.get("skeleton_code", "")
         
         if settings.debug:
@@ -88,6 +89,7 @@ class RetrievalPlannerAgent:
             print(f"Problem length: {len(problem)} chars")
             print(f"Skeleton length: {len(skeleton)} chars")
             print(f"Parameters: {list(bo_params.keys())}")
+            print(f"Problem structure keys: {list(problem_structure.keys()) if problem_structure else 'None'}")
         
         if not settings.openai_api_key:
             if settings.debug:
@@ -97,16 +99,54 @@ class RetrievalPlannerAgent:
         # Build analysis prompt
         param_str = "\n".join([f"{k}: {v}" for k, v in bo_params.items()])
         
+        # Format problem structure for display
+        structure_str = ""
+        if problem_structure:
+            structure_str = "**PROBLEM STRUCTURE (Stage 1 Extraction):**\n"
+            
+            # Search space
+            if "search_space" in problem_structure:
+                structure_str += f"\nSearch Space ({len(problem_structure['search_space'])} parameters):\n"
+                for param in problem_structure['search_space']:
+                    structure_str += f"  - {param}\n"
+            
+            # Objectives
+            if "objective" in problem_structure:
+                objectives = problem_structure['objective']
+                if isinstance(objectives, list):
+                    structure_str += f"\nObjectives ({len(objectives)}):\n"
+                    for obj in objectives:
+                        structure_str += f"  - {obj}\n"
+                else:
+                    structure_str += f"\nObjective: {objectives}\n"
+            
+            # Constraints
+            if "constraints" in problem_structure and problem_structure['constraints']:
+                structure_str += f"\nConstraints ({len(problem_structure['constraints'])}):\n"
+                for const in problem_structure['constraints']:
+                    structure_str += f"  - {const}\n"
+            
+            # Experimental setup
+            if "budget" in problem_structure:
+                structure_str += f"\nBudget: {problem_structure['budget']}\n"
+            if "batch_size" in problem_structure:
+                structure_str += f"Batch size: {problem_structure['batch_size']}\n"
+            if "noise_model" in problem_structure:
+                structure_str += f"Noise model: {problem_structure['noise_model']}\n"
+        
         planning_prompt = f"""You are an expert at identifying information gaps in Bayesian optimization code.
 
 **YOUR TASK:**
-Analyze the problem description and Honegumi skeleton to determine if additional 
-information from Ax Platform documentation is needed.
+Analyze the problem, problem structure, and skeleton to determine if additional information from Ax Platform documentation is needed.
 
-**PROBLEM DESCRIPTION:**
+**ORIGINAL PROBLEM DESCRIPTION:**
 {problem}
 
-**OPTIMIZATION PARAMETERS:**
+**PROBLEM STRUCTURE (Stage 1):**
+{structure_str}
+Note: The problem structure above was automatically extracted from the user's problem description.
+
+**GRID PARAMETERS (Stage 2):**
 {param_str}
 
 **HONEGUMI SKELETON (first 1500 chars):**

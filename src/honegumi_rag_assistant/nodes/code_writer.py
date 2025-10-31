@@ -50,6 +50,7 @@ class CodeWriterAgent:
         """
         problem = state.get("problem", "")
         bo_params = state.get("bo_params", {})
+        problem_structure = state.get("problem_structure", {})
         skeleton = state.get("skeleton_code", "") or ""
         contexts = state.get("contexts", [])
         review_feedback = state.get("critique_report", [])
@@ -57,6 +58,7 @@ class CodeWriterAgent:
         if settings.debug:
             print(f"\n[CODE WRITER START] contexts: {len(contexts)}")
             print(f"Received {len(contexts)} documentation contexts from retrievers")
+            print(f"Problem structure available: {'Yes' if problem_structure else 'No'}")
         
         # Debug: Show context summary
         if len(contexts) > 0 and settings.debug:
@@ -76,11 +78,12 @@ class CodeWriterAgent:
             raise RuntimeError("LLM_API_KEY is not set in environment or settings.")
         
         # Generate the code
-        return CodeWriterAgent._generate_code(problem, bo_params, skeleton, contexts, review_feedback)
+        return CodeWriterAgent._generate_code(problem, bo_params, problem_structure, skeleton, contexts, review_feedback)
     @staticmethod
     def _generate_code(
         problem: str,
         bo_params: Dict[str, Any],
+        problem_structure: Dict[str, Any],
         skeleton: str,
         contexts: List[Dict[str, Any]],
         review_feedback: List[str]
@@ -92,7 +95,9 @@ class CodeWriterAgent:
         problem : str
             Problem description
         bo_params : Dict[str, Any]
-            Bayesian optimization parameters
+            Bayesian optimization grid parameters
+        problem_structure : Dict[str, Any]
+            Stage 1 extracted problem structure (search space, objectives, constraints)
         skeleton : str
             Honegumi skeleton code
         contexts : List[Dict[str, Any]]
@@ -109,6 +114,62 @@ class CodeWriterAgent:
             print(f"\n[DEBUG] _generate_code called, stream_code={settings.stream_code}\n")
         
         param_str = "\n".join([f"{k}: {v}" for k, v in bo_params.items()])
+        
+        # Format problem structure for the prompt
+        structure_str = ""
+        if problem_structure:
+            structure_str = "**PROBLEM STRUCTURE (Stage 1 Analysis):**\n\n"
+            
+            # Search space
+            if "search_space" in problem_structure:
+                params = problem_structure['search_space']
+                structure_str += f"Parameters to optimize ({len(params) if isinstance(params, list) else 'N/A'}):\n"
+                if isinstance(params, list):
+                    for param in params:
+                        structure_str += f"  - {param}\n"
+                else:
+                    structure_str += f"  {params}\n"
+            
+            # Objectives
+            if "objective" in problem_structure:
+                objectives = problem_structure['objective']
+                if isinstance(objectives, list):
+                    structure_str += f"\nObjectives to optimize ({len(objectives)}):\n"
+                    for obj in objectives:
+                        structure_str += f"  - {obj}\n"
+                else:
+                    structure_str += f"\nObjective: {objectives}\n"
+            
+            # Constraints
+            if "constraints" in problem_structure:
+                constraints = problem_structure['constraints']
+                if constraints:
+                    structure_str += f"\nConstraints ({len(constraints) if isinstance(constraints, list) else 'N/A'}):\n"
+                    if isinstance(constraints, list):
+                        for const in constraints:
+                            structure_str += f"  - {const}\n"
+                    else:
+                        structure_str += f"  {constraints}\n"
+                else:
+                    structure_str += "\nConstraints: None\n"
+            
+            # Experimental setup
+            setup_items = []
+            if "budget" in problem_structure and problem_structure["budget"]:
+                setup_items.append(f"Budget: {problem_structure['budget']} trials")
+            if "batch_size" in problem_structure and problem_structure["batch_size"]:
+                setup_items.append(f"Batch size: {problem_structure['batch_size']}")
+            if "noise_model" in problem_structure:
+                setup_items.append(f"Noise model: {problem_structure['noise_model']}")
+            if "historical_data_points" in problem_structure and problem_structure["historical_data_points"]:
+                setup_items.append(f"Historical data points: {problem_structure['historical_data_points']}")
+            
+            if setup_items:
+                structure_str += "\nExperimental setup:\n"
+                for item in setup_items:
+                    structure_str += f"  - {item}\n"
+            
+            structure_str += "\n"
         
         context_strs: List[str] = []
         for ctx in contexts:
@@ -129,10 +190,15 @@ class CodeWriterAgent:
 **YOUR TASK:**
 Transform the generic Honegumi skeleton into a complete, executable solution for the user's specific problem.
 
-**PROBLEM DESCRIPTION:**
+**ORIGINAL PROBLEM DESCRIPTION:**
 {problem}
 
-**EXTRACTED OPTIMIZATION CONFIGURATION:**
+{structure_str}
+Note: The problem structure above was automatically extracted from the user's problem description 
+to identify the search space, objectives, constraints, and experimental setup. Use this structured 
+information to accurately adapt the skeleton code.
+
+**EXTRACTED GRID CONFIGURATION (Stage 2):**
 {param_str}
 
 These parameters were extracted from the problem and determine key decisions:

@@ -461,7 +461,7 @@ def run_from_text_with_state(
             "review_count": final_state.get("review_count", 0),
             "critique_reports": critique_reports,
             "contexts": final_state.get("contexts", []),
-            "final_code": final_state.get("final_code", ""),
+            "final_code": final_state.get("final_code") or final_state.get("candidate_code") or final_state.get("skeleton_code", ""),
             "error": final_state.get("error"),
         }
         

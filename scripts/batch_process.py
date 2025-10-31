@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import argparse
 import sys
+import json
 from pathlib import Path
 import pandas as pd
 from datetime import datetime
@@ -24,11 +25,47 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 from honegumi_rag_assistant.orchestrator import run_from_text_with_state
 
 
+def compare_parameters(expected: dict, generated: dict) -> tuple[int, int, list[str]]:
+    """Compare expected and generated BO parameters.
+    
+    Parameters
+    ----------
+    expected : dict
+        Expected grid selections from the input CSV.
+    generated : dict
+        Generated BO parameters from the pipeline.
+    
+    Returns
+    -------
+    tuple[int, int, list[str]]
+        (num_correct, num_incorrect, list of incorrect keys)
+    """
+    # Common keys to compare
+    common_keys = set(expected.keys()) & set(generated.keys())
+    
+    correct_count = 0
+    incorrect_keys = []
+    
+    for key in common_keys:
+        expected_val = expected[key]
+        generated_val = generated[key]
+        
+        # Compare values (handle different types)
+        if expected_val == generated_val:
+            correct_count += 1
+        else:
+            incorrect_keys.append(key)
+    
+    incorrect_count = len(incorrect_keys)
+    
+    return correct_count, incorrect_count, incorrect_keys
+
+
 def process_batch(
     input_csv: str,
     output_csv: str,
-    output_dir: str | None = None,
-    problem_column: str = "problems",
+    scripts_dir: str | None = None,
+    problem_column: str = "problem",
 ) -> None:
     """Process a batch of problems from a CSV file.
 
@@ -38,15 +75,22 @@ def process_batch(
         Path to input CSV file with a column containing problem descriptions.
     output_csv : str
         Path to output CSV file where results will be saved.
-    output_dir : str or None, optional
+    scripts_dir : str or None, optional
         Directory where generated Python scripts will be saved.
     problem_column : str, optional
-        Name of the column containing problem descriptions. Default: "problems".
+        Name of the column containing problem descriptions. Default: "problem".
     """
     # Read input CSV
     print(f"📖 Reading problems from: {input_csv}")
     try:
-        df = pd.read_csv(input_csv)
+        # Try UTF-8 first, then fall back to other common encodings
+        try:
+            df = pd.read_csv(input_csv, encoding='utf-8')
+        except UnicodeDecodeError:
+            try:
+                df = pd.read_csv(input_csv, encoding='latin-1')
+            except UnicodeDecodeError:
+                df = pd.read_csv(input_csv, encoding='cp1252')
     except Exception as exc:
         print(f"❌ Error reading CSV: {exc}", file=sys.stderr)
         return
@@ -58,16 +102,20 @@ def process_batch(
     
     print(f"✅ Found {len(df)} problems to process\n")
     
+    # Check for problem_id column
+    if 'problem_id' not in df.columns:
+        print("⚠️  Warning: 'problem_id' column not found. Using index as ID.", file=sys.stderr)
+    
     # Prepare results storage
     results: List[Dict[str, Any]] = []
     
     # Process each problem
     for idx, row in df.iterrows():
         problem = row[problem_column]
-        run_id = f"batch_{idx}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        problem_id = row.get('problem_id', f"problem_{idx}")
         
         print(f"{'='*80}")
-        print(f"Processing problem {idx + 1}/{len(df)}")
+        print(f"Processing problem {idx + 1}/{len(df)}: {problem_id}")
         print(f"{'='*80}")
         print(f"Problem: {problem[:100]}..." if len(problem) > 100 else f"Problem: {problem}")
         print()
@@ -76,31 +124,23 @@ def process_batch(
         try:
             result = run_from_text_with_state(
                 problem=problem,
-                output_dir=output_dir,
-                run_id=run_id,
+                output_dir=scripts_dir,
+                run_id=problem_id,
             )
             
-            # Flatten the result for CSV storage
-            flat_result = {
-                "index": idx,
-                "problem": problem,
-                "run_id": run_id,
+            # Start with all input columns
+            flat_result = row.to_dict()
+            
+            # Add result columns
+            flat_result.update({
                 "success": result["error"] is None,
                 "error": result["error"] or "",
                 
-                # Parameters (as JSON string)
-                "objective": result["bo_params"].get("objective", ""),
-                "model": result["bo_params"].get("model", ""),
-                "constraint": result["bo_params"].get("constraint", ""),
-                "parallelism": result["bo_params"].get("parallelism", ""),
-                "custom_gen": result["bo_params"].get("custom_gen", ""),
-                "custom_threshold": result["bo_params"].get("custom_threshold", ""),
-                "winsorize": result["bo_params"].get("winsorize", ""),
-                "standardize_Y": result["bo_params"].get("standardize_Y", ""),
-                "log_Y": result["bo_params"].get("log_Y", ""),
-                "no_Y_transform": result["bo_params"].get("no_Y_transform", ""),
-                "infer_noise": result["bo_params"].get("infer_noise", ""),
-                "early_stop": result["bo_params"].get("early_stop", ""),
+                # Stage 1: Problem Structure (as formatted JSON string)
+                "problem_structure": json.dumps(result.get("problem_structure", {}), ensure_ascii=False),
+                
+                # Stage 2: Grid Parameters (as formatted JSON string)
+                "bo_params": json.dumps(result.get("bo_params", {}), ensure_ascii=False),
                 
                 # Loop statistics
                 "retrieval_count": result["retrieval_count"],
@@ -117,10 +157,32 @@ def process_batch(
                 "skeleton_length": len(result["skeleton_code"]),
                 "final_code_length": len(result["final_code"]),
                 
-                # Full outputs (for reference)
+                # Full outputs
                 "skeleton_code": result["skeleton_code"],
                 "final_code": result["final_code"],
-            }
+                "final_code_filename": f"RAG_generated_{problem_id}.py" if result["final_code"] else "",
+            })
+            
+            # Compare expected_grid_selections with bo_params if available
+            if 'expected_grid_selections' in row:
+                try:
+                    expected = json.loads(row['expected_grid_selections']) if isinstance(row['expected_grid_selections'], str) else row['expected_grid_selections']
+                    generated = result.get("bo_params", {})
+                    
+                    correct, incorrect, incorrect_keys = compare_parameters(expected, generated)
+                    
+                    flat_result.update({
+                        "params_correct": correct,
+                        "params_incorrect": incorrect,
+                        "params_incorrect_keys": json.dumps(incorrect_keys),
+                    })
+                except Exception as e:
+                    print(f"⚠️  Warning: Could not compare parameters: {e}")
+                    flat_result.update({
+                        "params_correct": 0,
+                        "params_incorrect": 0,
+                        "params_incorrect_keys": "[]",
+                    })
             
             results.append(flat_result)
             
@@ -133,31 +195,28 @@ def process_batch(
                 print(f"   - Reviews: {result['review_count']}/2")
                 print(f"   - Contexts: {len(result['contexts'])}")
                 print(f"   - Code length: {len(result['final_code'])} chars")
+                
+                # Print parameter comparison if available
+                if 'expected_grid_selections' in row and 'params_correct' in flat_result:
+                    total_params = flat_result['params_correct'] + flat_result['params_incorrect']
+                    print(f"   - Parameters: {flat_result['params_correct']}/{total_params} correct")
+                    if flat_result['params_incorrect'] > 0:
+                        print(f"     Incorrect: {flat_result['params_incorrect_keys']}")
             print()
             
         except Exception as exc:
             print(f"❌ Unexpected error: {exc}")
             print()
             
-            # Add error result
-            results.append({
-                "index": idx,
-                "problem": problem,
-                "run_id": run_id,
+            # Start with all input columns
+            flat_result = row.to_dict()
+            
+            # Add error result columns
+            flat_result.update({
                 "success": False,
                 "error": str(exc),
-                "objective": "",
-                "model": "",
-                "constraint": "",
-                "parallelism": "",
-                "custom_gen": "",
-                "custom_threshold": "",
-                "winsorize": "",
-                "standardize_Y": "",
-                "log_Y": "",
-                "no_Y_transform": "",
-                "infer_noise": "",
-                "early_stop": "",
+                "problem_structure": "{}",
+                "bo_params": "{}",
                 "retrieval_count": 0,
                 "review_count": 0,
                 "retrieval_queries": "",
@@ -167,7 +226,13 @@ def process_batch(
                 "final_code_length": 0,
                 "skeleton_code": "",
                 "final_code": "",
+                "final_code_filename": "",
+                "params_correct": 0,
+                "params_incorrect": 0,
+                "params_incorrect_keys": "[]",
             })
+            
+            results.append(flat_result)
     
     # Save results to CSV
     print(f"{'='*80}")
@@ -210,14 +275,14 @@ def main(argv: list[str] | None = None) -> int:
         help="Path to output CSV file for results.",
     )
     parser.add_argument(
-        "--output-dir",
+        "--scripts-dir",
         required=False,
         help="Directory where generated Python scripts will be saved.",
     )
     parser.add_argument(
         "--problem-column",
-        default="problems",
-        help="Name of the column containing problem descriptions (default: 'problems').",
+        default="problem",
+        help="Name of the column containing problem descriptions (default: 'problem').",
     )
     
     args = parser.parse_args(argv)
@@ -226,7 +291,7 @@ def main(argv: list[str] | None = None) -> int:
         process_batch(
             input_csv=args.input,
             output_csv=args.output,
-            output_dir=args.output_dir,
+            scripts_dir=args.scripts_dir,
             problem_column=args.problem_column,
         )
         return 0
