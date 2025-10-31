@@ -1,0 +1,31 @@
+validation_timestamp: 2025-10-31 04:02:44 UTC
+note: Quick validation - full checks run in GitHub Actions CI
+summary:
+  total_files: 2
+  syntax_passed: 2
+  full_validation_in_ci: true
+results:
+- file: data/processed/evaluation/code_files/honegumi_generated_1_experimentalist_basic_corrected.py
+  syntax_check:
+    passed: true
+    error: null
+  import_check:
+    passed: null
+    error: Skipped in quick test - will run in CI
+  runtime_check:
+    passed: null
+    error: Skipped in quick test - will run in CI
+    execution_time: null
+  overall_passed: true
+- file: data/processed/evaluation/code_files/honegumi_generated_1_experimentalist_basic_natural.py
+  syntax_check:
+    passed: true
+    error: null
+  import_check:
+    passed: null
+    error: Skipped in quick test - will run in CI
+  runtime_check:
+    passed: null
+    error: Skipped in quick test - will run in CI
+    execution_time: null
+  overall_passed: true
