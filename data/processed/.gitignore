@@ -2,9 +2,7 @@
 *
 # Except this file
 !.gitignore
-# Allow evaluation directory
+# Allow evaluation directory and all .py files
 !evaluation/
 !evaluation/code_files/
-!evaluation/code_files/honegumi_generated_1_experimentalist_basic_corrected.py
-!evaluation/code_files/honegumi_generated_1_experimentalist_basic_natural.py
-!evaluation/validation_report.yaml
+!evaluation/code_files/*.py
