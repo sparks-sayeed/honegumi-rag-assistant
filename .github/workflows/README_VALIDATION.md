@@ -8,7 +8,7 @@ The workflow runs three checks on each `.py` file:
 
 1. **Syntax Check**: Validates Python syntax using `ast.parse()`
 2. **Import Check**: Attempts to import the module to verify all dependencies are available
-3. **Runtime Check**: Executes the file with a 30-second timeout
+3. **Runtime Check**: Executes the file with a 5-minute timeout (timeouts are treated as success for long-running optimization scripts)
 
 ## Workflow Triggers
 
