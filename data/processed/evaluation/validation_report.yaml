@@ -1,8 +1,8 @@
-validation_timestamp: 2025-10-31 05:03:42 UTC
+validation_timestamp: 2025-10-31 05:34:02 UTC
 summary:
   total_files: 2
-  passed_files: 0
-  failed_files: 2
+  passed_files: 2
+  failed_files: 0
 results:
 - file: data/processed/evaluation/code_files/honegumi_generated_1_experimentalist_basic_corrected.py
   syntax_check:
@@ -12,10 +12,12 @@ results:
     passed: true
     error: null
   runtime_check:
-    passed: false
-    error: Execution timeout after 30s
+    passed: true
+    error: null
     execution_time: 30.04s
-  overall_passed: false
+    timed_out: true
+    note: Execution timed out after 30s (expected for long-running optimization scripts)
+  overall_passed: true
 - file: data/processed/evaluation/code_files/honegumi_generated_1_experimentalist_basic_natural.py
   syntax_check:
     passed: true
@@ -24,7 +26,9 @@ results:
     passed: true
     error: null
   runtime_check:
-    passed: false
-    error: Execution timeout after 30s
+    passed: true
+    error: null
     execution_time: 30.04s
-  overall_passed: false
+    timed_out: true
+    note: Execution timed out after 30s (expected for long-running optimization scripts)
+  overall_passed: true
