@@ -74,12 +74,12 @@ def check_imports(file_path: Path) -> Dict[str, Any]:
         return {"passed": False, "error": str(e)}
 
 
-def check_runtime(file_path: Path, timeout: int = 300) -> Dict[str, Any]:
+def check_runtime(file_path: Path, timeout: int = 120) -> Dict[str, Any]:
     """Execute the Python file with a timeout.
     
     Args:
         file_path: Path to the Python file
-        timeout: Maximum execution time in seconds (default: 300s = 5 minutes)
+        timeout: Maximum execution time in seconds (default: 120s = 2 minutes)
         
     Returns:
         Dict with 'passed' bool, 'execution_time', 'timed_out' flag, and optional 'error' message

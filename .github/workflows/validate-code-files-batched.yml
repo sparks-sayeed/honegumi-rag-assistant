@@ -7,7 +7,7 @@ on:
       batch_size:
         description: 'Number of files per batch'
         required: false
-        default: '10'
+        default: '5'
   push:
     paths:
       - 'data/processed/evaluation/code_files/**'
@@ -42,7 +42,7 @@ jobs:
       - name: Create batches
         id: create-batches
         run: |
-          BATCH_SIZE=${{ github.event.inputs.batch_size || '10' }}
+          BATCH_SIZE=${{ github.event.inputs.batch_size || '5' }}
           export BATCH_SIZE
           
           # Get list of all files and save to a file to avoid shell escaping issues
