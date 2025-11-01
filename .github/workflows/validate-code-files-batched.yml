@@ -1,5 +1,6 @@
 name: Validate Generated Code Files (Batched)
 # Validates Python files in batches with configurable batch size and 120-minute timeout
+# Updated: Reduced batch size to 5 files and timeout to 2 minutes per file
 
 on:
   workflow_dispatch:
@@ -60,7 +61,7 @@ jobs:
           with open('/tmp/files.json', 'r') as f:
               files = json.load(f)
           
-          batch_size = int(os.environ.get('BATCH_SIZE', '10'))
+          batch_size = int(os.environ.get('BATCH_SIZE', '5'))
           
           if not files:
               with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
