@@ -1,0 +1,453 @@
+review_date: 11/01/2025
+reviewer: Hasan and Arin
+files:
+- filename: RAG_generated_1_experimentalist_basic_natural.py
+  problem_id: 1_experimentalist_basic_natural
+  flagged: 'no'
+  comments:
+  - 'Verified: parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_1_industrial_practitioner_natural.py
+  problem_id: 1_industrial_practitioner_natural
+  flagged: 'no'
+  comments:
+  - 'Verified: parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_1_research_scientist_natural.py
+  problem_id: 1_research_scientist_natural
+  flagged: 'no'
+  comments:
+  - 'Verified: parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_2_computational_intermediate_natural.py
+  problem_id: 2_computational_intermediate_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_2_industrial_practitioner_natural.py
+  problem_id: 2_industrial_practitioner_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_2_research_scientist_natural.py
+  problem_id: 2_research_scientist_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_3_data_science_advanced_natural.py
+  problem_id: 3_data_science_advanced_natural
+  flagged: 'no'
+  comments:
+  - 'Verified: parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_3_industrial_practitioner_natural.py
+  problem_id: 3_industrial_practitioner_natural
+  flagged: 'no'
+  comments:
+  - 'Verified: parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_3_research_scientist_natural.py
+  problem_id: 3_research_scientist_natural
+  flagged: 'no'
+  comments:
+  - 'Verified: parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_4_experimentalist_basic_natural.py
+  problem_id: 4_experimentalist_basic_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_4_industrial_practitioner_natural.py
+  problem_id: 4_industrial_practitioner_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_4_research_scientist_natural.py
+  problem_id: 4_research_scientist_natural
+  flagged: 'no'
+  comments:
+  - 'Verified: parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_5_experimentalist_basic_natural.py
+  problem_id: 5_experimentalist_basic_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_5_industrial_practitioner_natural.py
+  problem_id: 5_industrial_practitioner_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_5_research_scientist_natural.py
+  problem_id: 5_research_scientist_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_6_experimentalist_basic_natural.py
+  problem_id: 6_experimentalist_basic_natural
+  flagged: 'no'
+  comments:
+  - 'Verified: parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_6_industrial_practitioner_natural.py
+  problem_id: 6_industrial_practitioner_natural
+  flagged: 'no'
+  comments:
+  - 'Verified: parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_6_research_scientist_natural.py
+  problem_id: 6_research_scientist_natural
+  flagged: 'no'
+  comments:
+  - 'Verified: parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_7_experimentalist_basic_natural.py
+  problem_id: 7_experimentalist_basic_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_7_industrial_practitioner_natural.py
+  problem_id: 7_industrial_practitioner_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_7_research_scientist_natural.py
+  problem_id: 7_research_scientist_natural
+  flagged: 'no'
+  comments:
+  - 'Verified: parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_8_experimentalist_basic_natural.py
+  problem_id: 8_experimentalist_basic_natural
+  flagged: 'no'
+  comments:
+  - 'Verified: parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_8_industrial_practitioner_natural.py
+  problem_id: 8_industrial_practitioner_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_8_research_scientist_natural.py
+  problem_id: 8_research_scientist_natural
+  flagged: 'no'
+  comments:
+  - 'Verified: parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_9_experimentalist_basic_natural.py
+  problem_id: 9_experimentalist_basic_natural
+  flagged: 'no'
+  comments:
+  - 'Verified: parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_9_industrial_practitioner_natural.py
+  problem_id: 9_industrial_practitioner_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_9_research_scientist_natural.py
+  problem_id: 9_research_scientist_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, and setup all match specification'
+- filename: RAG_generated_10_experimentalist_basic_natural.py
+  problem_id: 10_experimentalist_basic_natural
+  flagged: 'no'
+  comments:
+  - 'Verified: parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_10_industrial_practitioner_natural.py
+  problem_id: 10_industrial_practitioner_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_10_research_scientist_natural.py
+  problem_id: 10_research_scientist_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_11_experimentalist_basic_natural.py
+  problem_id: 11_experimentalist_basic_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_11_industrial_practitioner_natural.py
+  problem_id: 11_industrial_practitioner_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_11_research_scientist_natural.py
+  problem_id: 11_research_scientist_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_12_experimentalist_basic_natural.py
+  problem_id: 12_experimentalist_basic_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_12_industrial_practitioner_natural.py
+  problem_id: 12_industrial_practitioner_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_12_research_scientist_natural.py
+  problem_id: 12_research_scientist_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_13_experimentalist_basic_natural.py
+  problem_id: 13_experimentalist_basic_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_13_industrial_practitioner_natural.py
+  problem_id: 13_industrial_practitioner_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_13_research_scientist_natural.py
+  problem_id: 13_research_scientist_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_14_experimentalist_basic_natural.py
+  problem_id: 14_experimentalist_basic_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_14_industrial_practitioner_natural.py
+  problem_id: 14_industrial_practitioner_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_14_research_scientist_natural.py
+  problem_id: 14_research_scientist_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_15_experimentalist_basic_natural.py
+  problem_id: 15_experimentalist_basic_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_15_industrial_practitioner_natural.py
+  problem_id: 15_industrial_practitioner_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_15_research_scientist_natural.py
+  problem_id: 15_research_scientist_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_16_experimentalist_basic_natural.py
+  problem_id: 16_experimentalist_basic_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_16_industrial_practitioner_natural.py
+  problem_id: 16_industrial_practitioner_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_16_research_scientist_natural.py
+  problem_id: 16_research_scientist_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_17_experimentalist_basic_natural.py
+  problem_id: 17_experimentalist_basic_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_17_industrial_practitioner_natural.py
+  problem_id: 17_industrial_practitioner_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_17_research_scientist_natural.py
+  problem_id: 17_research_scientist_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_18_experimentalist_basic_natural.py
+  problem_id: 18_experimentalist_basic_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_18_industrial_practitioner_natural.py
+  problem_id: 18_industrial_practitioner_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_18_research_scientist_natural.py
+  problem_id: 18_research_scientist_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_19_experimentalist_basic_natural.py
+  problem_id: 19_experimentalist_basic_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_19_industrial_practitioner_natural.py
+  problem_id: 19_industrial_practitioner_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_19_research_scientist_natural.py
+  problem_id: 19_research_scientist_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_20_experimentalist_basic_natural.py
+  problem_id: 20_experimentalist_basic_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_20_industrial_practitioner_natural.py
+  problem_id: 20_industrial_practitioner_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_20_research_scientist_natural.py
+  problem_id: 20_research_scientist_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_21_experimentalist_basic_natural.py
+  problem_id: 21_experimentalist_basic_natural
+  flagged: 'no'
+  comments:
+  - 'Verified: parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_21_industrial_practitioner_natural.py
+  problem_id: 21_industrial_practitioner_natural
+  flagged: 'no'
+  comments:
+  - 'Verified: parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_21_research_scientist_natural.py
+  problem_id: 21_research_scientist_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_22_experimentalist_basic_natural.py
+  problem_id: 22_experimentalist_basic_natural
+  flagged: 'no'
+  comments:
+  - 'Verified: parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_22_industrial_practitioner_natural.py
+  problem_id: 22_industrial_practitioner_natural
+  flagged: 'no'
+  comments:
+  - 'Verified: parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_22_research_scientist_natural.py
+  problem_id: 22_research_scientist_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_23_experimentalist_basic_natural.py
+  problem_id: 23_experimentalist_basic_natural
+  flagged: 'no'
+  comments:
+  - 'Verified: parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_23_industrial_practitioner_natural.py
+  problem_id: 23_industrial_practitioner_natural
+  flagged: 'no'
+  comments:
+  - 'Verified: parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_23_research_scientist_natural.py
+  problem_id: 23_research_scientist_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_24_experimentalist_basic_natural.py
+  problem_id: 24_experimentalist_basic_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_24_industrial_practitioner_natural.py
+  problem_id: 24_industrial_practitioner_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_24_research_scientist_natural.py
+  problem_id: 24_research_scientist_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_25_experimentalist_basic_natural.py
+  problem_id: 25_experimentalist_basic_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_25_industrial_practitioner_natural.py
+  problem_id: 25_industrial_practitioner_natural
+  flagged: 'no'
+  comments:
+  - 'Verified: parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_25_research_scientist_natural.py
+  problem_id: 25_research_scientist_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_26_experimentalist_basic_natural.py
+  problem_id: 26_experimentalist_basic_natural
+  flagged: 'no'
+  comments:
+  - 'Verified: parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_26_industrial_practitioner_natural.py
+  problem_id: 26_industrial_practitioner_natural
+  flagged: 'no'
+  comments:
+  - 'Verified: parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_26_research_scientist_natural.py
+  problem_id: 26_research_scientist_natural
+  flagged: 'no'
+  comments:
+  - 'Verified: parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_27_experimentalist_basic_natural.py
+  problem_id: 27_experimentalist_basic_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_27_industrial_practitioner_natural.py
+  problem_id: 27_industrial_practitioner_natural
+  flagged: 'no'
+  comments:
+  - 'Verified: parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_27_research_scientist_natural.py
+  problem_id: 27_research_scientist_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_28_experimentalist_basic_natural.py
+  problem_id: 28_experimentalist_basic_natural
+  flagged: 'no'
+  comments:
+  - 'Verified: parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_28_industrial_practitioner_natural.py
+  problem_id: 28_industrial_practitioner_natural
+  flagged: 'no'
+  comments:
+  - 'Verified: parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_28_research_scientist_natural.py
+  problem_id: 28_research_scientist_natural
+  flagged: 'no'
+  comments:
+  - 'Verified: parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_29_experimentalist_basic_natural.py
+  problem_id: 29_experimentalist_basic_natural
+  flagged: 'no'
+  comments:
+  - 'Verified: parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_29_industrial_practitioner_natural.py
+  problem_id: 29_industrial_practitioner_natural
+  flagged: 'no'
+  comments:
+  - 'Verified: parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_29_research_scientist_natural.py
+  problem_id: 29_research_scientist_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_30_experimentalist_basic_natural.py
+  problem_id: 30_experimentalist_basic_natural
+  flagged: 'no'
+  comments:
+  - 'parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_30_industrial_practitioner_natural.py
+  problem_id: 30_industrial_practitioner_natural
+  flagged: 'no'
+  comments:
+  - 'Verified: parameters, objectives, constraints, and setup all match specification'
+- filename: RAG_generated_30_research_scientist_natural.py
+  problem_id: 30_research_scientist_natural
+  flagged: 'no'
+  comments:
+  - 'Verified: parameters, objectives, constraints, and setup all match specification'
