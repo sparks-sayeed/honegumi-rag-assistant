@@ -2,333 +2,209 @@
 # %pip install ax-platform==0.4.3 matplotlib
 import numpy as np
 import pandas as pd
+from typing import Dict, Tuple, Any
 from ax.service.ax_client import AxClient, ObjectiveProperties
 import matplotlib.pyplot as plt
 
 
-obj1_name = "branin"
+# Problem: Optimize anti-corrosion coating formulation and thickness to minimize corrosion damage.
+# Parameters (decision variables):
+#   - resin_fraction, inhibitor_fraction, insulator_fraction (continuous, [0, 1])
+#   - stabilizer_fraction is derived from the composition constraint: 1 - (resin + inhibitor + insulator)
+#   - coating_thickness_microns (continuous, practical range provided below)
+# Constraints:
+#   - resin_fraction + inhibitor_fraction + insulator_fraction + stabilizer_fraction == 1.0
+#       -> reparameterized as: resin + inhibitor + insulator <= 1.0; stabilizer = 1 - (resin + inhibitor + insulator)
+#   - resin_fraction >= inhibitor_fraction
+#   - resin_fraction >= insulator_fraction
+# Objective:
+#   - Minimize corrosion_damage (arbitrary units; lower is better)
+# Batch setup:
+#   - Batch size = 6 (synchronous)
+#   - Total trials budget = 120 (20 batches of 6)
 
 
-def branin3(x1, x2, x3):
-    y = float(
-        (x2 - 5.1 / (4 * np.pi**2) * x1**2 + 5.0 / np.pi * x1 - 6.0) ** 2
-        + 10 * (1 - 1.0 / (8 * np.pi)) * np.cos(x1)
-        + 10
-    )
-
-    # Contrived way to incorporate x3 into the objective
-    y = y * (1 + 0.1 * x1 * x2 * x3)
-
-    return y
-
-
-# Define total for compositional constraint, where x1 + x2 + x3 == total
-total = 10.0
-
-
-ax_client = AxClient()
-
-ax_client.create_experiment(
-    parameters=[
-        {"name": "x1", "type": "range", "bounds": [0.0, total]},
-        {"name": "x2", "type": "range", "bounds": [0.0, total]},
-    ],
-    objectives={
-        obj1_name: ObjectiveProperties(minimize=True),
-    },
-    parameter_constraints=[
-        f"x1 + x2 <= {total}",  # reparameterized compositional constraint, which is a type of sum constraint
-        "x1 <= x2",  # example of an order constraint
-    ],
-)
-
-
-batch_size = 2
-
-
-for i in range(21):
-
-    parameterizations, optimization_complete = ax_client.get_next_trials(batch_size)
-    for trial_index, parameterization in list(parameterizations.items()):
-        # extract parameters
-        x1 = parameterization["x1"]
-        x2 = parameterization["x2"]
-        x3 = total - (x1 + x2)  # composition constraint: x1 + x2 + x3 == total
-
-        results = branin3(x1, x2, x3)
-        ax_client.complete_trial(trial_index=trial_index, raw_data=results)
-
-best_parameters, metrics = ax_client.get_best_parameters()
-
-
-# Plot results
-objectives = ax_client.objective_names
-df = ax_client.get_trials_data_frame()
-df.index = df.index // batch_size
-
-fig, ax = plt.subplots(figsize=(6, 4), dpi=150)
-ax.scatter(df.index, df[objectives], ec="k", fc="none", label="Observed")
-ax.plot(
-    df.index,
-    np.minimum.accumulate(df[objectives]),
-    color="#0033FF",
-    lw=2,
-    label="Best to Trial",
-)
-ax.set_xlabel("Trial Number")
-ax.set_ylabel(objectives[0])
-
-ax.legend()
-plt.show()
-
-# Anti-corrosion coating formulation optimization with Ax (batch Bayesian optimization)
-# %pip install ax-platform==0.4.3 matplotlib
-import numpy as np
-import pandas as pd
-from typing import Dict, Tuple
-from ax.service.ax_client import AxClient, ObjectiveProperties
-import matplotlib.pyplot as plt
-
-
-# Metric name: lower is better
-CORROSION_METRIC = "corrosion_damage"
-
-# Batch configuration from problem: 6 samples per batch, ~20 batches (total ~120 evaluations)
-BATCH_SIZE = 6
-N_BATCHES = 20  # 20 * 6 = 120 trials budget
-
-# Fixed total for composition of fractions: resin + inhibitor + insulator + stabilizer = 1.0
+OBJECTIVE_NAME = "corrosion_damage"
 COMPOSITION_TOTAL = 1.0
 
-# Reasonable thickness range in micrometers (adjust to your process limits as needed)
-THICKNESS_MIN = 20.0
-THICKNESS_MAX = 200.0
+# Practical thickness bounds (micrometers). Adjust to your lab's allowable range if needed.
+THICKNESS_MIN = 10.0
+THICKNESS_MAX = 80.0
 
-# Random seed for reproducibility of the synthetic noisy evaluation
-RNG = np.random.default_rng(42)
+# Reproducible RNG for simulated measurement noise
+_rng = np.random.default_rng(seed=2025)
 
 
-def evaluate_coating_formulation(
+def evaluate_corrosion_damage(
     resin_fraction: float,
     inhibitor_fraction: float,
     insulator_fraction: float,
     stabilizer_fraction: float,
     coating_thickness_microns: float,
-    rng: np.random.Generator,
-) -> Tuple[float, float]:
+) -> float:
     """
-    Evaluate the anti-corrosion coating formulation and process setting.
+    Simulated evaluation of corrosion damage for a coating formulation.
+    Lower returned value indicates better performance (less damage).
 
-    This function is a realistic stub simulating corrosion damage measurement.
-    It encodes plausible trends:
-      - Inhibitor reduces corrosion with an optimal range (~0.12-0.18).
-      - Insulator improves barrier up to an optimal (~0.2-0.3).
-      - Resin ensures film integrity; too low or too high can be suboptimal.
-      - Stabilizer should be modest; too much can be detrimental.
-      - Thickness reduces corrosion to a point; too thick may crack or be wasteful
-        (Gaussian-like optimum near ~100 micrometers).
+    NOTE: Replace this with your actual experimental measurement pipeline.
+    Example pathways:
+      - Run a lab test (salt spray / electrochemical impedance) and return measured damage
+      - Call a physics-based corrosion simulator
+      - Query a database of past experiments, etc.
 
-    Returned value:
-      - corrosion_damage: Lower is better (e.g., % area corroded after standardized test).
-      - standard_error: Estimated measurement noise (lab variability).
-
-    Replace this stub with your actual experimental measurement:
-      - Run batch of wet-salt fog / electrochemical tests and measure damage.
-      - Or call into your simulation/model and return the computed damage.
+    Returns:
+      corrosion_damage (float): damage units (arbitrary), lower is better.
     """
-    # Slight numerical guard to prevent tiny negatives due to floating point
-    stabilizer_fraction = max(0.0, stabilizer_fraction)
 
-    # Penalize catastrophic infeasibility (should not occur due to constraints)
-    infeasible_penalty = 0.0
-    if resin_fraction < inhibitor_fraction - 1e-6 or resin_fraction < insulator_fraction - 1e-6:
-        infeasible_penalty += 50.0  # large penalty if order constraints are violated
+    # Safety checks and penalties if numerical imprecision yields tiny violations
+    sum_components = resin_fraction + inhibitor_fraction + insulator_fraction + stabilizer_fraction
+    if sum_components <= 0:
+        return 1e6  # invalid composition
+    if stabilizer_fraction < -1e-9 or stabilizer_fraction > 1 + 1e-9:
+        return 1e6  # invalid composition
 
-    if resin_fraction + inhibitor_fraction + insulator_fraction > COMPOSITION_TOTAL + 1e-6:
-        infeasible_penalty += 50.0  # large penalty if sum exceeds 1
+    # Base damage level without protection
+    base_damage = 100.0
 
-    # Inhibitor effectiveness: peaked around ~0.16 with width ~0.08
-    inhib_opt = 0.16
-    inhib_width = 0.08
-    inhib_effect = np.exp(-0.5 * ((inhibitor_fraction - inhib_opt) / inhib_width) ** 2)
+    # Protective contributions (bounded, monotonic, and with plausible saturations)
+    # Resin: film formation and adhesion barrier
+    resin_eff = 0.55 * np.power(max(resin_fraction, 0.0), 0.85)
 
-    # Insulator effectiveness: peaked around ~0.24 with width ~0.12
-    insul_opt = 0.24
-    insul_width = 0.12
-    insul_effect = np.exp(-0.5 * ((insulator_fraction - insul_opt) / insul_width) ** 2)
+    # Inhibitor: chemical passivation, saturating effect
+    inhibitor_eff = 0.95 * (1.0 - np.exp(-4.2 * max(inhibitor_fraction, 0.0)))
 
-    # Resin contribution: peaked around ~0.45 with wider tolerance
-    resin_opt = 0.45
-    resin_width = 0.20
-    resin_effect = np.exp(-0.5 * ((resin_fraction - resin_opt) / resin_width) ** 2)
+    # Insulator: reduces ionic/electronic transport through film
+    insulator_eff = 0.35 * np.power(max(insulator_fraction, 0.0), 0.6)
 
-    # Stabilizer penalty if too high; mild penalty otherwise
-    stab_opt = 0.08
-    stab_width = 0.06
-    stabilizer_good = np.exp(-0.5 * ((stabilizer_fraction - stab_opt) / stab_width) ** 2)
-    stabilizer_penalty = max(0.0, 1.0 - stabilizer_good)  # 0 if near optimal, rises if far
+    # Stabilizer: minor effect; too much can hinder barrier continuity
+    # Small benefit at low levels, slight penalty at high levels
+    st = max(stabilizer_fraction, 0.0)
+    stabilizer_contrib = 0.05 * np.minimum(st, 0.15) / 0.15  # up to +0.05
+    stabilizer_penalty_factor = 1.0 + 0.15 * max(0.0, st - 0.4)  # increases damage if stabilizer > 0.4
 
-    # Thickness effect: Gaussian-like peak near ~100 µm
-    thick_opt = 100.0
-    thick_width = 35.0
-    thickness_effect = np.exp(-0.5 * ((coating_thickness_microns - thick_opt) / thick_width) ** 2)
+    # Thickness: diminished returns with increasing thickness
+    t = np.clip(coating_thickness_microns, THICKNESS_MIN, THICKNESS_MAX)
+    thickness_eff = 0.8 * (1.0 - np.exp(-0.045 * (t - THICKNESS_MIN)))
 
-    # Synergy: inhibitor is more effective with sufficient resin (film integrity)
-    synergy = inhibitor_fraction * max(0.0, resin_fraction - 0.25)
+    # Synergy: inhibitor works better with sufficient resin; mild synergy term
+    synergy = 0.3 * resin_fraction * inhibitor_fraction
 
-    # Aggregate into a damage score (lower is better)
-    # Start with a baseline (e.g., 60% damage without a good coating), subtract benefits, add penalties
-    baseline_damage = 60.0
-    damage = (
-        baseline_damage
-        - 28.0 * inhib_effect
-        - 18.0 * insul_effect
-        - 14.0 * resin_effect
-        - 22.0 * thickness_effect
-        - 8.0 * synergy
-        + 10.0 * stabilizer_penalty
-        + infeasible_penalty
-    )
+    # Aggregate protective effectiveness
+    protection = resin_eff + inhibitor_eff + insulator_eff + thickness_eff + stabilizer_contrib + synergy
+    # Bound overall protection to avoid negative damage
+    protection = np.clip(protection, 0.0, 0.97)
 
-    # Ensure damage is within plausible bounds
-    damage = float(np.clip(damage, 0.0, 100.0))
+    # Convert to damage
+    damage = base_damage * (1.0 - protection)
 
-    # Add measurement noise (lab variability)
-    noise_sd = 2.5
-    noisy_damage = float(damage + rng.normal(0.0, noise_sd))
+    # Penalize low resin if it's not sufficiently dominating others (even if constraints are met)
+    # Encourages resin to be meaningfully higher than inhibitor/insulator.
+    dominance_margin = min(resin_fraction - inhibitor_fraction, resin_fraction - insulator_fraction)
+    if dominance_margin < 0.05:
+        damage *= 1.0 + 0.05 * (0.05 - dominance_margin) / 0.05  # up to +5%
 
-    # Return mean and standard error for Ax to model observation noise
-    return noisy_damage, noise_sd
+    # Apply stabilizer penalty factor (if stabilizer too high)
+    damage *= stabilizer_penalty_factor
+
+    # Add realistic measurement noise (heteroscedastic, multiplicative + additive)
+    noise_mult = _rng.normal(loc=1.0, scale=0.03)  # ~3% multiplicative noise
+    noise_add = _rng.normal(loc=0.0, scale=0.5)    # small additive noise
+    observed_damage = max(0.0, damage * noise_mult + noise_add)
+
+    return float(observed_damage)
 
 
-def main() -> None:
-    ax_client = AxClient()
+ax_client = AxClient()
 
-    # Define search space: resin, inhibitor, insulator are parameters; stabilizer is derived to enforce sum-to-1
-    ax_client.create_experiment(
-        name="anti_corrosion_coating_optimization",
-        parameters=[
-            {
-                "name": "resin_fraction",
-                "type": "range",
-                "bounds": [0.0, 1.0],
-                "value_type": "float",
-            },
-            {
-                "name": "inhibitor_fraction",
-                "type": "range",
-                "bounds": [0.0, 1.0],
-                "value_type": "float",
-            },
-            {
-                "name": "insulator_fraction",
-                "type": "range",
-                "bounds": [0.0, 1.0],
-                "value_type": "float",
-            },
-            {
-                "name": "coating_thickness_microns",
-                "type": "range",
-                "bounds": [THICKNESS_MIN, THICKNESS_MAX],
-                "value_type": "float",
-            },
-        ],
-        objectives={
-            CORROSION_METRIC: ObjectiveProperties(minimize=True),
-        },
-        # Constraints:
-        # - Composition: resin + inhibitor + insulator <= 1.0 (stabilizer = 1 - sum)
-        # - Order: resin >= inhibitor and resin >= insulator
-        parameter_constraints=[
-            f"resin_fraction + inhibitor_fraction + insulator_fraction <= {COMPOSITION_TOTAL}",
-            "inhibitor_fraction <= resin_fraction",
-            "insulator_fraction <= resin_fraction",
-        ],
-    )
+# Create experiment with 3 explicit composition parameters (resin, inhibitor, insulator),
+# 1 derived parameter (stabilizer), and 1 process parameter (thickness).
+ax_client.create_experiment(
+    name="anti_corrosion_coating_optimization",
+    parameters=[
+        {"name": "resin_fraction", "type": "range", "bounds": [0.0, 1.0]},
+        {"name": "inhibitor_fraction", "type": "range", "bounds": [0.0, 1.0]},
+        {"name": "insulator_fraction", "type": "range", "bounds": [0.0, 1.0]},
+        {"name": "coating_thickness_microns", "type": "range", "bounds": [THICKNESS_MIN, THICKNESS_MAX]},
+    ],
+    objectives={
+        OBJECTIVE_NAME: ObjectiveProperties(minimize=True),
+    },
+    parameter_constraints=[
+        # Composition constraint via reparameterization:
+        # stabilizer_fraction = 1 - (resin + inhibitor + insulator) must be >= 0
+        f"resin_fraction + inhibitor_fraction + insulator_fraction <= {COMPOSITION_TOTAL}",
+        # Order constraints:
+        "resin_fraction >= inhibitor_fraction",
+        "resin_fraction >= insulator_fraction",
+    ],
+)
 
-    # Optimization loop: batched evaluations
-    for batch_idx in range(N_BATCHES):
-        parameterizations, optimization_complete = ax_client.get_next_trials(BATCH_SIZE)
-        for trial_index, params in list(parameterizations.items()):
-            try:
-                resin = float(params["resin_fraction"])
-                inhibitor = float(params["inhibitor_fraction"])
-                insulator = float(params["insulator_fraction"])
-                thickness = float(params["coating_thickness_microns"])
-
-                # Derive stabilizer to satisfy composition equality
-                stabilizer = float(COMPOSITION_TOTAL - (resin + inhibitor + insulator))
-
-                # Evaluate experiment (replace with actual lab measurement if available)
-                damage_value, damage_sem = evaluate_coating_formulation(
-                    resin_fraction=resin,
-                    inhibitor_fraction=inhibitor,
-                    insulator_fraction=insulator,
-                    stabilizer_fraction=stabilizer,
-                    coating_thickness_microns=thickness,
-                    rng=RNG,
-                )
-
-                # Report result to Ax (value, standard error)
-                ax_client.complete_trial(
-                    trial_index=trial_index, raw_data={CORROSION_METRIC: (damage_value, damage_sem)}
-                )
-            except Exception as e:
-                # Mark trial failed in case of evaluation failures
-                ax_client.log_trial_failure(trial_index=trial_index)
-                print(f"Trial {trial_index} failed: {e}")
-
-        if optimization_complete:
-            # Ax may signal early stopping if confident about optimum
-            print(f"Early stopping after batch {batch_idx + 1}.")
-            break
-
-    # Retrieve best found parameters
-    best_parameters, best_metrics = ax_client.get_best_parameters()
-    best_damage = best_metrics[CORROSION_METRIC]["mean"]
-    best_sem = best_metrics[CORROSION_METRIC].get("sem", None)
-
-    # Compute derived stabilizer for readability
-    resin_b = best_parameters["resin_fraction"]
-    inhibitor_b = best_parameters["inhibitor_fraction"]
-    insulator_b = best_parameters["insulator_fraction"]
-    thickness_b = best_parameters["coating_thickness_microns"]
-    stabilizer_b = COMPOSITION_TOTAL - (resin_b + inhibitor_b + insulator_b)
-
-    print("\nBest found formulation and setting:")
-    print(f"  resin_fraction       = {resin_b:.4f}")
-    print(f"  inhibitor_fraction   = {inhibitor_b:.4f}")
-    print(f"  insulator_fraction   = {insulator_b:.4f}")
-    print(f"  stabilizer_fraction  = {stabilizer_b:.4f}  (derived to sum to 1)")
-    print(f"  coating_thickness    = {thickness_b:.2f} µm")
-    if best_sem is not None:
-        print(f"  estimated {CORROSION_METRIC} = {best_damage:.3f} ± {best_sem:.3f}")
-    else:
-        print(f"  estimated {CORROSION_METRIC} = {best_damage:.3f}")
-
-    # Plot progress: best-so-far corrosion damage per batch
-    objectives = ax_client.objective_names
-    df = ax_client.get_trials_data_frame()
-
-    # df contains one row per arm; group by batch index for plotting
-    df.index = df.index // BATCH_SIZE
-
-    fig, ax = plt.subplots(figsize=(7, 4), dpi=150)
-    ax.scatter(df.index, df[objectives], ec="k", fc="none", label="Observed")
-    ax.plot(
-        df.index,
-        np.minimum.accumulate(df[objectives]),
-        color="#0033FF",
-        lw=2,
-        label="Best so far",
-    )
-    ax.set_xlabel("Batch number")
-    ax.set_ylabel(CORROSION_METRIC)
-    ax.set_title("Batched Bayesian optimization of anti-corrosion coating")
-    ax.legend()
-    plt.tight_layout()
-    plt.show()
+batch_size = 6
+num_batches = 20  # Total trials = 6 * 20 = 120
 
 
-if __name__ == "__main__":
-    main()
+for _ in range(num_batches):
+    parameterizations, optimization_complete = ax_client.get_next_trials(batch_size=batch_size)
+
+    for trial_index, params in list(parameterizations.items()):
+        # Extract explicit parameters
+        resin = float(params["resin_fraction"])
+        inhibitor = float(params["inhibitor_fraction"])
+        insulator = float(params["insulator_fraction"])
+        thickness = float(params["coating_thickness_microns"])
+
+        # Derive stabilizer from composition constraint
+        stabilizer = COMPOSITION_TOTAL - (resin + inhibitor + insulator)
+
+        # If small numerical negatives occur, clip to zero
+        if stabilizer < 0 and stabilizer > -1e-9:
+            stabilizer = 0.0
+
+        # Evaluate objective
+        corrosion_damage_value = evaluate_corrosion_damage(
+            resin_fraction=resin,
+            inhibitor_fraction=inhibitor,
+            insulator_fraction=insulator,
+            stabilizer_fraction=stabilizer,
+            coating_thickness_microns=thickness,
+        )
+
+        # Report result back to Ax
+        ax_client.complete_trial(
+            trial_index=trial_index,
+            raw_data={OBJECTIVE_NAME: corrosion_damage_value},
+        )
+
+best_parameters, best_objectives = ax_client.get_best_parameters()
+print("Best parameters (with derived stabilizer_fraction):")
+resin_best = best_parameters["resin_fraction"]
+inhibitor_best = best_parameters["inhibitor_fraction"]
+insulator_best = best_parameters["insulator_fraction"]
+stabilizer_best = COMPOSITION_TOTAL - (resin_best + inhibitor_best + insulator_best)
+thickness_best = best_parameters["coating_thickness_microns"]
+
+print(
+    {
+        "resin_fraction": resin_best,
+        "inhibitor_fraction": inhibitor_best,
+        "insulator_fraction": insulator_best,
+        "stabilizer_fraction": stabilizer_best,
+        "coating_thickness_microns": thickness_best,
+    }
+)
+print("Best observed corrosion_damage:", best_objectives[OBJECTIVE_NAME])
+
+# Plot results across batches
+objective_name = ax_client.objective_names[0]
+df = ax_client.get_trials_data_frame()
+df.index = df.index // batch_size  # group by batch
+
+y = df[objective_name]
+fig, ax = plt.subplots(figsize=(6, 4), dpi=150)
+ax.scatter(df.index, y, ec="k", fc="none", label="Observed")
+ax.plot(df.index, np.minimum.accumulate(y.values), color="#0033FF", lw=2, label="Best to Trial")
+ax.set_xlabel("Batch Number")
+ax.set_ylabel(objective_name)
+ax.legend()
+plt.tight_layout()
+plt.show()
