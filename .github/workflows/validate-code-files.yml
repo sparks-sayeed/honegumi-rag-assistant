@@ -1,0 +1,66 @@
+name: "Validate Generated Code Files"
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'data/processed/evaluation/code_files/**'
+      - 'scripts/validate_code_files.py'
+      - '.github/workflows/validate-code-files.yml'
+  pull_request:
+    paths:
+      - 'data/processed/evaluation/code_files/**'
+      - 'scripts/validate_code_files.py'
+      - '.github/workflows/validate-code-files.yml'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    env:
+      PIP_TIMEOUT: 600
+      PIP_RETRIES: 2
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+          
+      - name: Install package and dev dependencies
+        run: |
+          pip install -e .
+          pip install pyyaml
+          
+      - name: Run validation
+        run: |
+          timeout 600 python scripts/validate_code_files.py
+        env:
+          VALIDATION_MODE: 1
+          
+      - name: Upload validation report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: validation-report
+          path: data/processed/evaluation/validation_report.yaml
+          if-no-files-found: warn
+          
+      - name: Commit validation report
+        if: always()
+        run: |
+          if [ -f data/processed/evaluation/validation_report.yaml ]; then
+            git config --global user.name "github-actions[bot]"
+            git config --global user.email "github-actions[bot]@users.noreply.github.com"
+            git add data/processed/evaluation/validation_report.yaml
+            if ! git diff --staged --quiet; then
+              git commit -m "Update validation report [skip ci]" && git push || echo "Failed to commit/push validation report"
+            fi
+          else
+            echo "No validation report to commit"
+          fi
