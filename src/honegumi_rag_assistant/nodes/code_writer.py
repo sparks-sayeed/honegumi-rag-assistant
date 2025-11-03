@@ -434,11 +434,9 @@ Just the raw Python code, ready to execute.
                 "confidence": 0.0,
             }
 
-        # Self-check: ensure skeleton structure is preserved
-        if skeleton:
-            first_lines = [line for line in skeleton.splitlines() if line.strip()]
-            if first_lines and first_lines[0] not in candidate_code:
-                candidate_code = skeleton + "\n" + candidate_code
+        # Note: Removed self-check that was prepending skeleton code to generated code.
+        # The LLM is explicitly instructed to transform the skeleton into problem-specific code,
+        # so we should trust its output without prepending the template.
 
         confidence = 1.0 if candidate_code.strip() and "# Failed" not in candidate_code else 0.0
         

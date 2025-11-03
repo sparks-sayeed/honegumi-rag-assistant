@@ -6,205 +6,157 @@ from ax.service.ax_client import AxClient, ObjectiveProperties
 import matplotlib.pyplot as plt
 
 
-obj1_name = "branin"
+# Seed for reproducibility of the noise in the synthetic evaluator
+rng = np.random.default_rng(12345)
 
 
-def branin3(x1, x2, x3):
-    y = float(
-        (x2 - 5.1 / (4 * np.pi**2) * x1**2 + 5.0 / np.pi * x1 - 6.0) ** 2
-        + 10 * (1 - 1.0 / (8 * np.pi)) * np.cos(x1)
-        + 10
-    )
-
-    # Contrived way to incorporate x3 into the objective
-    y = y * (1 + 0.1 * x1 * x2 * x3)
-
-    return y
+# Objective metric name
+objective_metric_name = "compressive_strength_MPa"
+# Constraint metric name for enforcing cement_content >= water_content
+constraint_metric_name = "cement_ge_water_violation"
 
 
-# Define total for compositional constraint, where x1 + x2 + x3 == total
-total = 10.0
+def simulate_compressive_strength(aggregate_content: float, cement_content: float, water_content: float) -> float:
+    """
+    Synthetic, physically-inspired surrogate for 28-day compressive strength (MPa) of a high-performance concrete (HPC).
+    Key drivers:
+      - Water-to-cement ratio (w/c): lower is stronger up to a point; optimum around ~0.30-0.35 for HPC.
+      - Aggregate fraction: too little reduces skeleton; too much reduces paste for bonding; optimum around ~0.65-0.70.
+      - Cement fraction: very low cement limits strength (binder deficiency).
+    This surrogate returns a plausible strength in MPa in the range roughly 20-120 MPa for reasonable mixes.
+    """
+    # Guard against division by zero in w/c
+    w_over_c = water_content / max(cement_content, 1e-6)
+
+    # Peak strengths and optima (tunable)
+    strength_max = 120.0  # MPa, representative upper bound for HPC
+    w_c_opt = 0.32
+    w_c_width = 0.10
+
+    agg_opt = 0.68
+    agg_width = 0.10
+
+    # Penalize very low cement contents (< 0.18-0.20)
+    cement_floor = 0.20
+    cement_penalty = 1.0
+    if cement_content < cement_floor:
+        cement_penalty = max(0.6, 1.0 - 1.2 * (cement_floor - cement_content) / cement_floor)
+
+    # Gaussian penalties around optima
+    w_c_factor = np.exp(-((w_over_c - w_c_opt) / w_c_width) ** 2)
+    agg_factor = np.exp(-((aggregate_content - agg_opt) / agg_width) ** 2)
+
+    # Mild penalty if water fraction is extremely small (workability)
+    workability_floor = 0.05
+    water_penalty = 1.0
+    if water_content < workability_floor:
+        water_penalty = max(0.8, 1.0 - 1.5 * (workability_floor - water_content) / workability_floor)
+
+    # Combine effects
+    strength = strength_max * w_c_factor * agg_factor * cement_penalty * water_penalty
+
+    # Keep in a reasonable range
+    strength = float(np.clip(strength, 5.0, 140.0))
+    return strength
 
 
-ax_client = AxClient()
-
-ax_client.create_experiment(
-    parameters=[
-        {"name": "x1", "type": "range", "bounds": [0.0, total]},
-        {"name": "x2", "type": "range", "bounds": [0.0, total]},
-    ],
-    objectives={
-        obj1_name: ObjectiveProperties(minimize=True),
-    },
-    parameter_constraints=[
-        f"x1 + x2 <= {total}",  # reparameterized compositional constraint, which is a type of sum constraint
-        "x1 <= x2",  # example of an order constraint
-    ],
-)
-
-
-for i in range(21):
-
-    parameterization, trial_index = ax_client.get_next_trial()
-
-    # extract parameters
-    x1 = parameterization["x1"]
-    x2 = parameterization["x2"]
-    x3 = total - (x1 + x2)  # composition constraint: x1 + x2 + x3 == total
-
-    results = branin3(x1, x2, x3)
-    ax_client.complete_trial(trial_index=trial_index, raw_data=results)
-
-best_parameters, metrics = ax_client.get_best_parameters()
-
-
-# Plot results
-objectives = ax_client.objective_names
-df = ax_client.get_trials_data_frame()
-
-fig, ax = plt.subplots(figsize=(6, 4), dpi=150)
-ax.scatter(df.index, df[objectives], ec="k", fc="none", label="Observed")
-ax.plot(
-    df.index,
-    np.minimum.accumulate(df[objectives]),
-    color="#0033FF",
-    lw=2,
-    label="Best to Trial",
-)
-ax.set_xlabel("Trial Number")
-ax.set_ylabel(objectives[0])
-
-ax.legend()
-plt.show()
-
-# Generated from Honegumi skeleton, adapted for high-performance concrete mix optimization
-# %pip install ax-platform==0.4.3 matplotlib
-import numpy as np
-import pandas as pd
-from ax.service.ax_client import AxClient, ObjectiveProperties
-import matplotlib.pyplot as plt
-
-
-# Domain-specific objective metric name
-objective_metric_name = "compressive_strength_mpa"
-
-
-# Simulation model for compressive strength of concrete (in MPa).
-# Captures typical trends:
-# - Lower water/cement ratio (w/c) generally increases strength (Abrams' law).
-# - An optimal paste fraction (cement + water) around ~0.32 for HPC.
-# - Aggregate fraction too high or too low can reduce strength (packing/ITZ effects).
-# Adds Gaussian noise to reflect experimental variability.
-def simulate_concrete_strength(aggregate_fraction: float, cement_fraction: float) -> tuple[float, float]:
-    total = 1.0
-    water_fraction = max(0.0, total - (aggregate_fraction + cement_fraction))
-
-    # Protect against degenerate binder content
-    if cement_fraction <= 1e-6:
-        mean_strength = 5.0  # Essentially no binder, very low strength
-        sem = 3.0
-        return mean_strength, sem
-
-    # Core effects
-    w_c = water_fraction / cement_fraction  # water-to-cement ratio
-    paste_fraction = cement_fraction + water_fraction
-
-    # Abrams-like effect (decreasing strength with increasing w/c)
-    # Scaled to typical HPC ranges (60–120 MPa)
-    strength_w_c = 150.0 / (5.0 * w_c + 0.5)  # w/c=0.25 -> ~85.7 MPa; w/c=0.2 -> ~100 MPa
-
-    # Paste fraction effect: peak around ~0.32
-    paste_opt = 0.32
-    paste_penalty = 1.0 - 2.0 * abs(paste_fraction - paste_opt) / 0.2  # 0 at ~0.52 or ~0.12
-    paste_penalty = np.clip(paste_penalty, 0.2, 1.0)
-
-    # Aggregate packing/ITZ effect: peak near aggregate ~ (1 - paste_opt)
-    aggregate_opt = 1.0 - paste_opt
-    aggregate_penalty = 1.0 - 1.5 * abs(aggregate_fraction - aggregate_opt) / 0.3
-    aggregate_penalty = np.clip(aggregate_penalty, 0.2, 1.0)
-
-    # Cement richness factor (helps up to a point)
-    cement_enrichment = 0.8 + 0.6 * np.clip(cement_fraction / 0.18, 0.0, 1.0)
-
-    mean_strength = strength_w_c * paste_penalty * aggregate_penalty * cement_enrichment
-
-    # Add measurement noise (SEM). For noisy experiments, Ax can infer noise if SEM=None.
-    # Here we provide a modest SEM to reflect lab variability.
-    sem = 2.5 + 0.02 * mean_strength  # heteroscedastic noise
-
-    # Return mean and SEM tuple; Ax will treat this as a noisy observation.
-    return float(mean_strength), float(sem)
-
-
-# Compositional total: aggregate + cement + water = 1.0
+# Define total for compositional constraint, where aggregate + cement + water == total_fraction
 total_fraction = 1.0
 
 
 ax_client = AxClient()
 
-# We parameterize only aggregate and cement; water is computed as the remainder.
-# Constraints:
-# - aggregate_fraction + cement_fraction <= 1.0  (ensures water >= 0)
-# - cement_fraction <= aggregate_fraction       (aggregate >= cement)
-# - cement_fraction >= water_fraction
-#     Since water = 1 - aggregate - cement, cement >= water  <=>  aggregate + 2*cement >= 1
-#     We encode as a linear inequality: -aggregate - 2*cement <= -1
 ax_client.create_experiment(
-    name="hpc_concrete_mix_optimization",
+    name="hpc_mix_design_optimization",
     parameters=[
-        {"name": "aggregate_fraction", "type": "range", "bounds": [0.0, total_fraction], "value_type": "float"},
-        {"name": "cement_fraction", "type": "range", "bounds": [0.0, total_fraction], "value_type": "float"},
+        # We reparameterize the composition by optimizing only aggregate and cement.
+        # Water is computed as the residual: water = 1 - (aggregate + cement).
+        {"name": "aggregate_content", "type": "range", "bounds": [0.0, total_fraction]},
+        {"name": "cement_content", "type": "range", "bounds": [0.0, total_fraction]},
     ],
     objectives={
         objective_metric_name: ObjectiveProperties(minimize=False),
     },
+    # Parameter constraints:
+    # 1) Compositional: aggregate + cement <= 1.0  (implies water >= 0)
+    # 2) Ordering: aggregate_content >= cement_content
     parameter_constraints=[
-        f"aggregate_fraction + cement_fraction <= {total_fraction}",
-        "cement_fraction <= aggregate_fraction",
-        "-1.0*aggregate_fraction - 2.0*cement_fraction <= -1.0",
+        f"aggregate_content + cement_content <= {total_fraction}",
+        "cement_content <= aggregate_content",
     ],
+    # Outcome constraint to enforce cement_content >= water_content (which is nonlinear in the reparameterization).
+    # We model constraint metric as: cement_ge_water_violation = max(0, water - cement) <= 0.0
+    outcome_constraints=[f"{constraint_metric_name} <= 0.0"],
 )
 
-# Run optimization loop
-num_trials = 40
-for _ in range(num_trials):
-    parameters, trial_index = ax_client.get_next_trial()
 
-    # Extract parameters
-    aggregate_fraction = parameters["aggregate_fraction"]
-    cement_fraction = parameters["cement_fraction"]
-    water_fraction = total_fraction - (aggregate_fraction + cement_fraction)
+# Number of trials
+n_trials = 40
 
-    # Evaluate objective (compressive strength)
-    mean_strength, sem = simulate_concrete_strength(aggregate_fraction, cement_fraction)
+# For plotting / logging
+observed_strengths = []  # store objective values (NaN if constraint violated)
+violations = []  # store violation values
 
-    # Report single-objective result as (mean, SEM)
-    ax_client.complete_trial(trial_index=trial_index, raw_data=(mean_strength, sem))
+
+for _ in range(n_trials):
+
+    parameterization, trial_index = ax_client.get_next_trial()
+
+    # extract parameters
+    aggregate = float(parameterization["aggregate_content"])
+    cement = float(parameterization["cement_content"])
+    water = float(total_fraction - (aggregate + cement))  # composition constraint: aggregate + cement + water == 1.0
+
+    # Compute violation: cement_content >= water_content  -> violation = max(0, water - cement)
+    cement_vs_water_violation = max(0.0, water - cement)
+
+    if cement_vs_water_violation > 0.0:
+        # Skip expensive objective computation if constraint is violated
+        ax_client.complete_trial(
+            trial_index=trial_index,
+            raw_data={constraint_metric_name: (cement_vs_water_violation, 0.0)},
+        )
+        observed_strengths.append(np.nan)
+        violations.append(cement_vs_water_violation)
+        continue
+
+    # Compute objective when feasible
+    strength = simulate_compressive_strength(aggregate_content=aggregate, cement_content=cement, water_content=water)
+
+    # Add measurement noise (SEM reflects observational noise level)
+    sem_strength = 2.0  # MPa
+    noisy_strength = strength + rng.normal(0.0, sem_strength)
+
+    ax_client.complete_trial(
+        trial_index=trial_index,
+        raw_data={
+            objective_metric_name: (float(noisy_strength), float(sem_strength)),
+            constraint_metric_name: (0.0, 0.0),
+        },
+    )
+    observed_strengths.append(float(noisy_strength))
+    violations.append(0.0)
+
 
 best_parameters, best_metrics = ax_client.get_best_parameters()
 
-# Compute the corresponding water fraction for the best parameters
-best_agg = best_parameters["aggregate_fraction"]
-best_cem = best_parameters["cement_fraction"]
-best_wat = total_fraction - (best_agg + best_cem)
 
-print("Best mix found:")
-print(f"  aggregate_fraction = {best_agg:.4f}")
-print(f"  cement_fraction    = {best_cem:.4f}")
-print(f"  water_fraction     = {best_wat:.4f}")
-print("Best observed objective:")
-for m_name, m_val in best_metrics.items():
-    print(f"  {m_name}: {m_val:.3f}")
-
-# Plot results: optimization trace (maximize)
-metric_name = ax_client.objective_names[0]
-df = ax_client.get_trials_data_frame()
+# Plot results (objective over trials and best-so-far trace)
+y = np.array(observed_strengths, dtype=float)
+x = np.arange(1, len(y) + 1)
+best_so_far = []
+current_best = -np.inf
+for val in y:
+    if np.isfinite(val):
+        current_best = max(current_best, val)
+    best_so_far.append(current_best if np.isfinite(current_best) else np.nan)
 
 fig, ax = plt.subplots(figsize=(7, 4), dpi=150)
-ax.scatter(df.index, df[metric_name], ec="k", fc="none", label="Observed")
-ax.plot(df.index, np.maximum.accumulate(df[metric_name]), color="#0033FF", lw=2, label="Best to Trial")
+ax.scatter(x, y, ec="k", fc="none", label="Observed compressive strength")
+ax.plot(x, best_so_far, color="#0033FF", lw=2, label="Best so far")
 ax.set_xlabel("Trial Number")
-ax.set_ylabel(metric_name)
+ax.set_ylabel("Compressive Strength (MPa)")
+ax.set_title("High-Performance Concrete Mix Optimization")
 ax.legend()
 plt.tight_layout()
 plt.show()

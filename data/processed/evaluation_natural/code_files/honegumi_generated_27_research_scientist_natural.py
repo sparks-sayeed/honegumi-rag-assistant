@@ -6,238 +6,154 @@ from ax.service.ax_client import AxClient, ObjectiveProperties
 import matplotlib.pyplot as plt
 
 
-obj1_name = "branin"
-obj2_name = "branin_swapped"
+# Domain-specific objective names
+refractive_index_metric = "refractive_index"
+absorption_metric = "absorption_coefficient_cm_inv"
 
 
-def branin3_moo(x1, x2, x3):
-    y = float(
-        (x2 - 5.1 / (4 * np.pi**2) * x1**2 + 5.0 / np.pi * x1 - 6.0) ** 2
-        + 10 * (1 - 1.0 / (8 * np.pi)) * np.cos(x1)
-        + 10
+def simulate_glass_optics(
+    silica_fraction: float,
+    boron_oxide_fraction: float,
+    lead_oxide_fraction: float,
+    rng: np.random.Generator | None = None,
+) -> dict[str, float]:
+    """
+    Simulate two competing optical properties for a ternary glass system:
+    - refractive_index (to maximize)
+    - absorption_coefficient_cm_inv (to minimize)
+
+    This is a realistic stub using mixture rules and simple phenomenology:
+    - Refractive index is computed via Lorentz–Lorenz mixing rule.
+    - Absorption is modeled as a convex combination with non-linear penalties.
+
+    TODO: Replace with actual experimental/simulation logic when available.
+    """
+
+    if rng is None:
+        rng = np.random.default_rng()
+
+    # Validate fractions
+    if silica_fraction < 0 or boron_oxide_fraction < 0 or lead_oxide_fraction < 0:
+        raise ValueError("All oxide fractions must be non-negative.")
+    total = silica_fraction + boron_oxide_fraction + lead_oxide_fraction
+    if not np.isclose(total, 1.0, atol=1e-6):
+        raise ValueError(f"Fractions must sum to 1.0, got {total:.6f}")
+
+    # Component properties at ~589 nm (illustrative values)
+    n_silica = 1.458
+    n_boron = 1.61
+    n_lead = 2.50
+
+    # Lorentz–Lorenz mixing rule for refractive index
+    def L(n: float) -> float:
+        return (n**2 - 1.0) / (n**2 + 2.0)
+
+    L_mix = (
+        silica_fraction * L(n_silica)
+        + boron_oxide_fraction * L(n_boron)
+        + lead_oxide_fraction * L(n_lead)
+    )
+    # Guard against numerical issues
+    L_mix = np.clip(L_mix, -0.99, 0.99)
+    n_eff = np.sqrt((1.0 + 2.0 * L_mix) / (1.0 - L_mix))
+
+    # Absorption coefficient model (1/cm)
+    # Baseline component absorptions (illustrative)
+    alpha_silica = 0.010
+    alpha_boron = 0.030
+    alpha_lead = 0.250
+
+    absorption = (
+        silica_fraction * alpha_silica
+        + boron_oxide_fraction * alpha_boron
+        + lead_oxide_fraction * alpha_lead
     )
 
-    # Contrived way to incorporate x3 into the objective
-    y = y * (1 + 0.1 * x1 * x2 * x3)
+    # Non-linear composition effects:
+    # - Lead increases absorption super-linearly
+    # - Lead-Boron synergy slightly increases absorption
+    # - Silica-Boron network formation slightly reduces absorption
+    absorption += 0.60 * (lead_oxide_fraction ** 2)
+    absorption += 0.10 * lead_oxide_fraction * boron_oxide_fraction
+    absorption -= 0.02 * silica_fraction * boron_oxide_fraction
 
-    # second objective has x1 and x2 swapped
-    y2 = float(
-        (x1 - 5.1 / (4 * np.pi**2) * x2**2 + 5.0 / np.pi * x2 - 6.0) ** 2
-        + 10 * (1 - 1.0 / (8 * np.pi)) * np.cos(x2)
-        + 10
-    )
+    # Add measurement noise (to reflect experimental noise model)
+    n_noise = rng.normal(0.0, 0.001)  # refractive index noise
+    a_noise = rng.normal(0.0, 0.005)  # absorption noise (1/cm)
 
-    # Contrived way to incorporate x3 into the second objective
-    y2 = y2 * (1 - 0.1 * x1 * x2 * x3)
+    refractive_index_value = float(n_eff + n_noise)
+    absorption_value = float(max(0.0, absorption + a_noise))
 
-    return {obj1_name: y, obj2_name: y2}
-
-
-# Define total for compositional constraint, where x1 + x2 + x3 == total
-total = 10.0
+    return {
+        refractive_index_metric: refractive_index_value,
+        absorption_metric: absorption_value,
+    }
 
 
+# Composition total (fractions must sum to 1.0)
+total_fraction = 1.0
+
+# Initialize Ax client
 ax_client = AxClient()
 
+# We reparameterize the compositional constraint by optimizing two variables
+# and computing the third as the remainder to ensure the sum equals 1.0.
 ax_client.create_experiment(
     parameters=[
-        {"name": "x1", "type": "range", "bounds": [0.0, total]},
-        {"name": "x2", "type": "range", "bounds": [0.0, total]},
+        {"name": "silica_fraction", "type": "range", "bounds": [0.0, total_fraction]},
+        {"name": "boron_oxide_fraction", "type": "range", "bounds": [0.0, total_fraction]},
     ],
     objectives={
-        obj1_name: ObjectiveProperties(minimize=True),
-        obj2_name: ObjectiveProperties(minimize=True),
+        refractive_index_metric: ObjectiveProperties(minimize=False),
+        absorption_metric: ObjectiveProperties(minimize=True),
     },
     parameter_constraints=[
-        f"x1 + x2 <= {total}",  # reparameterized compositional constraint, which is a type of sum constraint
+        f"silica_fraction + boron_oxide_fraction <= {total_fraction}",
     ],
 )
 
+# Optimization loop
+num_trials = 36
+rng = np.random.default_rng(2025)
 
-for i in range(21):
-
+for _ in range(num_trials):
     parameterization, trial_index = ax_client.get_next_trial()
 
-    # extract parameters
-    x1 = parameterization["x1"]
-    x2 = parameterization["x2"]
-    x3 = total - (x1 + x2)  # composition constraint: x1 + x2 + x3 == total
+    # Extract parameters and compute the third fraction to satisfy the composition constraint
+    silica = float(parameterization["silica_fraction"])
+    boron = float(parameterization["boron_oxide_fraction"])
+    lead = total_fraction - (silica + boron)  # enforce silica + boron + lead == 1.0
 
-    results = branin3_moo(x1, x2, x3)
+    # Safety clamp for potential floating-point drift (should be ~0 anyway due to constraint)
+    lead = float(np.clip(lead, 0.0, 1.0))
+
+    results = simulate_glass_optics(silica, boron, lead, rng=rng)
     ax_client.complete_trial(trial_index=trial_index, raw_data=results)
-pareto_results = ax_client.get_pareto_optimal_parameters()
 
+# Retrieve Pareto-optimal parameterizations
+pareto_results = ax_client.get_pareto_optimal_parameters(use_model_predictions=False)
 
-# Plot results
+# Prepare data for plotting
 objectives = ax_client.objective_names
 df = ax_client.get_trials_data_frame()
 
 fig, ax = plt.subplots(figsize=(6, 4), dpi=150)
 pareto = ax_client.get_pareto_optimal_parameters(use_model_predictions=False)
-pareto_data = [p[1][0] for p in pareto.values()]
-pareto = pd.DataFrame(pareto_data).sort_values(objectives[0])
+# pareto.values() contains tuples; we extract the observed means dict
+pareto_means = [p[1][0] for p in pareto.values()]
+pareto_df = pd.DataFrame(pareto_means).sort_values(objectives[0])
 
 ax.scatter(df[objectives[0]], df[objectives[1]], fc="None", ec="k", label="Observed")
 ax.plot(
-    pareto[objectives[0]],
-    pareto[objectives[1]],
+    pareto_df[objectives[0]],
+    pareto_df[objectives[1]],
     color="#0033FF",
     lw=2,
     label="Pareto Front",
 )
-ax.set_xlabel(objectives[0])
-ax.set_ylabel(objectives[1])
-
-ax.legend()
-plt.show()
-
-# Generated from Honegumi skeleton and adapted for multi-objective glass composition optimization
-# %pip install ax-platform==0.4.3 matplotlib
-import numpy as np
-import pandas as pd
-from typing import Dict, Tuple
-from ax.service.ax_client import AxClient, ObjectiveProperties
-import matplotlib.pyplot as plt
-
-
-# Domain-specific metric names
-REFRACTIVE_INDEX = "refractive_index"     # Higher is better
-ABBE_NUMBER = "abbe_number"               # Higher is better (lower dispersion)
-
-
-def measure_glass_optics(frac_sio2: float, frac_b2o3: float, frac_pbo: float) -> Dict[str, Tuple[float, float]]:
-    """
-    Simulate optical properties of a ternary glass system composed of SiO2, B2O3, and PbO.
-    Returns measured mean values with estimated standard errors for:
-      - refractive index (n_d at ~589 nm)
-      - Abbe number (V_d, dispersion metric)
-    The model below is a plausible physics-inspired surrogate to enable BO to run end-to-end.
-    Replace with actual experimental/simulation measurement logic as needed.
-
-    Args:
-        frac_sio2: Mole or mass fraction of SiO2 (0-1)
-        frac_b2o3: Mole or mass fraction of B2O3 (0-1)
-        frac_pbo: Mole or mass fraction of PbO (0-1), computed to satisfy sum-to-one
-
-    Returns:
-        Dict mapping metric name to (mean, sem) tuple.
-    """
-
-    # Base property anchors (representative ballpark values of pure or dominant-component glasses)
-    n_sio2 = 1.458
-    n_b2o3 = 1.445
-    n_pbo = 1.90
-
-    v_sio2 = 67.0
-    v_b2o3 = 75.0
-    v_pbo = 30.0
-
-    # Linear mixture baseline
-    n_linear = frac_sio2 * n_sio2 + frac_b2o3 * n_b2o3 + frac_pbo * n_pbo
-    v_linear = frac_sio2 * v_sio2 + frac_b2o3 * v_b2o3 + frac_pbo * v_pbo
-
-    # Nonlinear interaction terms to induce realistic trade-offs
-    # Slight synergy of PbO with reduced SiO2 on refractive index; mild penalty from B2O3 mixing
-    n_interact = (
-        0.05 * frac_pbo * (1.0 - frac_sio2)
-        - 0.02 * frac_b2o3 * frac_sio2
-        + 0.01 * frac_pbo * frac_b2o3
-    )
-
-    # Abbe number strongly penalized by high PbO content; slight benefit from SiO2-B2O3 network formers
-    v_interact = (
-        -15.0 * (frac_pbo ** 1.5)
-        + 5.0 * frac_b2o3 * frac_sio2
-        - 2.0 * frac_b2o3 * frac_pbo
-    )
-
-    # Aggregate properties
-    refractive_index = n_linear + n_interact
-    abbe_number = v_linear + v_interact
-
-    # Measurement noise (SEM): adjust to represent experimental uncertainty
-    rng = np.random.default_rng(2025)
-    refractive_index_measured = refractive_index + rng.normal(0.0, 0.002)
-    abbe_number_measured = abbe_number + rng.normal(0.0, 0.4)
-
-    # Clamp to physically plausible ranges
-    refractive_index_measured = float(np.clip(refractive_index_measured, 1.35, 2.20))
-    abbe_number_measured = float(np.clip(abbe_number_measured, 10.0, 90.0))
-
-    # Report both mean and uncertainty (SEM) so Ax treats as noisy observations
-    return {
-        REFRACTIVE_INDEX: (refractive_index_measured, 0.003),
-        ABBE_NUMBER: (abbe_number_measured, 0.5),
-    }
-
-
-# Composition constraint: fractions must sum to 1.0
-TOTAL_FRACTION = 1.0
-
-ax_client = AxClient()
-
-ax_client.create_experiment(
-    name="ternary_glass_multiobjective_optimization",
-    parameters=[
-        # Two free variables; the third is computed to satisfy sum-to-one
-        {"name": "frac_sio2", "type": "range", "bounds": [0.0, TOTAL_FRACTION]},
-        {"name": "frac_b2o3", "type": "range", "bounds": [0.0, TOTAL_FRACTION]},
-    ],
-    objectives={
-        REFRACTIVE_INDEX: ObjectiveProperties(minimize=False),
-        ABBE_NUMBER: ObjectiveProperties(minimize=False),
-    },
-    parameter_constraints=[
-        # Reparameterized composition constraint: frac_sio2 + frac_b2o3 <= 1.0
-        f"frac_sio2 + frac_b2o3 <= {TOTAL_FRACTION}",
-    ],
-)
-
-# Optimization loop
-# Increase iterations for more thorough exploration; adjust as needed
-NUM_TRIALS = 48
-for _ in range(NUM_TRIALS):
-    parameterization, trial_index = ax_client.get_next_trial()
-
-    frac_sio2 = float(parameterization["frac_sio2"])
-    frac_b2o3 = float(parameterization["frac_b2o3"])
-    frac_pbo = float(TOTAL_FRACTION - (frac_sio2 + frac_b2o3))
-
-    # Numerical safety: ensure computed fraction remains within [0, 1]
-    frac_pbo = float(np.clip(frac_pbo, 0.0, 1.0))
-
-    results = measure_glass_optics(frac_sio2=frac_sio2, frac_b2o3=frac_b2o3, frac_pbo=frac_pbo)
-    ax_client.complete_trial(trial_index=trial_index, raw_data=results)
-
-# Retrieve all observations
-df = ax_client.get_trials_data_frame()
-df = df.copy()
-df = df.dropna(subset=[REFRACTIVE_INDEX, ABBE_NUMBER])
-
-# Compute empirical Pareto front (non-dominated set under maximization)
-def pareto_filter_maximization(dataframe: pd.DataFrame, obj_cols: Tuple[str, str]) -> pd.DataFrame:
-    a, b = obj_cols
-    points = dataframe[[a, b]].to_numpy()
-    is_nondominated = np.ones(points.shape[0], dtype=bool)
-    for i, p in enumerate(points):
-        if not is_nondominated[i]:
-            continue
-        dominates = (points[:, 0] >= p[0]) & (points[:, 1] >= p[1]) & (
-            (points[:, 0] > p[0]) | (points[:, 1] > p[1])
-        )
-        is_nondominated &= ~dominates
-        is_nondominated[i] = True  # keep the current point
-    return dataframe[is_nondominated]
-
-pareto_df = pareto_filter_maximization(df, (REFRACTIVE_INDEX, ABBE_NUMBER)).sort_values(REFRACTIVE_INDEX)
-
-# Plot objective trade-off and Pareto front
-fig, ax = plt.subplots(figsize=(6, 4), dpi=150)
-ax.scatter(df[REFRACTIVE_INDEX], df[ABBE_NUMBER], fc="None", ec="k", label="Observed")
-ax.plot(pareto_df[REFRACTIVE_INDEX], pareto_df[ABBE_NUMBER], color="#0033FF", lw=2, label="Pareto Front")
-ax.set_xlabel("Refractive index (n_d)")
-ax.set_ylabel("Abbe number (V_d)")
-ax.set_title("Ternary glass optimization: SiO2–B2O3–PbO")
+ax.set_xlabel(objectives[0].replace("_", " "))
+ax.set_ylabel(objectives[1].replace("_", " "))
+ax.set_title("Multi-objective Optimization of Glass Composition")
 ax.legend()
 plt.tight_layout()
 plt.show()

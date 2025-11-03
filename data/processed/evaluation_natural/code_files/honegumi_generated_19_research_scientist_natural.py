@@ -6,192 +6,163 @@ from ax.service.ax_client import AxClient, ObjectiveProperties
 import matplotlib.pyplot as plt
 
 
-obj1_name = "branin"
+# Problem: Optimize chemical conversion yield by tuning three process parameters
+# Parameters:
+#   - temperature_celsius (continuous): Reactor temperature in degrees Celsius
+#   - residence_time_minutes (continuous): Residence time in minutes
+#   - catalyst_loading_wt_percent (continuous): Catalyst mass fraction in wt%
+#
+# Objective:
+#   - yield_percent (maximize): Reaction yield in percent [%]
+#
+# Experimental budget: 35 trials
+# Noise model: True (evaluation includes realistic measurement noise)
+#
+# Note: Replace the evaluation function below with actual lab measurement or a high-fidelity
+# simulator as needed. The provided function is a physically plausible surrogate with noise.
 
 
-def branin(x1, x2):
-    y = float(
-        (x2 - 5.1 / (4 * np.pi**2) * x1**2 + 5.0 / np.pi * x1 - 6.0) ** 2
-        + 10 * (1 - 1.0 / (8 * np.pi)) * np.cos(x1)
-        + 10
-    )
-
-    return y
+# Reproducible RNG for simulated measurement noise
+_rng = np.random.default_rng(2025)
 
 
-ax_client = AxClient()
-
-ax_client.create_experiment(
-    parameters=[
-        {"name": "x1", "type": "range", "bounds": [-5.0, 10.0]},
-        {"name": "x2", "type": "range", "bounds": [0.0, 10.0]},
-    ],
-    objectives={
-        obj1_name: ObjectiveProperties(minimize=True),
-    },
-)
-
-
-for i in range(19):
-
-    parameterization, trial_index = ax_client.get_next_trial()
-
-    # extract parameters
-    x1 = parameterization["x1"]
-    x2 = parameterization["x2"]
-
-    results = branin(x1, x2)
-    ax_client.complete_trial(trial_index=trial_index, raw_data=results)
-
-best_parameters, metrics = ax_client.get_best_parameters()
-
-
-# Plot results
-objectives = ax_client.objective_names
-df = ax_client.get_trials_data_frame()
-
-fig, ax = plt.subplots(figsize=(6, 4), dpi=150)
-ax.scatter(df.index, df[objectives], ec="k", fc="none", label="Observed")
-ax.plot(
-    df.index,
-    np.minimum.accumulate(df[objectives]),
-    color="#0033FF",
-    lw=2,
-    label="Best to Trial",
-)
-ax.set_xlabel("Trial Number")
-ax.set_ylabel(objectives[0])
-
-ax.legend()
-plt.show()
-
-# Optimizing chemical conversion yield with Ax (Bayesian optimization)
-# %pip install ax-platform==0.4.3 matplotlib
-import numpy as np
-import pandas as pd
-from typing import Dict, Any
-from ax.service.ax_client import AxClient, ObjectiveProperties
-import matplotlib.pyplot as plt
-
-
-# Single-objective: maximize product yield (percent)
-YIELD_METRIC_NAME = "yield_percent"
-
-# Random generator for reproducibility and to simulate measurement noise
-rng = np.random.default_rng(seed=123)
-
-
-def evaluate_reaction_yield(
+def evaluate_chemical_conversion(
     temperature_celsius: float,
-    residence_time_min: float,
-    catalyst_loading_wt_pct: float,
+    residence_time_minutes: float,
+    catalyst_loading_wt_percent: float,
 ) -> float:
+    """Simulate chemical conversion yield [%] given process conditions.
+
+    This is a realistic stub capturing:
+      - Temperature-dependent rate and selectivity (too cold: slow, too hot: side reactions)
+      - Time-dependent conversion saturation
+      - Catalyst loading with diminishing returns and an optimum before selectivity drops
+      - Additive measurement noise (Gaussian) to reflect a noisy experimental setting
+
+    TODO: Replace with actual experimental measurement logic:
+      - Run the experiment at the specified conditions
+      - Measure yield (in percent, 0-100)
+      - Return the measured yield as a float
+
+    Returns:
+      Yield percent in [0, 100].
     """
-    Simulate measuring chemical conversion yield (%) for given operating conditions.
+    # Selectivity: peak around an optimal temperature and moderate catalyst loading
+    t_opt = 85.0  # deg C
+    t_sigma = 15.0  # controls how quickly selectivity falls off away from optimum
+    s_temp = np.exp(-0.5 * ((temperature_celsius - t_opt) / t_sigma) ** 2)
 
-    Replace this with your real evaluation logic, for example:
-    - Run the physical experiment and record GC/HPLC yield (%)
-    - Call a reactor simulation / kinetic model
-    - Query a lab data acquisition system API
+    cat_opt = 2.0  # wt%
+    cat_sigma = 1.5
+    s_cat = np.exp(-0.5 * ((catalyst_loading_wt_percent - cat_opt) / cat_sigma) ** 2)
 
-    Notes on this stub:
-    - Produces a smooth response surface with a single broad optimum.
-    - Adds Gaussian measurement noise (~2% absolute).
-    - Clamps yield to [0, 100] percent.
-    """
+    # Combine selectivity effects; ensure not too punitive by adding a modest baseline
+    selectivity = np.clip(s_temp * s_cat, 0.0, 1.0)
 
-    T = float(temperature_celsius)
-    t = float(residence_time_min)
-    c = float(catalyst_loading_wt_pct)
+    # Kinetics: temperature accelerates rate; catalyst contributes with diminishing returns
+    k_base = 0.03  # 1/min baseline rate constant scaling
+    temp_rate_factor = np.exp(0.035 * (temperature_celsius - 60.0))  # ~3.5%/C sensitivity
+    cat_rate_factor = 1.0 - np.exp(-1.2 * catalyst_loading_wt_percent)  # saturating with loading
+    # Ensure some baseline rate even at very low catalyst
+    k_eff = k_base * temp_rate_factor * (0.3 + 0.7 * cat_rate_factor)
 
-    # A physically plausible surrogate surface:
-    # Peak near T≈140 C, t≈40 min, c≈1.6 wt%
-    # Gaussian-like bumps for each factor plus mild penalties for excessive T or catalyst.
-    bump_T = np.exp(-((T - 140.0) / 18.0) ** 2)
-    bump_t = np.exp(-((np.log(t) - np.log(40.0)) / 0.4) ** 2)
-    bump_c = np.exp(-((c - 1.6) / 0.6) ** 2)
+    # Time dependence: saturation toward asymptote with effective rate constant
+    conversion = 1.0 - np.exp(-k_eff * max(residence_time_minutes, 0.0))
+    conversion = np.clip(conversion, 0.0, 1.0)
 
-    base_yield = 10.0 + 90.0 * bump_T * bump_t * bump_c
+    # Maximum attainable yield fraction (accounting for thermodynamic/stoichiometric limits)
+    max_yield_fraction = 0.98
 
-    # Mild penalties for conditions that encourage side-reactions or coking
-    def sigmoid(x: float, s: float = 2.0) -> float:
-        return 1.0 / (1.0 + np.exp(-x / s))
+    yield_fraction = max_yield_fraction * selectivity * conversion
 
-    penalty_factor = 1.0 - 0.15 * sigmoid(T - 170.0) - 0.10 * sigmoid(c - 3.5)
-    simulated_yield = base_yield * penalty_factor
+    # Add realistic measurement/process noise (~1% absolute std in yield)
+    noise_sd_fraction = 0.01
+    noisy_yield_fraction = yield_fraction + _rng.normal(0.0, noise_sd_fraction)
 
-    # Add measurement noise (absolute ±2% typical)
-    noisy_yield = simulated_yield + rng.normal(loc=0.0, scale=2.0)
-
-    # Clamp to [0, 100]
-    return float(np.clip(noisy_yield, 0.0, 100.0))
+    # Convert to percent and clamp to physical bounds [0, 100]
+    yield_percent = float(np.clip(noisy_yield_fraction * 100.0, 0.0, 100.0))
+    return yield_percent
 
 
-# Initialize Ax client
-ax_client = AxClient()
+# Set up Ax optimization
+ax_client = AxClient(random_seed=123)
 
-# Define search space: three process parameters
 ax_client.create_experiment(
+    name="chemical_conversion_yield_optimization",
     parameters=[
         {
             "name": "temperature_celsius",
             "type": "range",
-            "bounds": [80.0, 200.0],
+            "bounds": [40.0, 120.0],
+            "value_type": "float",
         },
         {
-            "name": "residence_time_min",
+            "name": "residence_time_minutes",
             "type": "range",
-            "bounds": [5.0, 120.0],
+            "bounds": [1.0, 120.0],
+            "value_type": "float",
         },
         {
-            "name": "catalyst_loading_wt_pct",
+            "name": "catalyst_loading_wt_percent",
             "type": "range",
             "bounds": [0.1, 5.0],
+            "value_type": "float",
         },
     ],
     objectives={
-        YIELD_METRIC_NAME: ObjectiveProperties(minimize=False),
+        "yield_percent": ObjectiveProperties(minimize=False),
     },
 )
 
-# Budgeted campaign: 35 experiments
-N_TRIALS = 35
-
-for _ in range(N_TRIALS):
+# Run optimization for the planned budget of 35 experiments
+n_trials = 35
+for _ in range(n_trials):
     parameterization, trial_index = ax_client.get_next_trial()
 
     # Extract parameters
-    T = parameterization["temperature_celsius"]
-    t = parameterization["residence_time_min"]
-    c = parameterization["catalyst_loading_wt_pct"]
+    temp_c = float(parameterization["temperature_celsius"])
+    time_min = float(parameterization["residence_time_minutes"])
+    cat_wt = float(parameterization["catalyst_loading_wt_percent"])
 
+    # Evaluate experiment (replace with actual measurement in production)
     try:
-        # Run your experiment here and measure yield (%)
-        yield_pct = evaluate_reaction_yield(T, t, c)
-
-        # Report observation to Ax. Passing a float signals a noisy observation by default.
-        ax_client.complete_trial(trial_index=trial_index, raw_data=yield_pct)
-    except Exception:
-        # Mark the trial as failed if evaluation crashes
+        measured_yield = evaluate_chemical_conversion(
+            temperature_celsius=temp_c,
+            residence_time_minutes=time_min,
+            catalyst_loading_wt_percent=cat_wt,
+        )
+        ax_client.complete_trial(trial_index=trial_index, raw_data=measured_yield)
+    except Exception as e:
+        # If a run fails (instrument error, etc.), record failure and continue
         ax_client.log_trial_failure(trial_index=trial_index)
+        print(f"Trial {trial_index} failed with error: {e}")
 
-# Retrieve best-found parameters and corresponding metric
+# Best found parameters and associated metric
 best_parameters, best_metrics = ax_client.get_best_parameters()
+print("Best Parameters Found:")
+for k, v in best_parameters.items():
+    print(f"  {k}: {v}")
+print("Best Metrics:")
+print(best_metrics)
 
-# Prepare results DataFrame
+# Plot results
+objective_name = ax_client.objective_names[0]
 df = ax_client.get_trials_data_frame()
 
-# Plot observed yields and best-so-far yield over trials
-objective_name = ax_client.objective_names[0]
-trial_numbers = np.arange(len(df))
-y_obs = df[objective_name].astype(float).to_numpy()
+# Ensure the DataFrame contains the objective column
+if objective_name not in df.columns:
+    raise RuntimeError(f"Objective column '{objective_name}' not found in trials DataFrame.")
+
+y_vals = df[objective_name].astype(float).values
+trial_numbers = df.index.values
+best_so_far = np.maximum.accumulate(y_vals)
 
 fig, ax = plt.subplots(figsize=(7, 4), dpi=150)
-ax.scatter(trial_numbers, y_obs, ec="k", fc="none", label="Observed yield")
-ax.plot(trial_numbers, np.maximum.accumulate(y_obs), color="#0033FF", lw=2, label="Best to trial")
+ax.scatter(trial_numbers, y_vals, ec="k", fc="none", label="Observed yield (%)")
+ax.plot(trial_numbers, best_so_far, color="#0033FF", lw=2, label="Best to date")
 ax.set_xlabel("Trial number")
 ax.set_ylabel("Yield (%)")
-ax.set_title("Bayesian optimization of chemical conversion yield")
+ax.set_title("Chemical Conversion Yield Optimization (Ax)")
 ax.legend()
 plt.tight_layout()
 plt.show()

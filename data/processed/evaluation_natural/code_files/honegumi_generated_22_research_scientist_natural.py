@@ -6,44 +6,111 @@ from ax.service.ax_client import AxClient, ObjectiveProperties
 import matplotlib.pyplot as plt
 
 
-obj1_name = "branin"
+# Domain: Spray coating process optimization for film thickness uniformity
+# Parameters:
+#   - spray_distance_mm: nozzle-to-substrate distance [100, 300] mm
+#   - atomizing_air_pressure_bar: atomizing air pressure [0.5, 3.0] bar
+# Objective:
+#   - thickness_nonuniformity: coefficient of variation (std/mean) of the simulated deposited film thickness across the panel (dimensionless), to be minimized
+
+metric_name = "thickness_nonuniformity"
+
+# Reproducible RNG for simulated measurement noise
+rng = np.random.default_rng(2025)
 
 
-def branin(x1, x2):
-    y = float(
-        (x2 - 5.1 / (4 * np.pi**2) * x1**2 + 5.0 / np.pi * x1 - 6.0) ** 2
-        + 10 * (1 - 1.0 / (8 * np.pi)) * np.cos(x1)
-        + 10
-    )
+def evaluate_coating_uniformity(spray_distance_mm: float, atomizing_air_pressure_bar: float) -> dict:
+    """
+    Physics-inspired simulation of coating thickness distribution over a flat panel
+    for a raster spray process, returning thickness non-uniformity (lower is better).
 
-    return y
+    This function models the spray plume as a Gaussian footprint whose width (sigma)
+    increases with nozzle distance and atomizing air pressure. The panel is coated by
+    multiple parallel passes with fixed spacing. Uniformity is computed as the
+    coefficient of variation over the panel width after summing contributions from all passes.
+
+    Parameters
+    ----------
+    spray_distance_mm : float
+        Nozzle-to-substrate standoff distance in millimeters.
+    atomizing_air_pressure_bar : float
+        Atomizing air pressure in bar.
+
+    Returns
+    -------
+    dict
+        {"thickness_nonuniformity": float}
+    """
+    # Panel and process constants (can be adjusted to match the real setup)
+    panel_width_mm = 280.0          # width of the coated panel
+    pass_pitch_mm = 40.0            # center-to-center spacing between adjacent passes
+    # Model the spray plume width (1D Gaussian sigma across the pass)
+    # Wider plume with larger distance and higher pressure (plausible trend)
+    sigma_mm = 0.16 * float(spray_distance_mm) + 6.0 * float(atomizing_air_pressure_bar)
+    sigma_mm = float(np.clip(sigma_mm, 5.0, 120.0))  # bound for numerical stability
+
+    # 1D discretization across panel width
+    x = np.linspace(-panel_width_mm / 2.0, panel_width_mm / 2.0, 501)
+
+    # Determine pass centers to cover panel plus margins (tails up to ~3 sigma)
+    margin = 3.0 * sigma_mm
+    start = -panel_width_mm / 2.0 - margin
+    end = panel_width_mm / 2.0 + margin
+    first_center = np.floor(start / pass_pitch_mm) * pass_pitch_mm
+    pass_centers = np.arange(first_center, end + pass_pitch_mm, pass_pitch_mm)
+
+    # Sum Gaussian contributions from all passes (amplitude set to 1.0 for uniformity analysis)
+    # T(x) proportional to summed overlap; edges naturally show less overlap
+    T = np.zeros_like(x)
+    inv_two_sigma2 = 1.0 / (2.0 * sigma_mm * sigma_mm)
+    for c in pass_centers:
+        T += np.exp(-((x - c) ** 2) * inv_two_sigma2)
+
+    # Compute coefficient of variation (std/mean) across the panel
+    mean_T = float(np.mean(T))
+    std_T = float(np.std(T))
+    cv = std_T / (mean_T + 1e-12)  # guard against division by zero
+
+    # Add small measurement noise to mimic real experimental conditions
+    noise_sd = 0.003  # ~0.3% absolute CV noise
+    measured_cv = max(0.0, cv + rng.normal(0.0, noise_sd))
+
+    return {metric_name: measured_cv}
 
 
 ax_client = AxClient()
 
 ax_client.create_experiment(
     parameters=[
-        {"name": "x1", "type": "range", "bounds": [-5.0, 10.0]},
-        {"name": "x2", "type": "range", "bounds": [0.0, 10.0]},
+        {"name": "spray_distance_mm", "type": "range", "bounds": [100.0, 300.0]},
+        {"name": "atomizing_air_pressure_bar", "type": "range", "bounds": [0.5, 3.0]},
     ],
     objectives={
-        obj1_name: ObjectiveProperties(minimize=True),
+        metric_name: ObjectiveProperties(minimize=True),
     },
 )
 
 
-for i in range(19):
-
+# Run the planned 25 experiments sequentially (batch size = 1)
+num_trials = 25
+for i in range(num_trials):
     parameterization, trial_index = ax_client.get_next_trial()
 
-    # extract parameters
-    x1 = parameterization["x1"]
-    x2 = parameterization["x2"]
+    # Extract parameters for this trial
+    spray_distance_mm = parameterization["spray_distance_mm"]
+    atomizing_air_pressure_bar = parameterization["atomizing_air_pressure_bar"]
 
-    results = branin(x1, x2)
+    # Evaluate the process (simulation stub; replace with real measurement if available)
+    results = evaluate_coating_uniformity(spray_distance_mm, atomizing_air_pressure_bar)
+
+    # Report results back to Ax
     ax_client.complete_trial(trial_index=trial_index, raw_data=results)
 
 best_parameters, metrics = ax_client.get_best_parameters()
+print("Best parameters found:")
+print(best_parameters)
+print("Observed objective at best parameters:")
+print(metrics)
 
 
 # Plot results
@@ -64,175 +131,3 @@ ax.set_ylabel(objectives[0])
 
 ax.legend()
 plt.show()
-
-# Generated for optimizing spray coating uniformity with Ax Platform
-# %pip install ax-platform==0.4.3 matplotlib numpy pandas
-import numpy as np
-import pandas as pd
-from typing import Dict, Any, Tuple
-from ax.service.ax_client import AxClient, ObjectiveProperties
-import matplotlib.pyplot as plt
-
-
-np.random.seed(42)
-
-
-def evaluate_coating_uniformity(atomizing_air_pressure_bar: float, traverse_speed_mm_s: float) -> Dict[str, float]:
-    """
-    Evaluate coating uniformity for given spray parameters.
-
-    This stub simulates a realistic response surface for coating uniformity.
-    Higher is better (1.0 = perfectly uniform; 0.0 = very non-uniform).
-
-    TODO: Replace with actual measurement integration, for example:
-      - Run the physical spray process with the given parameters
-      - Measure thickness across the coated surface (e.g., via profilometry or imaging)
-      - Compute a uniformity score (e.g., 1 - coefficient of variation, normalized)
-      - Return {'coating_uniformity': measured_uniformity_score}
-
-    Parameters
-    ----------
-    atomizing_air_pressure_bar : float
-        Atomizing air pressure at the spray gun (bar).
-    traverse_speed_mm_s : float
-        Gun traverse speed over the substrate (mm/s).
-
-    Returns
-    -------
-    Dict[str, float]
-        Dictionary with the measured/simulated objective.
-    """
-    p = atomizing_air_pressure_bar
-    v = traverse_speed_mm_s
-
-    # Simulated physically plausible landscape:
-    # Primary optimum near (p ~ 1.8 bar, v ~ 180 mm/s)
-    peak1 = np.exp(-(((p - 1.8) / 0.45) ** 2 + ((v - 180.0) / 60.0) ** 2))
-
-    # Secondary local optimum to induce multi-modality
-    peak2 = 0.6 * np.exp(-(((p - 1.2) / 0.25) ** 2 + ((v - 120.0) / 30.0) ** 2))
-
-    # Penalty for overly high speed at low pressure (overspray/under-atomization)
-    penalty = 0.2 * np.exp(-((p - 1.0) / 0.3) ** 2) * (1.0 / (1.0 + np.exp(-(v - 220.0) / 10.0)))
-
-    # Combine components to create a score in [0, 1]
-    signal = 0.75 * peak1 + 0.25 * peak2 - penalty
-
-    # Add measurement noise to mimic experimental variability (e.g., 2% abs noise)
-    noise = np.random.normal(loc=0.0, scale=0.02)
-    uniformity_score = float(np.clip(signal + noise, 0.0, 1.0))
-
-    return {"coating_uniformity": uniformity_score}
-
-
-if __name__ == "__main__":
-    # Define optimization budget and search space
-    total_trials = 25
-
-    # Initialize Ax client
-    ax_client = AxClient()
-
-    # Create experiment: maximize coating_uniformity over two continuous parameters
-    ax_client.create_experiment(
-        name="spray_coating_uniformity_optimization",
-        parameters=[
-            {
-                "name": "atomizing_air_pressure_bar",
-                "type": "range",
-                "bounds": [0.8, 3.0],  # Adjust to your equipment limits
-            },
-            {
-                "name": "traverse_speed_mm_s",
-                "type": "range",
-                "bounds": [100.0, 300.0],  # Adjust to your process window
-            },
-        ],
-        objectives={
-            "coating_uniformity": ObjectiveProperties(minimize=False),
-        },
-        # By default, Ax assumes noisy measurements if SEM not provided.
-        # You may pass (mean, sem) tuples per metric to specify measurement error.
-    )
-
-    # Run optimization for the specified budget
-    for _ in range(total_trials):
-        parameterization, trial_index = ax_client.get_next_trial()
-
-        # Extract parameters
-        p_bar = float(parameterization["atomizing_air_pressure_bar"])
-        v_mm_s = float(parameterization["traverse_speed_mm_s"])
-
-        # Evaluate experiment (replace with real measurement call)
-        results = evaluate_coating_uniformity(p_bar, v_mm_s)
-
-        # Report result back to Ax
-        ax_client.complete_trial(trial_index=trial_index, raw_data=results)
-
-    # Retrieve best found parameters according to the model
-    best_parameters, best_metrics = ax_client.get_best_parameters()
-
-    # Print results summary
-    print("Best parameters found:")
-    for k, v in best_parameters.items():
-        print(f"  {k}: {v:.4f}")
-
-    print("\nBest observed metrics:")
-    for metric_name, metric_props in best_metrics.items():
-        # metric_props example keys: "mean", "sem", "objective", etc.
-        mean = metric_props.get("mean", None)
-        sem = metric_props.get("sem", None)
-        if mean is not None:
-            if sem is not None:
-                print(f"  {metric_name}: mean={mean:.4f}, sem={sem:.4f}")
-            else:
-                print(f"  {metric_name}: mean={mean:.4f}")
-        else:
-            print(f"  {metric_name}: {metric_props}")
-
-    # Visualization
-    objectives = ax_client.objective_names
-    df = ax_client.get_trials_data_frame()
-
-    # Ensure consistent column access
-    objective_name = objectives[0]
-    if objective_name not in df.columns:
-        raise RuntimeError(f"Objective '{objective_name}' not found in trials data frame columns: {df.columns.tolist()}")
-
-    y = df[objective_name].values
-    x_idx = np.arange(len(y))
-
-    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(12, 4), dpi=150)
-
-    # Progress over trials
-    axes[0].scatter(x_idx, y, ec="k", fc="none", label="Observed")
-    axes[0].plot(x_idx, np.maximum.accumulate(y), color="#0033FF", lw=2, label="Best to Trial")
-    axes[0].set_xlabel("Trial Number")
-    axes[0].set_ylabel(objective_name)
-    axes[0].set_title("Objective Progress")
-    axes[0].legend()
-
-    # Parameter scatter colored by objective value (if parameter cols are available)
-    param_x = "atomizing_air_pressure_bar"
-    param_y = "traverse_speed_mm_s"
-    try:
-        x_param = df[param_x].values.astype(float)
-        y_param = df[param_y].values.astype(float)
-        sc = axes[1].scatter(x_param, y_param, c=y, cmap="viridis", ec="k")
-        axes[1].set_xlabel(param_x)
-        axes[1].set_ylabel(param_y)
-        axes[1].set_title("Trials in Parameter Space")
-        cb = fig.colorbar(sc, ax=axes[1])
-        cb.set_label(objective_name)
-    except KeyError:
-        axes[1].text(
-            0.5,
-            0.5,
-            "Parameter columns not found in DataFrame.",
-            ha="center",
-            va="center",
-            transform=axes[1].transAxes,
-        )
-        axes[1].set_axis_off()
-
-    plt.tight_layout()
-    plt.show()

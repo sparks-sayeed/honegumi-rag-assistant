@@ -6,208 +6,169 @@ from ax.service.ax_client import AxClient, ObjectiveProperties
 import matplotlib.pyplot as plt
 
 
-obj1_name = "branin"
+# Set random seed for reproducible simulated measurements (remove/change for real experiments)
+rng = np.random.default_rng(2025)
+
+objective_metric_name = "biomass_yield_g_per_l"
 
 
-def branin(x1, x2):
-    y = float(
-        (x2 - 5.1 / (4 * np.pi**2) * x1**2 + 5.0 / np.pi * x1 - 6.0) ** 2
-        + 10 * (1 - 1.0 / (8 * np.pi)) * np.cos(x1)
-        + 10
-    )
-
-    return y
-
-
-ax_client = AxClient()
-
-ax_client.create_experiment(
-    parameters=[
-        {"name": "x1", "type": "range", "bounds": [-5.0, 10.0]},
-        {"name": "x2", "type": "range", "bounds": [0.0, 10.0]},
-    ],
-    objectives={
-        obj1_name: ObjectiveProperties(minimize=True),
-    },
-)
-
-
-for i in range(19):
-
-    parameterization, trial_index = ax_client.get_next_trial()
-
-    # extract parameters
-    x1 = parameterization["x1"]
-    x2 = parameterization["x2"]
-
-    results = branin(x1, x2)
-    ax_client.complete_trial(trial_index=trial_index, raw_data=results)
-
-best_parameters, metrics = ax_client.get_best_parameters()
-
-
-# Plot results
-objectives = ax_client.objective_names
-df = ax_client.get_trials_data_frame()
-
-fig, ax = plt.subplots(figsize=(6, 4), dpi=150)
-ax.scatter(df.index, df[objectives], ec="k", fc="none", label="Observed")
-ax.plot(
-    df.index,
-    np.minimum.accumulate(df[objectives]),
-    color="#0033FF",
-    lw=2,
-    label="Best to Trial",
-)
-ax.set_xlabel("Trial Number")
-ax.set_ylabel(objectives[0])
-
-ax.legend()
-plt.show()
-
-# Optimizing fermentation medium (glucose, nitrogen source, phosphate) for maximum biomass yield
-# Generated from Honegumi skeleton and adapted to a real-world problem
-# %pip install ax-platform==0.4.3 matplotlib
-
-from typing import Dict, Tuple
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-from ax.service.ax_client import AxClient, ObjectiveProperties
-
-
-objective_name = "biomass_yield_gDCW_per_L"  # Biomass yield (dry cell weight) in g/L
-
-# Random number generator for simulated measurement noise (remove seeding in production)
-_rng = np.random.default_rng(seed=42)
-
-
-def evaluate_fermentation(
+def evaluate_fermentation_medium(
     glucose_g_per_l: float,
     nitrogen_source_g_per_l: float,
     phosphate_g_per_l: float,
-) -> Dict[str, Tuple[float, float]]:
-    """Evaluate biomass yield for a given fermentation medium composition.
-
-    This function currently simulates biomass yield using a plausible bioprocess model with:
-    - Saturation (Monod-like) effects for C, N, P
-    - Inhibition at excessive concentrations (osmotic/toxic)
-    - Penalty for deviation from a target C:N:P ratio
-    - Additive Gaussian measurement noise, returning both mean and SEM
-
-    TODO: Replace this simulation with the actual lab or simulation measurement:
-      - Set up the culture with the provided concentrations
-      - Measure biomass yield (e.g., gDCW/L or OD600 converted to gDCW/L)
-      - Estimate measurement noise (SEM) from replicates or instrumentation
+) -> float:
     """
-    # Target concentrations (approximate reasonable optima)
-    target_glucose = 20.0       # g/L
-    target_nitrogen = 1.2       # g/L (e.g., as ammonium source mass-equivalent)
-    target_phosphate = 0.5      # g/L (e.g., KH2PO4 mass-equivalent)
+    Simulated evaluation of biomass yield (g/L) for a fermentation culture, given
+    medium concentrations of glucose (carbon source), nitrogen source, and phosphate.
 
-    # Monod-like saturation constants
-    Kc = 5.0   # g/L for glucose
-    Kn = 0.3   # g/L for nitrogen source
-    Kp = 0.1   # g/L for phosphate
+    This function models:
+    - Saturation kinetics (diminishing returns) for each nutrient
+    - Stoichiometric balance penalty (C:N:P balance requirement)
+    - High-concentration toxicity/osmotic stress penalties
+    - Experimental noise
 
-    # Base achievable biomass yield at optimum (gDCW/L)
-    Y_max = 15.0
+    Replace this function with the actual laboratory or bioreactor readout:
+      Example real-world procedure:
+        1. Prepare medium at specified concentrations.
+        2. Inoculate and incubate culture under standard conditions.
+        3. Measure biomass (e.g., OD600 converted to dry cell weight, or dry weight directly).
+        4. Return the biomass concentration in g/L.
 
-    # Saturation (limitation) factors
-    s_c = glucose_g_per_l / (Kc + glucose_g_per_l)
-    s_n = nitrogen_source_g_per_l / (Kn + nitrogen_source_g_per_l)
-    s_p = phosphate_g_per_l / (Kp + phosphate_g_per_l)
-    limitation = min(s_c, s_n, s_p)
+    Parameters
+    ----------
+    glucose_g_per_l : float
+        Glucose concentration in g/L (typical useful range ~0–60 g/L).
+    nitrogen_source_g_per_l : float
+        Nitrogen source concentration in g/L (e.g., ammonium sulfate or yeast extract; range ~0–15 g/L).
+    phosphate_g_per_l : float
+        Phosphate concentration in g/L (e.g., KH2PO4/K2HPO4; range ~0–5 g/L).
 
-    # Inhibition penalties for excessive concentrations (Gaussian tails)
-    inh_c = np.exp(-((max(0.0, glucose_g_per_l - 30.0) / 10.0) ** 2))
-    inh_n = np.exp(-((max(0.0, nitrogen_source_g_per_l - 2.0) / 0.5) ** 2))
-    inh_p = np.exp(-((max(0.0, phosphate_g_per_l - 1.2) / 0.4) ** 2))
+    Returns
+    -------
+    float
+        Simulated biomass yield in g/L.
+    """
 
-    # Ratio penalty: closeness to target stoichiometry (mass-based proxy)
-    v_g = glucose_g_per_l / max(target_glucose, 1e-9)
-    v_n = nitrogen_source_g_per_l / max(target_nitrogen, 1e-9)
-    v_p = phosphate_g_per_l / max(target_phosphate, 1e-9)
-    ratio_penalty = np.exp(-1.5 * ((v_g - 1.0) ** 2 + (v_n - 1.0) ** 2 + (v_p - 1.0) ** 2))
+    g = max(0.0, float(glucose_g_per_l))
+    n = max(0.0, float(nitrogen_source_g_per_l))
+    p = max(0.0, float(phosphate_g_per_l))
 
-    # Deterministic yield model
-    modeled_yield = Y_max * limitation * inh_c * inh_n * inh_p * ratio_penalty
+    # Saturation kinetics (Monod-like)
+    K_g, K_n, K_p = 15.0, 3.0, 0.5  # half-saturation constants (g/L)
+    saturation = (g / (K_g + g)) * (n / (K_n + n)) * (p / (K_p + p))
 
-    # Measurement noise (simulate experimental variability)
-    noise_sd = 0.1 + 0.05 * modeled_yield  # heteroscedastic noise
-    measured_yield = max(0.0, modeled_yield + _rng.normal(0.0, noise_sd))
+    # Balance penalty based on target mass ratio (g/L): glucose:nitrogen:phosphate ≈ 20:4:1
+    # Penalize deviation from this ratio using coefficient of variation of normalized components
+    target = np.array([20.0, 4.0, 1.0])
+    vec = np.array([g, n, p]) / target
+    mean_vec = np.mean(vec) + 1e-9
+    cv = np.std(vec) / mean_vec  # 0 (perfect balance) to higher values (imbalance)
+    balance_penalty = float(np.exp(-2.0 * cv))  # in (0, 1]
 
-    # Estimated standard error of the mean (example)
-    sem = max(0.05, 0.2 + 0.03 * measured_yield)
+    # Toxicity/osmotic-stress penalties for excessive concentrations
+    tox_thr_g, tox_thr_n, tox_thr_p = 40.0, 10.0, 3.0  # threshold (g/L)
+    tox_decay_g, tox_decay_n, tox_decay_p = 10.0, 3.0, 1.0  # decay scales (g/L)
+    penalty_g = float(np.exp(-max(0.0, g - tox_thr_g) / tox_decay_g))
+    penalty_n = float(np.exp(-max(0.0, n - tox_thr_n) / tox_decay_n))
+    penalty_p = float(np.exp(-max(0.0, p - tox_thr_p) / tox_decay_p))
+    toxicity_penalty = penalty_g * penalty_n * penalty_p  # in (0, 1]
 
-    return {objective_name: (float(measured_yield), float(sem))}
+    # Base scale for achievable biomass (g/L) under ideal balance and no toxicity
+    base_max_yield = 15.0  # typical upper bound for many lab strains in batch mode
+
+    # Deterministic yield (noiseless)
+    deterministic_yield = base_max_yield * saturation * balance_penalty * toxicity_penalty
+
+    # Add experimental noise: multiplicative (log-normal) + small additive Gaussian
+    multiplicative_noise = rng.lognormal(mean=0.0, sigma=0.05)  # ~5% CV
+    additive_noise = rng.normal(loc=0.0, scale=0.15)  # small absolute noise in g/L
+
+    measured_yield = deterministic_yield * multiplicative_noise + additive_noise
+
+    return float(max(0.0, measured_yield))
 
 
-# Initialize Ax optimization client
 ax_client = AxClient()
 
-# Define the search space for medium composition
+# Define the search space for medium optimization
 ax_client.create_experiment(
     parameters=[
         {
             "name": "glucose_g_per_l",
             "type": "range",
-            "bounds": [0.0, 40.0],  # typical workable range for many microbes
+            "bounds": [0.0, 60.0],
+            "value_type": "float",
         },
         {
             "name": "nitrogen_source_g_per_l",
             "type": "range",
-            "bounds": [0.0, 3.0],  # e.g., ammonium or urea source mass-equivalent
+            "bounds": [0.0, 15.0],
+            "value_type": "float",
         },
         {
             "name": "phosphate_g_per_l",
             "type": "range",
-            "bounds": [0.0, 1.5],  # e.g., KH2PO4 mass-equivalent
+            "bounds": [0.0, 5.0],
+            "value_type": "float",
         },
     ],
     objectives={
-        objective_name: ObjectiveProperties(minimize=False),
+        objective_metric_name: ObjectiveProperties(minimize=False),
     },
+    # By default Ax assumes noisy observations; no explicit noise model needed here.
 )
 
-# Run the optimization for a total budget of 30 cultures
-total_trials = 30
-for _ in range(total_trials):
+# Run up to the allocated budget of 30 cultures (sequential evaluations)
+num_trials = 30
+for i in range(num_trials):
     parameterization, trial_index = ax_client.get_next_trial()
 
-    # Extract parameters
-    glucose = float(parameterization["glucose_g_per_l"])
-    nitrogen = float(parameterization["nitrogen_source_g_per_l"])
-    phosphate = float(parameterization["phosphate_g_per_l"])
+    # Extract parameters for the wet-lab (or simulated) run
+    glucose = parameterization["glucose_g_per_l"]
+    nitrogen = parameterization["nitrogen_source_g_per_l"]
+    phosphate = parameterization["phosphate_g_per_l"]
 
-    # Evaluate the fermentation
-    results = evaluate_fermentation(glucose, nitrogen, phosphate)
+    # Evaluate (replace with actual measurement in production)
+    biomass_yield = evaluate_fermentation_medium(glucose, nitrogen, phosphate)
 
-    # Report result (mean and SEM) back to Ax
-    ax_client.complete_trial(trial_index=trial_index, raw_data=results)
+    # Report result back to Ax
+    ax_client.complete_trial(
+        trial_index=trial_index,
+        raw_data={objective_metric_name: biomass_yield},
+    )
 
-# Get best parameters and their estimated outcome
 best_parameters, best_metrics = ax_client.get_best_parameters()
 
-print("Best medium composition found:")
+# Print best found medium composition and corresponding yield estimate
+print("Best medium parameters found:")
 for k, v in best_parameters.items():
     print(f"  {k}: {v:.4f}")
-
-bm = best_metrics[objective_name]
-best_mean = bm["mean"] if isinstance(bm, dict) else bm[0]
-best_sem = bm["sem"] if isinstance(bm, dict) else bm[1]
-print(f"Estimated best {objective_name}: {best_mean:.3f} ± {best_sem:.3f} (SEM)")
+print("Best observed metrics:")
+for m, val in best_metrics.items():
+    try:
+        mean_val = float(val[0])
+    except Exception:
+        mean_val = float(val)
+    print(f"  {m}: {mean_val:.4f}")
 
 # Plot results
+obj_name = ax_client.objective_names[0]
 df = ax_client.get_trials_data_frame()
-y = df[objective_name].values
-trial_numbers = df.index.values
 
-fig, ax = plt.subplots(figsize=(7, 4), dpi=150)
-ax.scatter(trial_numbers, y, ec="k", fc="none", label="Observed")
-ax.plot(trial_numbers, np.maximum.accumulate(y), color="#0033FF", lw=2, label="Best to Trial")
+fig, ax = plt.subplots(figsize=(6, 4), dpi=150)
+y_obs = pd.to_numeric(df[obj_name], errors="coerce")
+
+ax.scatter(df.index, y_obs, ec="k", fc="none", label="Observed")
+
+# Best-so-far (cumulative maximum)
+y_vals = y_obs.fillna(-np.inf).values
+best_so_far = np.maximum.accumulate(y_vals)
+best_so_far[best_so_far == -np.inf] = np.nan
+ax.plot(df.index, best_so_far, color="#0033FF", lw=2, label="Best to Trial")
+
 ax.set_xlabel("Trial Number")
-ax.set_ylabel(objective_name)
+ax.set_ylabel(f"{obj_name.replace('_', ' ')}")
+ax.set_title("Fermentation Medium Optimization: Biomass Yield")
 ax.legend()
 plt.tight_layout()
 plt.show()

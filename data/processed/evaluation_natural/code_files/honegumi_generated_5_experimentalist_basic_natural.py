@@ -2,311 +2,232 @@
 # %pip install ax-platform==0.4.3 matplotlib
 import numpy as np
 import pandas as pd
-from ax.service.ax_client import AxClient, ObjectiveProperties
 import matplotlib.pyplot as plt
+from typing import Dict, Tuple
+
+from ax.service.ax_client import AxClient, ObjectiveProperties
 
 
-obj1_name = "branin"
-obj2_name = "branin_swapped"
+# Problem-specific metric names
+BIOAVAILABILITY = "bioavailability"       # %
+SHELF_LIFE = "shelf_life"                 # months
+
+# Storage temperature bounds (°C)
+TEMP_MIN = 4.0
+TEMP_MAX = 60.0
+
+# Random seed for reproducibility of noisy observations
+rng = np.random.default_rng(2025)
 
 
-def branin3_moo(x1, x2, x3):
-    y = float(
-        (x2 - 5.1 / (4 * np.pi**2) * x1**2 + 5.0 / np.pi * x1 - 6.0) ** 2
-        + 10 * (1 - 1.0 / (8 * np.pi)) * np.cos(x1)
-        + 10
-    )
+def evaluate_formulation(
+    excipient_1: float,
+    excipient_2: float,
+    excipient_3: float,
+    excipient_4: float,
+    pH: float,
+    storage_temperature_celsius: float,
+) -> Dict[str, Tuple[float, float]]:
+    """
+    Simulated evaluation of a solid oral drug formulation.
 
-    # Contrived way to incorporate x3 into the objective
-    y = y * (1 + 0.1 * x1 * x2 * x3)
+    Parameters (all floats):
+      - excipient_1: fraction of permeation enhancer (0..1)
+      - excipient_2: fraction of solubilizer (0..1)
+      - excipient_3: fraction of stabilizer/antioxidant (0..1)
+      - excipient_4: fraction of disintegrant (0..1)
+      - excipient_5 is computed as 1 - sum(excipients 1..4) (filler / bulking agent)
+      - pH: formulation pH (1..14)
+      - storage_temperature_celsius: storage temperature in °C (4..60)
 
-    # second objective has x1 and x2 swapped
-    y2 = float(
-        (x1 - 5.1 / (4 * np.pi**2) * x2**2 + 5.0 / np.pi * x2 - 6.0) ** 2
-        + 10 * (1 - 1.0 / (8 * np.pi)) * np.cos(x2)
-        + 10
-    )
+    Returns:
+      Dict mapping:
+        - "bioavailability": (mean %, sem %)
+        - "shelf_life": (mean months, sem months)
 
-    # Contrived way to incorporate x3 into the second objective
-    y2 = y2 * (1 - 0.1 * x1 * x2 * x3)
+    Notes:
+      - This function is a physically-inspired surrogate:
+        • Bioavailability increases with solubilizer and permeation enhancer,
+          is best near neutral pH for permeability, and slightly with disintegrant.
+        • Shelf life decreases with temperature (Arrhenius Q10 rule),
+          is best around mildly acidic pH (~4.5) for many small molecules,
+          and improves with stabilizer. Surfactants may reduce stability slightly.
+      - Gaussian noise is added to emulate experimental noise.
+      - Replace this surrogate with real lab measurements or a validated simulator.
+    """
+    # Compute excipient_5 from the composition constraint
+    excipient_5 = 1.0 - (excipient_1 + excipient_2 + excipient_3 + excipient_4)
+    # Numerical guard
+    excipient_5 = max(0.0, min(1.0, excipient_5))
 
-    return {obj1_name: y, obj2_name: y2}
+    # Bioavailability model (0..100 %)
+    # Roles:
+    #  - excipient_1: permeation enhancer
+    #  - excipient_2: solubilizer
+    #  - excipient_3: stabilizer (not directly boosting BA)
+    #  - excipient_4: disintegrant
+    #  - excipient_5: filler (neutral to slightly negative for BA)
+    enhancer_effect = 1.0 - np.exp(-3.0 * (0.6 * excipient_2 + 0.4 * excipient_1))
+    disintegrant_boost = 0.12 * excipient_4  # up to +12%
+    filler_penalty = -0.06 * excipient_5     # up to -6%
+
+    # pH effect for BA: peak near physiological pH ~6.5
+    ba_pH_peak = 6.5
+    ba_pH_sigma = 2.0
+    pH_factor_ba = np.exp(-0.5 * ((pH - ba_pH_peak) / ba_pH_sigma) ** 2)
+    pH_scaler_ba = 0.6 + 0.4 * pH_factor_ba  # 0.6..1.0
+
+    # Temperature has mild negative effect on BA relative to 25°C
+    temp_ba_penalty = -0.05 * (storage_temperature_celsius - 25.0)
+
+    ba_base = 10.0 + 75.0 * enhancer_effect  # baseline 10%, up to ~85%
+    bioavailability_mean = ba_base * pH_scaler_ba + 100.0 * disintegrant_boost + 100.0 * filler_penalty + temp_ba_penalty
+    bioavailability_mean = float(np.clip(bioavailability_mean, 0.0, 100.0))
+
+    # Shelf-life model (months)
+    # Base shelf-life at 25C, neutral pH, and no excipients: ~12 months
+    # Improved with stabilizer, reduced by surfactants/enhancers.
+    base_sl_25C = 12.0 * (1.0 + 1.6 * excipient_3)  # stabilizer boost up to +160%
+    destabilizer_factor = max(0.4, 1.0 - 0.5 * excipient_1 - 0.35 * excipient_2 - 0.15 * excipient_4)
+    base_sl_25C *= destabilizer_factor
+
+    # pH effect for stability: peak ~4.5
+    sl_pH_peak = 4.5
+    sl_pH_sigma = 1.5
+    pH_factor_sl = np.exp(-0.5 * ((pH - sl_pH_peak) / sl_pH_sigma) ** 2)
+    pH_scaler_sl = 0.5 + 0.5 * pH_factor_sl  # 0.5..1.0
+
+    # Temperature effect via Q10 rule (Q10 ~ 2)
+    Q10 = 2.0
+    shelf_life_temp = base_sl_25C * (Q10 ** ((25.0 - storage_temperature_celsius) / 10.0))
+
+    shelf_life_mean = float(max(0.1, shelf_life_temp * pH_scaler_sl))
+
+    # Add observational noise (SEM)
+    ba_noise_sd = 2.5  # %
+    sl_noise_sd = 1.2  # months
+
+    ba_observed = float(bioavailability_mean + rng.normal(0.0, ba_noise_sd))
+    sl_observed = float(shelf_life_mean + rng.normal(0.0, sl_noise_sd))
+
+    # Clip to sensible ranges
+    ba_observed = float(np.clip(ba_observed, 0.0, 100.0))
+    sl_observed = float(max(0.0, sl_observed))
+
+    return {
+        BIOAVAILABILITY: (ba_observed, ba_noise_sd),
+        SHELF_LIFE: (sl_observed, sl_noise_sd),
+    }
 
 
-# Define total for compositional constraint, where x1 + x2 + x3 == total
-total = 10.0
+def compute_observed_pareto(df_wide: pd.DataFrame, objectives: Tuple[str, str]) -> pd.DataFrame:
+    """
+    Compute the observed Pareto frontier (non-dominated set) for maximization
+    given a wide DataFrame with metric columns and optionally parameter columns.
+
+    Returns a DataFrame of the Pareto set sorted by the first objective.
+    """
+    m1, m2 = objectives
+    points = df_wide[[m1, m2]].to_numpy()
+    is_dominated = np.zeros(points.shape[0], dtype=bool)
+
+    for i in range(points.shape[0]):
+        if is_dominated[i]:
+            continue
+        pi = points[i]
+        # dominated if exists j where pj >= pi in both and > in at least one
+        dominated = (points[:, 0] >= pi[0]) & (points[:, 1] >= pi[1]) & (
+            (points[:, 0] > pi[0]) | (points[:, 1] > pi[1])
+        )
+        dominated[i] = False
+        is_dominated |= dominated
+
+    pareto_df = df_wide.loc[~is_dominated].copy()
+    pareto_df = pareto_df.sort_values(by=m1, ascending=True)
+    return pareto_df
 
 
 ax_client = AxClient()
 
+# Create experiment with reparameterized compositional constraint:
+# optimize excipient_1..4; compute excipient_5 = 1 - sum(excipients 1..4)
 ax_client.create_experiment(
+    name="drug_formulation_optimization",
     parameters=[
-        {"name": "x1", "type": "range", "bounds": [0.0, total]},
-        {"name": "x2", "type": "range", "bounds": [0.0, total]},
+        {"name": "excipient_1", "type": "range", "bounds": [0.0, 1.0]},  # permeation enhancer
+        {"name": "excipient_2", "type": "range", "bounds": [0.0, 1.0]},  # solubilizer
+        {"name": "excipient_3", "type": "range", "bounds": [0.0, 1.0]},  # stabilizer/antioxidant
+        {"name": "excipient_4", "type": "range", "bounds": [0.0, 1.0]},  # disintegrant
+        {"name": "pH", "type": "range", "bounds": [1.0, 14.0]},
+        {"name": "storage_temperature_celsius", "type": "range", "bounds": [TEMP_MIN, TEMP_MAX]},
     ],
     objectives={
-        obj1_name: ObjectiveProperties(minimize=True),
-        obj2_name: ObjectiveProperties(minimize=True),
+        BIOAVAILABILITY: ObjectiveProperties(minimize=False),
+        SHELF_LIFE: ObjectiveProperties(minimize=False),
     },
     parameter_constraints=[
-        f"x1 + x2 <= {total}",  # reparameterized compositional constraint, which is a type of sum constraint
+        # compositional constraint: excipient_1 + excipient_2 + excipient_3 + excipient_4 <= 1.0
+        "excipient_1 + excipient_2 + excipient_3 + excipient_4 <= 1.0",
     ],
 )
 
+# Optimization loop
+N_TRIALS = 40
+for _ in range(N_TRIALS):
+    params, trial_index = ax_client.get_next_trial()
 
-for i in range(21):
+    e1 = params["excipient_1"]
+    e2 = params["excipient_2"]
+    e3 = params["excipient_3"]
+    e4 = params["excipient_4"]
+    ph = params["pH"]
+    temp_c = params["storage_temperature_celsius"]
 
-    parameterization, trial_index = ax_client.get_next_trial()
-
-    # extract parameters
-    x1 = parameterization["x1"]
-    x2 = parameterization["x2"]
-    x3 = total - (x1 + x2)  # composition constraint: x1 + x2 + x3 == total
-
-    results = branin3_moo(x1, x2, x3)
+    results = evaluate_formulation(e1, e2, e3, e4, ph, temp_c)
     ax_client.complete_trial(trial_index=trial_index, raw_data=results)
-pareto_results = ax_client.get_pareto_optimal_parameters()
 
+# Retrieve observed results
+df_long = ax_client.get_trials_data_frame()
 
-# Plot results
-objectives = ax_client.objective_names
-df = ax_client.get_trials_data_frame()
-
-fig, ax = plt.subplots(figsize=(6, 4), dpi=150)
-pareto = ax_client.get_pareto_optimal_parameters(use_model_predictions=False)
-pareto_data = [p[1][0] for p in pareto.values()]
-pareto = pd.DataFrame(pareto_data).sort_values(objectives[0])
-
-ax.scatter(df[objectives[0]], df[objectives[1]], fc="None", ec="k", label="Observed")
-ax.plot(
-    pareto[objectives[0]],
-    pareto[objectives[1]],
-    color="#0033FF",
-    lw=2,
-    label="Pareto Front",
-)
-ax.set_xlabel(objectives[0])
-ax.set_ylabel(objectives[1])
-
-ax.legend()
-plt.show()
-
-# Generated by adapting a Honegumi Ax skeleton for drug formulation optimization
-# %pip install ax-platform==0.4.3 matplotlib numpy pandas
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-
-from ax.service.ax_client import AxClient
-from ax.service.utils.instantiation import ObjectiveProperties
-
-
-# Domain-specific objective names
-BIOAVAILABILITY_METRIC = "bioavailability_percent"
-SHELF_LIFE_METRIC = "shelf_life_months"
-
-# Compositional total for excipients (fractions sum to 1.0)
-COMPOSITION_TOTAL = 1.0
-
-# Random seed for reproducibility of synthetic noise
-RNG = np.random.default_rng(seed=42)
-
-
-def evaluate_formulation(parameterization: dict) -> dict:
-    """
-    Synthetic evaluation function for drug formulation.
-
-    Parameters
-    ----------
-    parameterization : dict
-        Keys (decision variables):
-          - excipient_1_fraction (0..1)
-          - excipient_2_fraction (0..1)
-          - excipient_3_fraction (0..1)
-          - excipient_4_fraction (0..1)
-          - pH (2..9)
-          - storage_temperature_celsius (4..40)
-        Note: excipient_5_fraction is computed to satisfy the composition constraint.
-
-    Returns
-    -------
-    dict
-        {
-            "bioavailability_percent": float in [0, 100],
-            "shelf_life_months": float >= 0
-        }
-
-    Notes
-    -----
-    Replace this synthetic model with actual lab measurements or simulations:
-      - Run experiment with provided parameters
-      - Measure bioavailability (%) and shelf life (months)
-      - Return as a dict where values are floats or (mean, SEM) tuples if SEM known
-    """
-    e1 = float(parameterization["excipient_1_fraction"])
-    e2 = float(parameterization["excipient_2_fraction"])
-    e3 = float(parameterization["excipient_3_fraction"])
-    e4 = float(parameterization["excipient_4_fraction"])
-    pH = float(parameterization["pH"])
-    temp_c = float(parameterization["storage_temperature_celsius"])
-
-    # Reconstruct the 5th excipient to enforce: e1 + e2 + e3 + e4 + e5 = 1.0
-    e5 = COMPOSITION_TOTAL - (e1 + e2 + e3 + e4)
-    # Numerical guard in case of floating errors
-    if e5 < 0.0:
-        e5 = 0.0
-    if e5 > 1.0:
-        e5 = 1.0
-
-    # Synthetic bioavailability model:
-    # - Positive contributions from e1 (surfactant-like), e3 (disintegrant-like), e5 (stabilizer-like)
-    # - Negative contribution from e4 (lubricant-like) if too high
-    # - pH optimal near ~6.5
-    # - Weak bell-shaped temperature effect around room temp (storage-related)
-    sol_score = 0.8 * e1 + 0.4 * e2 + 0.6 * e3 - 0.2 * e4 + 0.3 * e5
-    sol_effect = 0.5 * (np.tanh(3.0 * sol_score) + 1.0)  # map to ~[0,1]
-
-    pH_effect = np.exp(-((pH - 6.5) / 1.2) ** 2)  # peak near physiological pH
-    temp_effect = np.exp(-((temp_c - 25.0) / 15.0) ** 2)  # near-neutral around 25C
-
-    bioavailability = 100.0 * np.clip(0.65 * sol_effect + 0.3 * pH_effect + 0.05 * temp_effect, 0.0, 1.0)
-
-    # Synthetic shelf-life model:
-    # - Strongly dependent on storage temperature (Arrhenius-like decay with temperature)
-    # - Stabilizer (e5) increases shelf life; surfactant (e1) may mildly reduce it
-    # - pH stability best near neutral (~7.0)
-    temp_scale = np.clip(36.0 * np.exp(-0.06 * (temp_c - 25.0)), 1.0, 60.0)  # months, capped to [1, 60]
-    pH_stability = 0.6 + 0.4 * np.exp(-((pH - 7.0) / 1.3) ** 2)
-    excipient_stability = 1.0 + 0.5 * e5 - 0.1 * e1 - 0.05 * e3
-    shelf_life = np.clip(temp_scale * pH_stability * excipient_stability, 0.0, 72.0)
-
-    # Add observational noise (unknown SEM; Ax will infer)
-    bioavailability += RNG.normal(0.0, 2.0)  # +/- 2% noise
-    shelf_life += RNG.normal(0.0, 1.0)       # +/- 1 month noise
-
-    bioavailability = float(np.clip(bioavailability, 0.0, 100.0))
-    shelf_life = float(max(0.0, shelf_life))
-
-    return {
-        BIOAVAILABILITY_METRIC: bioavailability,
-        SHELF_LIFE_METRIC: shelf_life,
-    }
-
-
-def compute_pareto_front(df: pd.DataFrame, x_col: str, y_col: str) -> pd.DataFrame:
-    """
-    Compute non-dominated (Pareto) set for maximizing both x_col and y_col.
-
-    Parameters
-    ----------
-    df : pd.DataFrame
-        Must contain columns x_col and y_col, with no NaNs.
-    x_col : str
-    y_col : str
-
-    Returns
-    -------
-    pd.DataFrame
-        Subset of df containing only non-dominated rows. Sorted by x_col ascending.
-    """
-    vals = df[[x_col, y_col]].values
-    n = vals.shape[0]
-    dominated = np.zeros(n, dtype=bool)
-
-    for i in range(n):
-        if dominated[i]:
-            continue
-        for j in range(n):
-            if i == j:
-                continue
-            # j dominates i if j is >= in both and strictly > in at least one
-            if (vals[j, 0] >= vals[i, 0]) and (vals[j, 1] >= vals[i, 1]) and (
-                (vals[j, 0] > vals[i, 0]) or (vals[j, 1] > vals[i, 1])
-            ):
-                dominated[i] = True
-                break
-
-    pareto_df = df.loc[~dominated].copy()
-    pareto_df.sort_values(by=x_col, inplace=True)
-    return pareto_df
-
-
-def main():
-    ax_client = AxClient()
-
-    # Build experiment with reparameterized composition:
-    # We optimize 4 excipient fractions directly and reconstruct the 5th so that all 5 sum to 1.0.
-    ax_client.create_experiment(
-        name="drug_formulation_moo",
-        parameters=[
-            {"name": "excipient_1_fraction", "type": "range", "bounds": [0.0, 1.0]},
-            {"name": "excipient_2_fraction", "type": "range", "bounds": [0.0, 1.0]},
-            {"name": "excipient_3_fraction", "type": "range", "bounds": [0.0, 1.0]},
-            {"name": "excipient_4_fraction", "type": "range", "bounds": [0.0, 1.0]},
-            {"name": "pH", "type": "range", "bounds": [2.0, 9.0]},
-            {"name": "storage_temperature_celsius", "type": "range", "bounds": [4.0, 40.0]},
-        ],
-        objectives={
-            BIOAVAILABILITY_METRIC: ObjectiveProperties(minimize=False),
-            SHELF_LIFE_METRIC: ObjectiveProperties(minimize=False),
-        },
-        parameter_constraints=[
-            "excipient_1_fraction + excipient_2_fraction + excipient_3_fraction + excipient_4_fraction <= 1.0"
-        ],
-        overwrite_existing_experiment=True,
-        is_test=False,
+# Pivot to wide format: one row per arm, columns per metric
+if "metric_name" in df_long.columns:
+    df_wide = df_long.pivot_table(
+        index="arm_name",
+        columns="metric_name",
+        values="mean",
+        aggfunc="last",
     )
+    # Bring parameter columns alongside metrics for inspection
+    param_cols = [c for c in df_long.columns if c in {"excipient_1", "excipient_2", "excipient_3", "excipient_4", "pH", "storage_temperature_celsius"}]
+    if param_cols:
+        # Take last occurrence per arm for parameters
+        params_per_arm = df_long.groupby("arm_name")[param_cols].last()
+        df_wide = df_wide.join(params_per_arm, how="left")
+else:
+    # Fallback if API changes; proceed without plotting
+    df_wide = pd.DataFrame()
 
-    # Run sequential optimization
-    NUM_TRIALS = 60
-    for _ in range(NUM_TRIALS):
-        parameters, trial_index = ax_client.get_next_trial()
-        # Evaluate locally (replace this call with actual experimental run)
-        results = evaluate_formulation(parameters)
-        ax_client.complete_trial(trial_index=trial_index, raw_data=results)
+# Compute excipient_5 for plotting/reference
+if not df_wide.empty and all(col in df_wide.columns for col in ["excipient_1", "excipient_2", "excipient_3", "excipient_4"]):
+    df_wide["excipient_5"] = 1.0 - (df_wide["excipient_1"] + df_wide["excipient_2"] + df_wide["excipient_3"] + df_wide["excipient_4"])
 
-    # Retrieve results
-    df = ax_client.get_trials_data_frame()
-    # Keep only completed, non-null metrics
-    metrics_df = df[[BIOAVAILABILITY_METRIC, SHELF_LIFE_METRIC]].dropna()
+# Plot observed points and Pareto frontier (observed)
+if not df_wide.empty and all(col in df_wide.columns for col in [BIOAVAILABILITY, SHELF_LIFE]):
+    pareto_obs = compute_observed_pareto(df_wide[[BIOAVAILABILITY, SHELF_LIFE]], (BIOAVAILABILITY, SHELF_LIFE))
 
-    # Compute observed Pareto front on measured data
-    pareto_df = compute_pareto_front(
-        metrics_df, x_col=BIOAVAILABILITY_METRIC, y_col=SHELF_LIFE_METRIC
-    )
-
-    # Plot observed data and Pareto front
-    fig, ax = plt.subplots(figsize=(7, 5), dpi=150)
-    ax.scatter(
-        metrics_df[BIOAVAILABILITY_METRIC],
-        metrics_df[SHELF_LIFE_METRIC],
-        fc="None",
-        ec="k",
-        label="Observed",
-        alpha=0.6,
-    )
-    if len(pareto_df) >= 2:
+    fig, ax = plt.subplots(figsize=(6, 4), dpi=150)
+    ax.scatter(df_wide[BIOAVAILABILITY], df_wide[SHELF_LIFE], facecolors="None", edgecolors="k", label="Observed")
+    if not pareto_obs.empty:
         ax.plot(
-            pareto_df[BIOAVAILABILITY_METRIC],
-            pareto_df[SHELF_LIFE_METRIC],
+            pareto_obs[BIOAVAILABILITY],
+            pareto_obs[SHELF_LIFE],
             color="#0033FF",
             lw=2,
-            label="Pareto Front (observed)",
-        )
-    else:
-        ax.scatter(
-            pareto_df[BIOAVAILABILITY_METRIC],
-            pareto_df[SHELF_LIFE_METRIC],
-            color="#0033FF",
-            label="Pareto Point (observed)",
+            label="Observed Pareto Front",
         )
     ax.set_xlabel("Bioavailability (%)")
     ax.set_ylabel("Shelf life (months)")
-    ax.set_title("Drug formulation optimization: Bioavailability vs. Shelf life")
+    ax.set_title("Drug formulation trade-off: bioavailability vs shelf life")
     ax.legend()
     plt.tight_layout()
     plt.show()
-
-
-if __name__ == "__main__":
-    main()
