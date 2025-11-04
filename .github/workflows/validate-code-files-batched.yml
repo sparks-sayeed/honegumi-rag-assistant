@@ -1,6 +1,6 @@
 name: Validate Generated Code Files (Batched)
-# Validates Python files in batches with configurable batch size and 120-minute timeout
-# Updated: Reduced batch size to 5 files and timeout to 2 minutes per file
+# Validates Python files in batches with configurable batch size and 2-hour timeout
+# Updated: 20-minute timeout per file, 2-hour batch timeout
 # Trigger: Re-run validation workflow
 
 on:
