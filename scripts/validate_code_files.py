@@ -86,37 +86,66 @@ def check_runtime(file_path: Path, timeout: int = 120) -> Dict[str, Any]:
         Note: Timeout is treated as success if no errors occurred (optimization scripts are expected to run long)
     """
     start_time = time.time()
+    process = None
     try:
-        result = subprocess.run(
+        # Use Popen for better process control
+        process = subprocess.Popen(
             [sys.executable, str(file_path)],
-            capture_output=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
             text=True,
-            timeout=timeout,
-            env={**os.environ, "MPLBACKEND": "Agg"}  # Use non-interactive matplotlib backend
+            env={**os.environ, "MPLBACKEND": "Agg"},  # Use non-interactive matplotlib backend
+            preexec_fn=os.setsid if hasattr(os, 'setsid') else None  # Create new process group on Unix
         )
-        execution_time = time.time() - start_time
         
-        if result.returncode == 0:
-            return {"passed": True, "error": None, "execution_time": f"{execution_time:.2f}s", "timed_out": False}
-        else:
+        try:
+            stdout, stderr = process.communicate(timeout=timeout)
+            execution_time = time.time() - start_time
+            
+            if process.returncode == 0:
+                return {"passed": True, "error": None, "execution_time": f"{execution_time:.2f}s", "timed_out": False}
+            else:
+                return {
+                    "passed": False,
+                    "error": f"Non-zero exit code {process.returncode}: {stderr}",
+                    "execution_time": f"{execution_time:.2f}s",
+                    "timed_out": False
+                }
+        except subprocess.TimeoutExpired:
+            execution_time = time.time() - start_time
+            
+            # Kill the entire process group to ensure all child processes are terminated
+            try:
+                if hasattr(os, 'killpg'):
+                    os.killpg(os.getpgid(process.pid), 9)  # SIGKILL
+                else:
+                    process.kill()
+                process.wait(timeout=5)  # Wait for cleanup
+            except Exception as cleanup_error:
+                print(f"Warning: Error during process cleanup: {cleanup_error}", file=sys.stderr)
+            
+            # Timeout is treated as SUCCESS for optimization scripts
             return {
-                "passed": False,
-                "error": f"Non-zero exit code {result.returncode}: {result.stderr}",
+                "passed": True,
+                "error": None,
                 "execution_time": f"{execution_time:.2f}s",
-                "timed_out": False
+                "timed_out": True,
+                "note": f"Execution timed out after {timeout}s (expected for long-running optimization scripts)"
             }
-    except subprocess.TimeoutExpired:
-        execution_time = time.time() - start_time
-        # Timeout is treated as SUCCESS for optimization scripts
-        return {
-            "passed": True,
-            "error": None,
-            "execution_time": f"{execution_time:.2f}s",
-            "timed_out": True,
-            "note": f"Execution timed out after {timeout}s (expected for long-running optimization scripts)"
-        }
     except Exception as e:
         execution_time = time.time() - start_time
+        
+        # Ensure process is terminated
+        if process and process.poll() is None:
+            try:
+                if hasattr(os, 'killpg'):
+                    os.killpg(os.getpgid(process.pid), 9)
+                else:
+                    process.kill()
+                process.wait(timeout=5)
+            except Exception:
+                pass
+        
         return {
             "passed": False,
             "error": str(e),

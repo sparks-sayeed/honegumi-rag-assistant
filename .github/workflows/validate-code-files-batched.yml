@@ -92,7 +92,7 @@ jobs:
     needs: prepare-batches
     if: needs.prepare-batches.outputs.batch_ids != '[]'
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 60  # Reduced from 120 to 60 minutes (5 files × 2 min = 10 min + 50 min buffer)
     strategy:
       fail-fast: false
       matrix:
@@ -113,13 +113,16 @@ jobs:
       
       - name: Install dependencies
         run: |
+          echo "Starting dependency installation at $(date)"
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install -r requirements-validation.txt
+          echo "Dependency installation completed at $(date)"
       
       - name: Validate batch
         run: |
           set -e
+          echo "Starting batch validation at $(date)"
           BATCHES='${{ needs.prepare-batches.outputs.batches }}'
           echo "Batches data: $BATCHES"
           BATCH_FILES=$(echo "$BATCHES" | python3 -c "import sys, json; batches=json.load(sys.stdin); print(batches.get('${{ matrix.batch_id }}', ''))")
@@ -133,8 +136,12 @@ jobs:
           mkdir -p batch-results
           python scripts/validate_code_files.py --batch "$BATCH_FILES" --batch-id ${{ matrix.batch_id }} --output-dir batch-results
           
-          echo "Batch validation complete. Results:"
+          echo "Batch validation complete at $(date). Results:"
           ls -la batch-results/
+          
+          # Show zombie processes if any
+          echo "Checking for zombie processes:"
+          ps aux | grep -i defunct || echo "No zombie processes found"
       
       - name: Upload batch result
         uses: actions/upload-artifact@v4
