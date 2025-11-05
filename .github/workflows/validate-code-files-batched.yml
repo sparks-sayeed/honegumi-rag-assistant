@@ -1,0 +1,245 @@
+name: Validate Generated Code Files (Batched)
+# Validates Python files in batches with configurable batch size and 2-hour timeout
+# Updated: 20-minute timeout per file, 2-hour batch timeout
+# Trigger: Re-run validation workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      batch_size:
+        description: 'Number of files per batch'
+        required: false
+        default: '5'
+  push:
+    paths:
+      - 'data/processed/evaluation/code_files/**'
+      - 'scripts/validate_code_files.py'
+      - '.github/workflows/validate-code-files-batched.yml'
+  pull_request:
+    paths:
+      - 'data/processed/evaluation/code_files/**'
+      - 'scripts/validate_code_files.py'
+      - '.github/workflows/validate-code-files-batched.yml'
+
+jobs:
+  prepare-batches:
+    runs-on: ubuntu-latest
+    outputs:
+      batch_ids: ${{ steps.create-batches.outputs.batch_ids }}
+      batches: ${{ steps.create-batches.outputs.batches }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyyaml
+      
+      - name: Create batches
+        id: create-batches
+        run: |
+          BATCH_SIZE=${{ github.event.inputs.batch_size || '5' }}
+          export BATCH_SIZE
+          
+          # Get list of all files and save to a file to avoid shell escaping issues
+          python scripts/validate_code_files.py --list-files > /tmp/files.json
+          echo "Files list saved to /tmp/files.json"
+          cat /tmp/files.json
+          
+          # Create batches using Python
+          python3 << 'EOF'
+          import json
+          import sys
+          import os
+          
+          # Read files from file instead of shell variable
+          with open('/tmp/files.json', 'r') as f:
+              files = json.load(f)
+          
+          batch_size = int(os.environ.get('BATCH_SIZE', '5'))
+          
+          if not files:
+              with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+                  f.write("batch_ids=[]\n")
+                  f.write("batches={}\n")
+              print("No files to validate")
+              sys.exit(0)
+          
+          # Create batches
+          batches = {}
+          for i in range(0, len(files), batch_size):
+              batch_id = i // batch_size
+              batch_files = files[i:i + batch_size]
+              batches[str(batch_id)] = ','.join(batch_files)
+          
+          batch_ids = list(range(len(batches)))
+          
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+              f.write(f"batch_ids={json.dumps(batch_ids)}\n")
+              f.write(f"batches={json.dumps(batches)}\n")
+          
+          print(f"Created {len(batch_ids)} batches of up to {batch_size} files each")
+          print(f"Total files: {len(files)}")
+          EOF
+
+  validate:
+    needs: prepare-batches
+    if: needs.prepare-batches.outputs.batch_ids != '[]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60  # Reduced from 120 to 60 minutes (5 files × 2 min = 10 min + 50 min buffer)
+    strategy:
+      fail-fast: false
+      matrix:
+        batch_id: ${{ fromJSON(needs.prepare-batches.outputs.batch_ids) }}
+    env:
+      PIP_TIMEOUT: 600
+      PIP_RETRIES: 2
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+      
+      - name: Install dependencies
+        run: |
+          echo "Starting dependency installation at $(date)"
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install -r requirements-validation.txt
+          echo "Dependency installation completed at $(date)"
+      
+      - name: Validate batch
+        run: |
+          set -e
+          echo "Starting batch validation at $(date)"
+          BATCHES='${{ needs.prepare-batches.outputs.batches }}'
+          echo "Batches data: $BATCHES"
+          BATCH_FILES=$(echo "$BATCHES" | python3 -c "import sys, json; batches=json.load(sys.stdin); print(batches.get('${{ matrix.batch_id }}', ''))")
+          
+          if [ -z "$BATCH_FILES" ]; then
+            echo "Error: No files found for batch ${{ matrix.batch_id }}"
+            exit 1
+          fi
+          
+          echo "Validating batch ${{ matrix.batch_id }}: $BATCH_FILES"
+          mkdir -p batch-results
+          python scripts/validate_code_files.py --batch "$BATCH_FILES" --batch-id ${{ matrix.batch_id }} --output-dir batch-results
+          
+          echo "Batch validation complete at $(date). Results:"
+          ls -la batch-results/
+          
+          # Show zombie processes if any
+          echo "Checking for zombie processes:"
+          ps aux | grep -i defunct || echo "No zombie processes found"
+      
+      - name: Upload batch result
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: batch-result-${{ matrix.batch_id }}
+          path: batch-results/batch_*.yaml
+          retention-days: 30
+      
+      - name: Upload batch logs
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: batch-logs-${{ matrix.batch_id }}
+          path: |
+            batch-results/*.log
+            batch-results/*.txt
+          retention-days: 30
+          if-no-files-found: ignore
+
+  combine-results:
+    needs: validate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      PIP_TIMEOUT: 600
+      PIP_RETRIES: 2
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyyaml
+      
+      - name: Download all batch results
+        uses: actions/download-artifact@v4
+        with:
+          pattern: batch-result-*
+          path: batch-results/
+          merge-multiple: true
+      
+      - name: Download all batch logs
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          pattern: batch-logs-*
+          path: batch-logs/
+          merge-multiple: true
+      
+      - name: Combine results
+        run: |
+          python scripts/validate_code_files.py --combine batch-results --output-dir data/processed/evaluation
+      
+      - name: Upload final validation report
+        uses: actions/upload-artifact@v4
+        with:
+          name: validation-report
+          path: data/processed/evaluation/validation_report.yaml
+          retention-days: 90
+      
+      - name: Upload all batch results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: all-batch-results
+          path: batch-results/
+          retention-days: 90
+      
+      - name: Upload all logs
+        uses: actions/upload-artifact@v4
+        if: always()
+        continue-on-error: true
+        with:
+          name: all-validation-logs
+          path: batch-logs/
+          retention-days: 90
+      
+      - name: Commit validation report
+        if: success()
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add data/processed/evaluation/validation_report.yaml
+          git diff --staged --quiet || git commit -m "Add validation report [skip ci]"
+      
+      - name: Push changes
+        if: success() && github.event_name == 'push'
+        uses: ad-m/github-push-action@v0.8.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}

@@ -1,0 +1,68 @@
+name: Validate Generated Code Files (Standard - DISABLED)
+
+on:
+  # workflow_dispatch:
+  # push:
+  #   paths:
+  #     - 'data/processed/evaluation/code_files/**'
+  #     - 'scripts/validate_code_files.py'
+  #     - '.github/workflows/validate-code-files.yml'
+  # pull_request:
+  #   paths:
+  #     - 'data/processed/evaluation/code_files/**'
+  #     - 'scripts/validate_code_files.py'
+  #     - '.github/workflows/validate-code-files.yml'
+  workflow_call:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      PIP_TIMEOUT: 600
+      PIP_RETRIES: 2
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install -r requirements-validation.txt
+      
+      - name: Run validation
+        run: |
+          python scripts/validate_code_files.py
+      
+      - name: Upload validation report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: validation-report
+          path: data/processed/evaluation/validation_report.yaml
+          retention-days: 30
+      
+      - name: Commit validation report
+        if: success()
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add data/processed/evaluation/validation_report.yaml
+          git diff --staged --quiet || git commit -m "Add validation report [skip ci]"
+      
+      - name: Push changes
+        if: success() && github.event_name == 'push'
+        uses: ad-m/github-push-action@v0.8.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}

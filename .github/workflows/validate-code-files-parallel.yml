@@ -1,0 +1,139 @@
+name: Validate Generated Code Files (Parallel - DISABLED)
+
+on:
+  # workflow_dispatch:
+  # push:
+  #   paths:
+  #     - 'data/processed/evaluation/code_files/**'
+  #     - 'scripts/validate_code_files.py'
+  #     - '.github/workflows/validate-code-files-parallel.yml'
+  # pull_request:
+  #   paths:
+  #     - 'data/processed/evaluation/code_files/**'
+  #     - 'scripts/validate_code_files.py'
+  #     - '.github/workflows/validate-code-files-parallel.yml'
+  workflow_call:
+
+jobs:
+  list-files:
+    runs-on: ubuntu-latest
+    outputs:
+      files: ${{ steps.list.outputs.files }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyyaml
+      
+      - name: List files to validate
+        id: list
+        run: |
+          FILES=$(python scripts/validate_code_files.py --list-files)
+          echo "files=$FILES" >> $GITHUB_OUTPUT
+          echo "Files to validate: $FILES"
+
+  validate:
+    needs: list-files
+    if: needs.list-files.outputs.files != '[]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        file: ${{ fromJSON(needs.list-files.outputs.files) }}
+    env:
+      PIP_TIMEOUT: 600
+      PIP_RETRIES: 2
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install -r requirements-validation.txt
+      
+      - name: Validate file
+        run: |
+          python scripts/validate_code_files.py --file "${{ matrix.file }}" --output-dir partial-results
+      
+      - name: Upload partial result
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: partial-result-${{ matrix.file }}
+          path: partial-results/partial_*.yaml
+          retention-days: 7
+
+  combine-results:
+    needs: validate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      PIP_TIMEOUT: 600
+      PIP_RETRIES: 2
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyyaml
+      
+      - name: Download all partial results
+        uses: actions/download-artifact@v4
+        with:
+          pattern: partial-result-*
+          path: partial-results/
+          merge-multiple: true
+      
+      - name: Combine results
+        run: |
+          python scripts/validate_code_files.py --combine partial-results --output-dir data/processed/evaluation
+      
+      - name: Upload final validation report
+        uses: actions/upload-artifact@v4
+        with:
+          name: validation-report
+          path: data/processed/evaluation/validation_report.yaml
+          retention-days: 30
+      
+      - name: Commit validation report
+        if: success()
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add data/processed/evaluation/validation_report.yaml
+          git diff --staged --quiet || git commit -m "Add validation report [skip ci]"
+      
+      - name: Push changes
+        if: success() && github.event_name == 'push'
+        uses: ad-m/github-push-action@v0.8.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
