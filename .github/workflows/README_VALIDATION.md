@@ -9,15 +9,15 @@ Sequential validation of all files in a single job. Suitable for small numbers o
 
 ### Batched Workflow (`validate-code-files-batched.yml`) **RECOMMENDED**
 **Recommended for 10+ files.** Uses batching with GitHub Actions matrix strategy:
-- **prepare-batches**: Creates batches of files (default: 10 files per batch)
+- **prepare-batches**: Creates batches of files (default: 5 files per batch)
 - **validate**: Runs validation in parallel (one job per batch, 120-minute timeout)
 - **combine-results**: Aggregates all batch results into final report
 
 Benefits:
-- Reduces number of parallel jobs (e.g., 180 files → 18 batches instead of 180 jobs)
+- Reduces number of parallel jobs (e.g., 20 files → 4 batches instead of 20 jobs)
 - Includes all partial results and logs as artifacts
 - Configurable batch size via workflow_dispatch
-- 120-minute timeout per batch allows for long-running optimization scripts
+- 120-minute timeout per batch (20-minute timeout per file × 5 files + buffer)
 - Robust error handling and improved batch creation logic
 
 ### Parallel Workflow (`validate-code-files-parallel.yml`)
@@ -29,7 +29,7 @@ The workflow runs three checks on each `.py` file:
 
 1. **Syntax Check**: Validates Python syntax using `ast.parse()`
 2. **Import Check**: Attempts to import the module to verify all dependencies are available
-3. **Runtime Check**: Executes the file with a 5-minute timeout (timeouts are treated as success for long-running optimization scripts)
+3. **Runtime Check**: Executes the file with a 20-minute timeout (timeouts are treated as success for long-running optimization scripts)
 
 ## Workflow Triggers
 
