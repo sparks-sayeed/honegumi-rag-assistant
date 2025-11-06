@@ -92,7 +92,7 @@ jobs:
     needs: prepare-batches
     if: needs.prepare-batches.outputs.batch_ids != '[]'
     runs-on: ubuntu-latest
-    timeout-minutes: 120  # 2-hour timeout per batch (5 files × 20 min = 100 min + 20 min buffer)
+    timeout-minutes: 120  # 2-hour timeout per batch (5 files × 2 min = 10 min + buffer)
     strategy:
       fail-fast: false
       matrix:
