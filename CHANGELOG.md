@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+- **GitHub Actions workflow timeout configuration**: Updated batched validation workflow (`validate-code-files-batched.yml`) with 2-hour timeout per batch and 2-minute timeout per file. Changed per-file timeout from 20 minutes to 2 minutes in `scripts/validate_code_files.py` (timeout=120s). Updated documentation in `README_VALIDATION.md` to reflect correct batch size (5 files per batch) and runtime timeout (2 minutes per file). Configuration supports 20 files → 4 batches (5 files each) with force termination at 2 minutes if no errors occur (2025-11-06).
 - **API key environment variable**: Updated all code to use `LLM_API_KEY` instead of `OPENAI_API_KEY` for consistency with repository secrets configuration. This affects:
   - `src/honegumi_rag_assistant/app_config.py` - Settings class now reads from `LLM_API_KEY`
   - `src/honegumi_rag_assistant/nodes/code_writer.py` - Error message updated

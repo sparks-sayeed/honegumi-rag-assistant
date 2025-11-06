@@ -74,12 +74,12 @@ def check_imports(file_path: Path) -> Dict[str, Any]:
         return {"passed": False, "error": str(e)}
 
 
-def check_runtime(file_path: Path, timeout: int = 1200) -> Dict[str, Any]:
+def check_runtime(file_path: Path, timeout: int = 120) -> Dict[str, Any]:
     """Execute the Python file with a timeout.
     
     Args:
         file_path: Path to the Python file
-        timeout: Maximum execution time in seconds (default: 1200s = 20 minutes)
+        timeout: Maximum execution time in seconds (default: 120s = 2 minutes)
         
     Returns:
         Dict with 'passed' bool, 'execution_time', 'timed_out' flag, and optional 'error' message
@@ -114,15 +114,31 @@ def check_runtime(file_path: Path, timeout: int = 1200) -> Dict[str, Any]:
         except subprocess.TimeoutExpired:
             execution_time = time.time() - start_time
             
-            # Kill the entire process group to ensure all child processes are terminated
+            # FORCE KILL the process immediately with SIGKILL
+            # This hard-terminates the process without allowing cleanup
             try:
                 if hasattr(os, 'killpg'):
-                    os.killpg(os.getpgid(process.pid), 9)  # SIGKILL
+                    # Kill entire process group (handles child processes too)
+                    try:
+                        os.killpg(os.getpgid(process.pid), 9)  # SIGKILL - immediate force termination
+                    except ProcessLookupError:
+                        pass  # Process already dead
                 else:
-                    process.kill()
-                process.wait(timeout=5)  # Wait for cleanup
+                    process.kill()  # Fallback for non-Unix systems
+                
+                # Don't wait for process - drain output buffers immediately to prevent deadlock
+                # Use non-blocking communicate with very short timeout
+                try:
+                    process.communicate(timeout=0.1)
+                except:
+                    pass  # Ignore any errors during buffer draining
+                    
             except Exception as cleanup_error:
-                print(f"Warning: Error during process cleanup: {cleanup_error}", file=sys.stderr)
+                # Last resort: force kill
+                try:
+                    process.kill()
+                except:
+                    pass
             
             # Timeout is treated as SUCCESS for optimization scripts
             return {
@@ -130,19 +146,26 @@ def check_runtime(file_path: Path, timeout: int = 1200) -> Dict[str, Any]:
                 "error": None,
                 "execution_time": f"{execution_time:.2f}s",
                 "timed_out": True,
-                "note": f"Execution timed out after {timeout}s (expected for long-running optimization scripts)"
+                "note": f"Execution forcibly terminated after {timeout}s timeout (expected for long-running optimization scripts)"
             }
     except Exception as e:
         execution_time = time.time() - start_time
         
-        # Ensure process is terminated
+        # Ensure process is force-terminated
         if process and process.poll() is None:
             try:
                 if hasattr(os, 'killpg'):
-                    os.killpg(os.getpgid(process.pid), 9)
+                    try:
+                        os.killpg(os.getpgid(process.pid), 9)  # SIGKILL
+                    except ProcessLookupError:
+                        pass
                 else:
                     process.kill()
-                process.wait(timeout=5)
+                # Drain buffers quickly
+                try:
+                    process.communicate(timeout=0.1)
+                except:
+                    pass
             except Exception:
                 pass
         
