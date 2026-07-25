@@ -3,7 +3,7 @@ Gradio interface for Honegumi RAG Assistant.
 
 This app provides a web UI for the Honegumi RAG Assistant, allowing users to:
 - Enter Bayesian optimization problem descriptions in natural language
-- Select OpenAI models for different agents
+- Select Claude models for different agents
 - View generated code with syntax highlighting
 - Download generated Python scripts
 - Use example prompts for quick testing
@@ -34,46 +34,25 @@ except ImportError:
     pass  # python-dotenv not installed, skip
 
 from honegumi_rag_assistant.orchestrator import run_from_text
-from honegumi_rag_assistant.app_config import settings
+from honegumi_rag_assistant.app_config import settings, DEFAULT_MODEL
 
 
-# Example prompts for quick testing
+# Claude models offered in the UI dropdowns.
+MODEL_CHOICES = ["claude-sonnet-5", "claude-opus-5", "claude-haiku-4-5"]
+
+# Example prompts for quick testing.  Each row supplies the three model
+# dropdowns and the review checkbox alongside the prompt.
+EXAMPLE_PROMPTS = [
+    "Optimize temperature (50-200°C) and pressure (1-10 bar) for maximum yield in a chemical reaction.",
+    "Find optimal composition ratios for a ternary alloy (Element A: 0-100%, Element B: 0-100%, Element C: 0-100%) to maximize tensile strength while minimizing cost.",
+    "Optimize learning rate (1e-5 to 1e-1, log scale) and batch size (16, 32, 64, 128) for training a neural network to minimize validation loss.",
+    "Optimize reaction time (1-24 hours) and catalyst concentration (0.1-5.0 mol/L) to maximize conversion efficiency in a batch reactor.",
+    "Design a solar panel configuration with panel angle (0-90 degrees) and spacing (0.5-3 meters) to maximize energy output while minimizing land area.",
+]
+
 EXAMPLES = [
-    [
-        "Optimize temperature (50-200°C) and pressure (1-10 bar) for maximum yield in a chemical reaction.",
-        "gpt-4o-mini",
-        "gpt-4o-mini",
-        "gpt-4o",
-        False
-    ],
-    [
-        "Find optimal composition ratios for a ternary alloy (Element A: 0-100%, Element B: 0-100%, Element C: 0-100%) to maximize tensile strength while minimizing cost.",
-        "gpt-4o-mini",
-        "gpt-4o-mini",
-        "gpt-4o",
-        False
-    ],
-    [
-        "Optimize learning rate (1e-5 to 1e-1, log scale) and batch size (16, 32, 64, 128) for training a neural network to minimize validation loss.",
-        "gpt-4o-mini",
-        "gpt-4o-mini",
-        "gpt-4o",
-        False
-    ],
-    [
-        "Optimize reaction time (1-24 hours) and catalyst concentration (0.1-5.0 mol/L) to maximize conversion efficiency in a batch reactor.",
-        "gpt-4o-mini",
-        "gpt-4o-mini",
-        "gpt-4o",
-        False
-    ],
-    [
-        "Design a solar panel configuration with panel angle (0-90 degrees) and spacing (0.5-3 meters) to maximize energy output while minimizing land area.",
-        "gpt-4o-mini",
-        "gpt-4o-mini",
-        "gpt-4o",
-        False
-    ],
+    [prompt, DEFAULT_MODEL, DEFAULT_MODEL, DEFAULT_MODEL, False]
+    for prompt in EXAMPLE_PROMPTS
 ]
 
 
@@ -91,7 +70,7 @@ def generate_code(
     
     Args:
         problem: Natural language problem description
-        api_key: OpenAI API key
+        api_key: Anthropic API key
         param_selector_model: Model for Parameter Selector agent
         retrieval_planner_model: Model for Retrieval Planner agent
         code_writer_model: Model for Code Writer agent
@@ -105,11 +84,11 @@ def generate_code(
         return "", "⚠️ Please enter a problem description."
     
     if not api_key or not api_key.strip():
-        return "", "⚠️ Please enter your OpenAI API key."
+        return "", "⚠️ Please enter your Anthropic API key."
     
     try:
         # Update settings with user selections
-        settings.openai_api_key = api_key.strip()
+        settings.anthropic_api_key = api_key.strip()
         settings.model_name = param_selector_model
         settings.retrieval_planner_model = retrieval_planner_model
         settings.code_writer_model = code_writer_model
@@ -142,7 +121,7 @@ def generate_code(
     except Exception as e:
         error_msg = f"❌ Error: {str(e)}\n\n"
         if "api_key" in str(e).lower() or "authentication" in str(e).lower():
-            error_msg += "Please check that your OpenAI API key is valid."
+            error_msg += "Please check that your Anthropic API key is valid."
         else:
             error_msg += "Full traceback:\n" + traceback.format_exc()
         return "", error_msg
@@ -189,34 +168,34 @@ def create_interface():
                 gr.Markdown("### 🔑 Configuration")
                 
                 api_key = gr.Textbox(
-                    label="OpenAI API Key",
+                    label="Anthropic API Key",
                     type="password",
-                    placeholder="sk-...",
-                    info="Your OpenAI API key (required for GPT models)"
+                    placeholder="sk-ant-...",
+                    info="Your Anthropic API key (required for Claude models)"
                 )
-                
+
                 gr.Markdown("### 🎯 Model Selection")
-                gr.Markdown("*Choose models for different agents (GPT-4o-mini is faster and cheaper)*")
-                
+                gr.Markdown("*Choose models for different agents (Haiku is faster and cheaper; Opus is the most capable)*")
+
                 param_selector_model = gr.Dropdown(
-                    choices=["gpt-4o", "gpt-4o-mini", "gpt-4-turbo"],
-                    value="gpt-4o-mini",
+                    choices=MODEL_CHOICES,
+                    value=DEFAULT_MODEL,
                     label="Parameter Selector",
                     info="Extracts optimization parameters"
                 )
-                
+
                 retrieval_planner_model = gr.Dropdown(
-                    choices=["gpt-4o", "gpt-4o-mini", "gpt-4-turbo"],
-                    value="gpt-4o-mini",
+                    choices=MODEL_CHOICES,
+                    value=DEFAULT_MODEL,
                     label="Retrieval Planner",
                     info="Plans documentation queries"
                 )
-                
+
                 code_writer_model = gr.Dropdown(
-                    choices=["gpt-4o", "gpt-4o-mini", "gpt-4-turbo"],
-                    value="gpt-4o",
+                    choices=MODEL_CHOICES,
+                    value=DEFAULT_MODEL,
                     label="Code Writer",
-                    info="Generates final code (recommended: gpt-4o)"
+                    info=f"Generates final code (recommended: {DEFAULT_MODEL})"
                 )
                 
                 enable_review = gr.Checkbox(
@@ -277,9 +256,9 @@ def create_interface():
         
         - **Repository**: [github.com/hasan-sayeed/honegumi_rag_assistant](https://github.com/hasan-sayeed/honegumi_rag_assistant)
         - **Documentation**: [Honegumi Docs](https://honegumi.readthedocs.io/)
-        - **Powered by**: [LangGraph](https://github.com/langchain-ai/langgraph), [Ax Platform](https://ax.dev/), OpenAI GPT models
+        - **Powered by**: [LangGraph](https://github.com/langchain-ai/langgraph), [Ax Platform](https://ax.dev/), Anthropic Claude models
         
-        **Note**: This tool requires an OpenAI API key. Typical cost per generation: $0.05-$0.20 depending on problem complexity and models selected.
+        **Note**: This tool requires an Anthropic API key. Typical cost per generation: $0.08-$0.17 with Claude Sonnet 5, depending on problem complexity and how much documentation is retrieved.
         
         **Citation**:
         ```bibtex

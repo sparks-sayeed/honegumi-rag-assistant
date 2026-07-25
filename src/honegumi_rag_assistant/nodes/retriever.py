@@ -19,6 +19,7 @@ from __future__ import annotations
 
 from typing import Dict, Any, List
 import json
+import threading
 import time
 
 from ..states import HonegumiRAGState
@@ -28,10 +29,72 @@ from ..timing_utils import time_node
 # Optional dependencies.  LangChain is not always installed.
 try:
     from langchain_community.vectorstores import FAISS  # type: ignore[import]
-    from langchain_openai import OpenAIEmbeddings  # type: ignore[import]
+    from langchain_huggingface import HuggingFaceEmbeddings  # type: ignore[import]
 except ImportError:  # pragma: no cover - optional
     FAISS = None  # type: ignore
-    OpenAIEmbeddings = None  # type: ignore
+    HuggingFaceEmbeddings = None  # type: ignore
+
+
+# Embeddings now run locally, which changes the cost model of loading them: the
+# sentence-transformers weights are read from disk (~1.3 GB) and the FAISS index
+# is deserialized on every use.  The retrieval planner fans out up to seven
+# retrievers in parallel, so loading per call would repeat that work seven times
+# per run.  Cache the loaded store, keyed by path and embedding model.
+_STORE_CACHE: Dict[tuple, Any] = {}
+_STORE_LOCK = threading.Lock()
+
+
+def _load_vectorstore(path: str, model_name: str) -> Any:
+    """Load and memoise the FAISS store for a given path and embedding model.
+
+    Parameters
+    ----------
+    path : str
+        Directory holding the serialized FAISS index.
+    model_name : str
+        sentence-transformers model to embed queries with.  This must match the
+        model the store was built with; a mismatch yields meaningless
+        neighbours rather than an error.
+
+    Returns
+    -------
+    Any
+        A loaded ``FAISS`` vector store, shared across parallel retrievers.
+    """
+    device = settings.embedding_device
+    key = (path, model_name, device)
+    cached = _STORE_CACHE.get(key)
+    if cached is not None:
+        return cached
+
+    with _STORE_LOCK:
+        # Re-check inside the lock: a concurrent retriever may have won the race.
+        cached = _STORE_CACHE.get(key)
+        if cached is not None:
+            return cached
+
+        embeddings = HuggingFaceEmbeddings(
+            model_name=model_name,
+            model_kwargs={"device": device},
+            encode_kwargs={"normalize_embeddings": True},
+        )
+
+        # Run one inference while still holding the lock, before this store is
+        # visible to any other thread.  sentence-transformers initialises lazily
+        # and compiles kernels on first use; on Apple's MPS backend, several
+        # threads entering that compilation at once deadlock inside Metal -- no
+        # exception, no output, just a pinned GPU until the process is killed.
+        # Warming up serially here guarantees the parallel retrievers only ever
+        # meet an already-initialised model, on whatever device is configured.
+        embeddings.embed_query("warmup")
+
+        store = FAISS.load_local(
+            path,
+            embeddings,
+            allow_dangerous_deserialization=True,
+        )
+        _STORE_CACHE[key] = store
+        return store
 
 
 def retrieve_single_query(query: str, query_index: int) -> Dict[str, Any]:
@@ -65,24 +128,20 @@ def retrieve_single_query(query: str, query_index: int) -> Dict[str, Any]:
         return {"contexts": [], "vectorstore_missing": True if query_index == 0 else None}
 
     # Check dependencies
-    if FAISS is None or OpenAIEmbeddings is None:
+    if FAISS is None or HuggingFaceEmbeddings is None:
         if settings.debug:
             print(f"[PARALLEL RETRIEVER {query_index + 1}] Dependencies not available\n")
         # Only set the flag on the first retriever to avoid duplicates
         return {"contexts": [], "vectorstore_missing": True if query_index == 0 else None}
 
     try:
-        # Load the vector store and embeddings
-        embeddings = OpenAIEmbeddings(
-            openai_api_key=settings.openai_api_key,
-            model="text-embedding-3-large"
-        )
-        vectorstore = FAISS.load_local(
+        # Shared across parallel retrievers; only the first call pays the
+        # model-load and index-deserialization cost.
+        vectorstore = _load_vectorstore(
             settings.retrieval_vectorstore_path,
-            embeddings,
-            allow_dangerous_deserialization=True
+            settings.embedding_model,
         )
-        
+
         # Search using the query
         docs = vectorstore.similarity_search(query, k=settings.retrieval_top_k)
         
@@ -152,7 +211,7 @@ class RetrieverAgent:
             }
 
         # Check that the necessary dependencies are present
-        if FAISS is None or OpenAIEmbeddings is None:
+        if FAISS is None or HuggingFaceEmbeddings is None:
             return {
                 "contexts": state.get("contexts", []),
                 "retrieval_count": state.get("retrieval_count", 0),
@@ -183,18 +242,13 @@ class RetrieverAgent:
             print("="*80 + "\n")
 
         try:
-            # Load the vector store and embeddings
-            # Use text-embedding-3-large to match the vector store creation
-            embeddings = OpenAIEmbeddings(
-                openai_api_key=settings.openai_api_key,
-                model="text-embedding-3-large"
-            )
-            vectorstore = FAISS.load_local(
+            # Shared loader; the embedding model must match the one the store
+            # was built with.
+            vectorstore = _load_vectorstore(
                 settings.retrieval_vectorstore_path,
-                embeddings,
-                allow_dangerous_deserialization=True
+                settings.embedding_model,
             )
-            
+
             # Search using the specific question from Code Writer
             docs = vectorstore.similarity_search(retrieval_query, k=settings.retrieval_top_k)
             

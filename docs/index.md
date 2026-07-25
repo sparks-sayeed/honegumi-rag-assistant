@@ -8,7 +8,7 @@
 
 ## Overview
 
-**Honegumi RAG Assistant** is an advanced agentic AI system that automatically generates high-quality, executable Python code for Bayesian optimization experiments. Built on top of [**Honegumi**](https://honegumi.readthedocs.io/en/latest/), it uses **LangGraph** and **OpenAI GPT models** to orchestrate multiple specialized agents that collaborate to understand your optimization problem, retrieve relevant documentation, and generate production-ready code using the [**Ax Platform**](https://ax.dev/).
+**Honegumi RAG Assistant** is an advanced agentic AI system that automatically generates high-quality, executable Python code for Bayesian optimization experiments. Built on top of [**Honegumi**](https://honegumi.readthedocs.io/en/latest/), it uses **LangGraph** and **Anthropic Claude models** to orchestrate multiple specialized agents that collaborate to understand your optimization problem, retrieve relevant documentation, and generate production-ready code using the [**Ax Platform**](https://ax.dev/).
 
 Simply describe your optimization problem in plain English, and the assistant produces complete, runnable code tailored to your specific requirements.
 
@@ -18,7 +18,8 @@ Simply describe your optimization problem in plain English, and the assistant pr
 - **Intelligent RAG**: Parallel retrieval of relevant Ax documentation to supplement skeleton code
 - **Built on Honegumi**: Leverages [Honegumi](https://honegumi.readthedocs.io/en/latest/) for deterministic skeleton generation
 - **Multi-agent architecture**: Specialized agents for parameter extraction, retrieval planning, and code writing
-- **Flexible model selection**: Mix GPT-o1 and GPT-4o models for cost-performance optimization
+- **Local embeddings**: Documentation retrieval runs offline via sentence-transformers — no embedding API key or per-token cost
+- **Tunable reasoning**: Adaptive thinking with a configurable effort level to trade depth against token spend
 
 ## Quick Start
 

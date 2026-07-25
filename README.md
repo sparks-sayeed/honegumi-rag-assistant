@@ -17,7 +17,7 @@
 
 ## Overview
 
-**Honegumi RAG Assistant** is an advanced agentic AI system that automatically generates high-quality, executable Python code for Bayesian optimization experiments. Built on top of [**Honegumi**](https://honegumi.readthedocs.io/en/latest/), it uses **LangGraph** and **OpenAI GPT models** to orchestrate multiple specialized agents that collaborate to understand your optimization problem, retrieve relevant documentation, and generate production-ready code using the [**Ax Platform**](https://ax.dev/).
+**Honegumi RAG Assistant** is an advanced agentic AI system that automatically generates high-quality, executable Python code for Bayesian optimization experiments. Built on top of [**Honegumi**](https://honegumi.readthedocs.io/en/latest/), it uses **LangGraph** and **Anthropic Claude models** to orchestrate multiple specialized agents that collaborate to understand your optimization problem, retrieve relevant documentation, and generate production-ready code using the [**Ax Platform**](https://ax.dev/).
 
 [**Honegumi**](https://honegumi.readthedocs.io/en/latest/) provides deterministic skeleton code generation based on problem parameters, and this RAG Assistant enhances it by retrieving relevant [Ax Platform](https://ax.dev/) documentation to help the LLM transform the skeleton into complete, domain-specific code tailored to your problem.
 
@@ -29,7 +29,8 @@ Simply describe your optimization problem in plain English, and the assistant pr
 - **Intelligent RAG**: Parallel retrieval of relevant Ax documentation to supplement skeleton code
 - **Built on Honegumi**: Leverages [Honegumi](https://honegumi.readthedocs.io/en/latest/) for deterministic skeleton generation
 - **Multi-agent architecture**: Specialized agents for parameter extraction, retrieval planning, and code writing
-- **Flexible model selection**: Mix GPT-5 and GPT-4o models for cost-performance optimization
+- **Local embeddings**: Documentation retrieval runs entirely offline via sentence-transformers — no embedding API key, no per-token cost
+- **Tunable reasoning**: Adaptive thinking with a configurable effort level to trade depth against token spend
 
 ---
 
@@ -40,7 +41,7 @@ Simply describe your optimization problem in plain English, and the assistant pr
 - **Skeleton Generator**: Uses [Honegumi](https://honegumi.readthedocs.io/en/latest/) to create deterministic code templates
 - **Retrieval Planner**: Intelligently generates retrieval queries based on problem complexity
 - **Parallel Retrievers**: For efficient documentation retrieval - multiple queries executed concurrently to minimize latency
-- **Code Writer**: GPT-5 powered code generation with streaming output
+- **Code Writer**: Claude-powered code generation with adaptive thinking and streaming output
 - **Reviewer** (optional): Quality assessment and revision requests (disabled by default for speed)
 
 ### Advanced Features
@@ -52,7 +53,7 @@ Simply describe your optimization problem in plain English, and the assistant pr
 
 - **Conda** (Miniconda or Anaconda)
 - **Python 3.11+**
-- [**OpenAI API key**](https://platform.openai.com/api-keys)
+- [**Anthropic API key**](https://console.anthropic.com/settings/keys)
 - [**LangSmith API key**](https://docs.smith.langchain.com/administration/how_to_guides/organization_management/create_account_api_key) (optional)
 
 ---
@@ -66,12 +67,12 @@ To help you get started quickly, we've prepared an interactive Google Colab tuto
 In this tutorial, you'll learn how to:
 
 - Install Honegumi RAG Assistant and all necessary dependencies on Colab
-- Set up API keys using Colab Secrets
-- Build a vector store from Ax Platform documentation
+- Set up your API key using Colab Secrets
+- Build a local vector store from Ax Platform documentation
 - Describe your optimization problem and generate code
 - View the generated code in your Google Drive
 
-The tutorial runs entirely in Colab—no local setup required. All you need is access to your Google Drive and valid OpenAI/LangSmith API keys.
+The tutorial runs entirely in Colab—no local setup required. All you need is access to your Google Drive and a valid Anthropic API key (LangSmith optional).
 
 ---
 
@@ -97,8 +98,8 @@ The tutorial runs entirely in Colab—no local setup required. All you need is a
    In the folder where you'll run the CLI (or in any ancestor), create a file called **`.env`** containing:
 
    ```bash
-   OPENAI_API_KEY=sk-...
-   LANGCHAIN_API_KEY=lsv2_...
+   ANTHROPIC_API_KEY=sk-ant-...
+   LANGCHAIN_API_KEY=lsv2_...   # optional, for tracing
    ```
 
 4. Build vector store (one-time setup)
@@ -108,11 +109,20 @@ The tutorial runs entirely in Colab—no local setup required. All you need is a
    # Run the build script from the package
    python -m honegumi_rag_assistant.build_vector_store
    ```
-   
+
+   Embeddings are computed locally, so **no API key is needed for this step**.
+   The first run downloads the embedding model (~1.3 GB) and embedding the
+   corpus takes several minutes on CPU. Until it finishes, the assistant still
+   works — it just generates code without documentation retrieval.
+
    **Note**: By default, this uses Ax v0.4.3 (matching honegumi). To use a different version:
    ```bash
    python -m honegumi_rag_assistant.build_vector_store --ax-version 0.4.0
    ```
+
+   If you change the embedding model, you must rebuild the store: vector
+   dimensions and semantics differ between models, and a mismatch between build
+   time and query time yields meaningless results rather than an error.
 
 5. Run the assistant
    ```bash
@@ -143,15 +153,16 @@ The tutorial runs entirely in Colab—no local setup required. All you need is a
    In the project root directory, create a file called **`.env`** containing:
    
    ```bash
-   # Required: OpenAI API Key for LLM and embeddings
-   OPENAI_API_KEY=sk-your-actual-openai-api-key-here
-   
-   # Optional: LangChain for tracing (recommended for debugging)
+   # Required: Anthropic API key for the Claude agents.
+   # Embeddings run locally, so this is the only credential needed.
+   ANTHROPIC_API_KEY=sk-ant-your-actual-api-key-here
+
+   # Optional: LangSmith tracing (recommended for debugging)
    LANGCHAIN_API_KEY=your-langchain-api-key-here
    LANGCHAIN_TRACING_V2=true
    LANGCHAIN_PROJECT=Honegumi RAG Assistant
-   
-   # Optional: Path to FAISS vector store (if using RAG)
+
+   # Path to FAISS vector store (set after building it)
    AX_DOCS_VECTORSTORE_PATH=data/processed/ax_docs_vectorstore
    RETRIEVAL_TOP_K=5
    ```
@@ -167,7 +178,8 @@ The tutorial runs entirely in Colab—no local setup required. All you need is a
    python -m honegumi_rag_assistant.build_vector_store --ax-version 0.4.0
    ```
    
-   The vector store will be saved to `data/processed/ax_docs_vectorstore/` and automatically loaded if present.
+   The vector store will be saved to `data/processed/ax_docs_vectorstore/` and automatically loaded if present. Embeddings run locally via
+   [`BAAI/bge-large-en-v1.5`](https://huggingface.co/BAAI/bge-large-en-v1.5) — no API key, no per-token cost. Build metadata (Ax version, embedding model, chunk settings) is recorded in `metadata.json` alongside the index.
 
 6. **Verify Installation**:
    ```bash
@@ -212,29 +224,48 @@ honegumi-rag --debug
 | Argument | Description | Default |
 |----------|-------------|---------|
 | `--output-dir` | Save generated script to specified directory (if omitted, code is only printed, not saved) | `None` (no save) |
-| `--debug` | Enable debug mode with detailed logging | `False` |
-| `--review` | Enable Reviewer agent (slower, more accurate) | `False` |
-| `--param-selector-model` | Model for Parameter Selector | `gpt-5` |
-| `--retrieval-planner-model` | Model for Retrieval Planner | `gpt-5` |
-| `--code-writer-model` | Model for Code Writer agent | `gpt-5` |
-| `--reviewer-model` | Model for Reviewer agent | `gpt-4o` |
+| `--debug` | Enable debug mode with detailed logging, including a summary of the Code Writer's reasoning | `False` |
+| `--review` | Enable Reviewer agent (slower, more accurate; disables streaming) | `False` |
+| `--effort` | Reasoning effort for the Code Writer: `low`, `medium`, `high`, `xhigh`, `max` | `high` |
+| `--param-selector-model` | Model for Parameter Selector | `claude-sonnet-5` |
+| `--retrieval-planner-model` | Model for Retrieval Planner | `claude-sonnet-5` |
+| `--code-writer-model` | Model for Code Writer agent | `claude-sonnet-5` |
+| `--reviewer-model` | Model for Reviewer agent | `claude-sonnet-5` |
 
 
 ### Model Selection Guide
 
-**Recommended (Best Quality)**:
+All agents default to **Claude Sonnet 5**, which gives the best balance of
+capability and cost for this pipeline.
+
+**Highest capability** — for hard, many-parameter or many-objective problems:
 ```bash
---param-selector-model gpt-5 \
---code-writer-model gpt-5 \
---retrieval-planner-model gpt-5
+--code-writer-model claude-opus-5 --effort xhigh
 ```
 
-**Budget (Faster, Lower Cost, Lower Accuracy)**:
+**Budget** — the extraction agents do constrained classification against a fixed
+schema, so they downgrade well; the Code Writer is where capability shows up:
 ```bash
---param-selector-model gpt-5-mini \
---code-writer-model gpt-4o \
---retrieval-planner-model gpt-5-mini
+--param-selector-model claude-haiku-4-5 \
+--retrieval-planner-model claude-haiku-4-5 \
+--code-writer-model claude-sonnet-5
 ```
+
+### Reasoning Effort
+
+The Code Writer runs with **adaptive thinking**: Claude decides per request how
+much to reason before rewriting the skeleton. `--effort` sets the ceiling on that
+reasoning, trading token spend against depth. `high` is the default; `medium`
+costs less and is often sufficient for straightforward problems.
+
+Note that on the Anthropic API, `max_tokens` caps thinking *plus* visible output.
+If you raise `--effort` to `xhigh` or `max`, also raise `CODE_WRITER_MAX_TOKENS`
+(default 16000) so long reasoning can't crowd out the generated script.
+
+Rather than guessing, measure: the repo ships 20 problem statements with
+ground-truth grid selections in `data/raw/problem_statements.yaml` and a
+validation workflow that syntax-checks, imports and executes generated scripts.
+Run a sweep at two effort levels and compare.
 
 ---
 
@@ -270,7 +301,7 @@ honegumi-rag --debug
 │           ├── skeleton_generator.py   <- Honegumi skeleton generation
 │           ├── retrieval_planner.py    <- Retrieval query generation
 │           ├── retriever.py            <- Parallel FAISS retrieval
-│           ├── code_writer.py          <- GPT-5 code generation
+│           ├── code_writer.py          <- Claude code generation
 │           └── reviewer.py             <- Code quality review
 │
 ├── scripts/
@@ -340,6 +371,8 @@ This project is licensed under the MIT License - see [LICENSE.txt](LICENSE.txt) 
 - Powered by [LangGraph](https://github.com/langchain-ai/langgraph) and [LangChain](https://github.com/langchain-ai/langchain)
 - Skeleton generation by [Honegumi](https://honegumi.readthedocs.io/en/latest/)
 - Uses Meta's [Ax Platform](https://ax.dev/) for Bayesian optimization
+- Code generation by Anthropic's [Claude](https://www.anthropic.com/claude) models
+- Local embeddings via [BAAI/bge-large-en-v1.5](https://huggingface.co/BAAI/bge-large-en-v1.5)
 
 ---
 

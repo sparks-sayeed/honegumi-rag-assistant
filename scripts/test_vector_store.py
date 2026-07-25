@@ -26,25 +26,30 @@ except ImportError:
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from langchain_community.vectorstores import FAISS
-from langchain_openai import OpenAIEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
+
+from honegumi_rag_assistant.app_config import settings
 
 
-def test_vector_store(vectorstore_path: str, openai_api_key: str):
+def test_vector_store(vectorstore_path: str, embedding_model: str):
     """Test vector store with sample queries."""
-    
+
     print("="*80)
     print("VECTOR STORE TEST")
     print("="*80)
     print(f"Vector store path: {vectorstore_path}")
+    print(f"Embedding model:   {embedding_model}")
     print("="*80 + "\n")
-    
+
     # Load the vector store
     print("Loading vector store...")
     try:
-        # Use text-embedding-3-large to match the vector store creation
-        embeddings = OpenAIEmbeddings(
-            openai_api_key=openai_api_key,
-            model="text-embedding-3-large"
+        # Must match the model the store was built with, or the neighbours
+        # returned will be meaningless rather than merely worse.
+        embeddings = HuggingFaceEmbeddings(
+            model_name=embedding_model,
+            model_kwargs={"device": settings.embedding_device},
+            encode_kwargs={"normalize_embeddings": True},
         )
         vectorstore = FAISS.load_local(vectorstore_path, embeddings, allow_dangerous_deserialization=True)
         print("  Vector store loaded successfully\n")
@@ -101,18 +106,17 @@ def main():
         default=None,
         help="Path to vector store directory (default: from AX_DOCS_VECTORSTORE_PATH env var)"
     )
-    
+    parser.add_argument(
+        "--embedding-model",
+        default=settings.embedding_model,
+        help=f"Embedding model to query with (default: {settings.embedding_model}). "
+             "Must match the model the store was built with."
+    )
+
     args = parser.parse_args()
-    
-    # Check for OpenAI API key
-    openai_api_key = os.getenv("LLM_API_KEY")
-    if not openai_api_key:
-        print("Error: LLM_API_KEY environment variable not set")
-        print("\nSet your API key:")
-        print("  PowerShell: $env:LLM_API_KEY = 'your-key'")
-        print("  Bash: export LLM_API_KEY='your-key'")
-        sys.exit(1)
-    
+
+    # No API key needed: embeddings are computed locally.
+
     # Determine vector store path
     vectorstore_path = args.vectorstore_path or os.getenv("AX_DOCS_VECTORSTORE_PATH")
     
@@ -130,11 +134,11 @@ def main():
     if not Path(vectorstore_path).exists():
         print(f"Error: Vector store not found at {vectorstore_path}")
         print("\nCreate the vector store first:")
-        print("  python scripts/build_vector_store.py")
+        print("  python -m honegumi_rag_assistant.build_vector_store")
         sys.exit(1)
-    
+
     # Run tests
-    success = test_vector_store(vectorstore_path, openai_api_key)
+    success = test_vector_store(vectorstore_path, args.embedding_model)
     sys.exit(0 if success else 1)
 
 

@@ -7,7 +7,7 @@ that each perform a single function in the overall pipeline:
 
 * The **ParameterSelector** node parses the free‑form problem text and
   selects an appropriate set of optimisation parameters via a large
-  language model using the OpenAI function calling interface.
+  language model, using Claude's native structured outputs.
 * The **SkeletonGenerator** node calls into the Honegumi template engine to
   produce a deterministic code skeleton for the Ax platform, based on the
   selected parameters.

@@ -27,7 +27,7 @@ The following infrastructure has been created and is ready to use:
    - Updates rag_assistant_runs.yaml with results
 
 3. **`scripts/run_experiments_and_upload.sh`** - Bash wrapper that:
-   - Checks for OPENAI_API_KEY
+   - Checks for ANTHROPIC_API_KEY
    - Runs the Python script
    - Lists generated artifacts
    - Provides artifact URL structure
@@ -38,7 +38,7 @@ The following infrastructure has been created and is ready to use:
 
 ## Running the Experiments
 
-Once the OPENAI_API_KEY is configured, run:
+Once the ANTHROPIC_API_KEY is configured, run:
 
 ```bash
 ./scripts/run_experiments_and_upload.sh
@@ -47,7 +47,7 @@ Once the OPENAI_API_KEY is configured, run:
 Or directly:
 
 ```bash
-export OPENAI_API_KEY="your-key-here"
+export ANTHROPIC_API_KEY="sk-ant-your-key-here"
 python3 scripts/run_rag_experiments.py
 ```
 
@@ -136,5 +136,5 @@ To trace results for experiment `exp_001_natural`:
 ## Status
 
 ✓ Infrastructure created and committed
-⏳ Waiting for OPENAI_API_KEY to run experiments
+⏳ Waiting for ANTHROPIC_API_KEY to run experiments
 ⏳ Artifacts will be uploaded after experiments complete

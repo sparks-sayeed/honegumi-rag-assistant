@@ -5,13 +5,17 @@ Build a FAISS vector store from Ax documentation.
 This script automates the process of:
 1. Cloning Ax repository from GitHub
 2. Extracting documentation from markdown files
-3. Generating OpenAI embeddings
+3. Generating embeddings locally with sentence-transformers
 4. Building and saving a FAISS vector database
 
+Embeddings run locally and cost nothing, but the first invocation downloads
+the model (~1.3 GB for bge-large-en-v1.5) and embedding the corpus on CPU
+takes several minutes.  No API key is required.
+
 Usage:
-    python scripts/build_vector_store.py
-    python scripts/build_vector_store.py --output custom/path
-    python scripts/build_vector_store.py --update  # Refresh existing store
+    python -m honegumi_rag_assistant.build_vector_store
+    python -m honegumi_rag_assistant.build_vector_store --output custom/path
+    python -m honegumi_rag_assistant.build_vector_store --update  # Rebuild
 """
 
 import argparse
@@ -35,10 +39,12 @@ except ImportError:
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
-from langchain_openai import OpenAIEmbeddings
-from langchain.docstore.document import Document
+from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_core.documents import Document
+
+from honegumi_rag_assistant.app_config import DEFAULT_EMBEDDING_MODEL, settings
 
 
 def clone_ax_repo(temp_dir: Path, ax_version: str = "0.4.3") -> Path:
@@ -216,20 +222,23 @@ def extract_docs_from_repo(repo_path: Path) -> List[Dict[str, str]]:
     return documents
 
 
-def chunk_documents(documents: List[Dict[str, str]], 
-                    chunk_size: int = 2000,
-                    chunk_overlap: int = 400) -> List[Document]:
+def chunk_documents(documents: List[Dict[str, str]],
+                    chunk_size: int = 1400,
+                    chunk_overlap: int = 300) -> List[Document]:
     """
     Split documents into chunks for retrieval.
-    
-    Uses larger chunks (2000 chars) to keep code examples and explanations together.
-    Larger overlap (400 chars) ensures context continuity across chunks.
-    
+
+    Chunks are sized to fit the embedding model's context window.
+    bge-large-en-v1.5 accepts a maximum of 512 tokens, which is roughly 1900
+    characters of mixed prose and code; anything longer is silently truncated
+    by the model, losing the tail of the chunk with no error. 1400 characters
+    leaves headroom for code, which tokenizes less efficiently than prose.
+
     Args:
         documents: List of dicts with 'content', 'title', 'url'
-        chunk_size: Target size for each chunk in characters (default: 2000)
-        chunk_overlap: Overlap between chunks to preserve context (default: 400)
-        
+        chunk_size: Target size for each chunk in characters (default: 1400)
+        chunk_overlap: Overlap between chunks to preserve context (default: 300)
+
     Returns:
         List of LangChain Document objects
     """
@@ -260,36 +269,44 @@ def chunk_documents(documents: List[Dict[str, str]],
     return chunked_docs
 
 
-def build_faiss_index(documents: List[Document], 
-                     openai_api_key: str,
-                     embedding_model: str = "text-embedding-3-large") -> FAISS:
+def build_faiss_index(documents: List[Document],
+                      embedding_model: str = DEFAULT_EMBEDDING_MODEL) -> FAISS:
     """
     Build a FAISS vector store from documents.
-    
-    Uses text-embedding-3-large for better retrieval quality.
-    This model has 3072 dimensions vs 1536 for the small model,
-    providing more nuanced semantic understanding.
-    
+
+    Embeddings are computed locally with sentence-transformers, so no API key
+    and no per-token cost is involved. bge-large-en-v1.5 produces 1024-dim
+    vectors and scores 64.23 on the MTEB average, effectively matching
+    OpenAI's text-embedding-3-large (64.6).
+
+    Embeddings are L2-normalised because BGE models are trained for cosine
+    similarity; with unit vectors, FAISS's L2 ranking matches cosine ranking.
+
+    The device is pinned rather than auto-selected, matching the retriever, so
+    that documents and queries are embedded identically.
+
     Args:
         documents: List of LangChain Document objects
-        openai_api_key: OpenAI API key for embeddings
-        embedding_model: OpenAI embedding model (default: text-embedding-3-large)
-        
+        embedding_model: sentence-transformers model name
+
     Returns:
         FAISS vector store
     """
-    print(f"\nGenerating embeddings using {embedding_model}...")
-    print(f"  This may take a few minutes for {len(documents)} chunks...")
-    
-    embeddings = OpenAIEmbeddings(
-        openai_api_key=openai_api_key,
-        model=embedding_model
+    print(f"\nGenerating embeddings locally using {embedding_model} "
+          f"on {settings.embedding_device}...")
+    print(f"  First run downloads the model (~1.3 GB); embedding "
+          f"{len(documents)} chunks takes several minutes on CPU...")
+
+    embeddings = HuggingFaceEmbeddings(
+        model_name=embedding_model,
+        model_kwargs={"device": settings.embedding_device},
+        encode_kwargs={"normalize_embeddings": True},
     )
-    
+
     # Build FAISS index - process all at once (LangChain handles batching internally)
-    print(f"  Building FAISS index...")
+    print("  Building FAISS index...")
     vectorstore = FAISS.from_documents(documents, embeddings)
-    
+
     print("  FAISS index built successfully")
     return vectorstore
 
@@ -304,19 +321,21 @@ def main():
     parser.add_argument(
         "--chunk-size",
         type=int,
-        default=2000,
-        help="Size of text chunks (default: 2000)"
+        default=1400,
+        help="Size of text chunks (default: 1400, sized for the 512-token "
+             "limit of bge-large-en-v1.5)"
     )
     parser.add_argument(
         "--chunk-overlap",
         type=int,
-        default=400,
-        help="Overlap between chunks (default: 400)"
+        default=300,
+        help="Overlap between chunks (default: 300)"
     )
     parser.add_argument(
         "--embedding-model",
-        default="text-embedding-3-large",
-        help="OpenAI embedding model (default: text-embedding-3-large)"
+        default=DEFAULT_EMBEDDING_MODEL,
+        help=f"Local sentence-transformers model (default: {DEFAULT_EMBEDDING_MODEL}). "
+             "Must match EMBEDDING_MODEL at query time, or retrieval breaks."
     )
     parser.add_argument(
         "--ax-version",
@@ -331,15 +350,8 @@ def main():
     
     args = parser.parse_args()
     
-    # Check for OpenAI API key
-    openai_api_key = os.getenv("LLM_API_KEY")
-    if not openai_api_key:
-        print("❌ Error: LLM_API_KEY environment variable not set")
-        print("\nSet your API key:")
-        print("  PowerShell: $env:LLM_API_KEY = 'your-key'")
-        print("  Bash: export LLM_API_KEY='your-key'")
-        sys.exit(1)
-    
+    # No API key needed: embeddings are computed locally.
+
     # Check if output already exists
     output_path = Path(args.output)
     if output_path.exists() and not args.update:
@@ -383,7 +395,6 @@ def main():
         # Step 4: Build FAISS index
         vectorstore = build_faiss_index(
             chunked_docs,
-            openai_api_key,
             embedding_model=args.embedding_model
         )
         

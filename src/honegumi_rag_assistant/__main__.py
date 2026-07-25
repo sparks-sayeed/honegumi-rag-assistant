@@ -23,7 +23,7 @@ except ImportError:
     pass  # python-dotenv not installed, skip
 
 from .orchestrator import run_from_text
-from .app_config import settings
+from .app_config import settings, DEFAULT_MODEL
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -63,23 +63,34 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument(
         "--code-writer-model",
-        default="gpt-5",
-        help="OpenAI model to use for the Code Writer agent. Default: gpt-5",
+        default=DEFAULT_MODEL,
+        help=f"Claude model to use for the Code Writer agent. Default: {DEFAULT_MODEL}",
     )
     parser.add_argument(
         "--reviewer-model",
-        default="gpt-4o",
-        help="OpenAI model to use for the Reviewer agent. Default: gpt-4o",
+        default=DEFAULT_MODEL,
+        help=f"Claude model to use for the Reviewer agent. Default: {DEFAULT_MODEL}",
     )
     parser.add_argument(
         "--retrieval-planner-model",
-        default="gpt-5",
-        help="OpenAI model to use for the Retrieval Planner agent. Default: gpt-5",
+        default=DEFAULT_MODEL,
+        help=f"Claude model to use for the Retrieval Planner agent. Default: {DEFAULT_MODEL}",
     )
     parser.add_argument(
         "--param-selector-model",
-        default="gpt-5",
-        help="OpenAI model to use for the Parameter Selector and Retrieval Planner. Default: gpt-5",
+        default=DEFAULT_MODEL,
+        help=f"Claude model to use for the Parameter Selector. Default: {DEFAULT_MODEL}",
+    )
+    parser.add_argument(
+        "--effort",
+        choices=["low", "medium", "high", "xhigh", "max"],
+        default=None,
+        help=(
+            "Reasoning effort for the Code Writer. Higher values reason more "
+            "deeply before rewriting the skeleton, at higher token cost. "
+            "Defaults to the CODE_WRITER_EFFORT setting (currently "
+            f"'{settings.code_writer_effort}')."
+        ),
     )
 
     args = parser.parse_args(argv)
@@ -90,6 +101,8 @@ def main(argv: list[str] | None = None) -> int:
         settings.reviewer_model = args.reviewer_model
         settings.retrieval_planner_model = args.retrieval_planner_model
         settings.model_name = args.param_selector_model
+        if args.effort:
+            settings.code_writer_effort = args.effort
         settings.stream_code = not args.review  # Enable streaming when review is disabled
         
         # Interactive prompt for problem description
@@ -118,7 +131,7 @@ def main(argv: list[str] | None = None) -> int:
             print("="*80)
             print(f"Parameter Selector: {args.param_selector_model}")
             print(f"Retrieval Planner: {args.retrieval_planner_model}")
-            print(f"Code Writer: {args.code_writer_model}")
+            print(f"Code Writer: {args.code_writer_model} (effort={settings.code_writer_effort})")
             if args.review:
                 print(f"Reviewer: {args.reviewer_model}")
             else:

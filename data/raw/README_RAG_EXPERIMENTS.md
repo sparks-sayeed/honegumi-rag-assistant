@@ -20,8 +20,8 @@ Each experiment has a unique ID that correlates logs with results:
 To run the experiments:
 
 ```bash
-# Ensure OPENAI_API_KEY is set
-export OPENAI_API_KEY="your-key-here"
+# Ensure ANTHROPIC_API_KEY is set
+export ANTHROPIC_API_KEY="sk-ant-your-key-here"
 
 # Run the experiment script
 python scripts/run_rag_experiments.py
