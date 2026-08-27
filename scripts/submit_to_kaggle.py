@@ -6,8 +6,10 @@ are black-box benchmarks: the objective is only reachable through a provided
 kagglehub package that writes a ``submission.csv``. This helper auto-submits that
 CSV to the competition leaderboard via the Kaggle API.
 
-Credentials are read from the environment (``KAGGLE_USERNAME`` and ``KAGGLE_KEY``)
-or from ``~/.kaggle/kaggle.json``. See https://www.kaggle.com/docs/api.
+Credentials are read from the environment. Both the modern access token
+(``KAGGLE_API_TOKEN``) and the legacy pair (``KAGGLE_USERNAME`` +
+``KAGGLE_KEY``) are supported; ``KAGGLE_API_KEY`` is also accepted and routed
+to the right variable automatically. See https://www.kaggle.com/docs/api.
 
 Usage:
     python scripts/submit_to_kaggle.py \
@@ -20,12 +22,36 @@ You can also pass a competition ``id`` from kaggle_competitions.yaml via
 """
 
 import argparse
+import os
+import re
 import sys
 from pathlib import Path
 
 import yaml
 
 KAGGLE_COMPETITIONS = Path("data/raw/kaggle_competitions.yaml")
+
+# Legacy Kaggle API keys (from kaggle.json) are 32 lowercase hex characters.
+_LEGACY_KEY_RE = re.compile(r"^[0-9a-f]{32}$")
+
+
+def _ensure_kaggle_credentials():
+    """Route env credentials to the variables the Kaggle SDK expects.
+
+    Supports both the modern access token (``KAGGLE_API_TOKEN``) and the legacy
+    username/key pair (``KAGGLE_USERNAME`` + ``KAGGLE_KEY``). When only
+    ``KAGGLE_API_KEY`` is provided, it is treated as a legacy key if it matches
+    the 32-hex format, otherwise as an access token.
+    """
+    if os.environ.get("KAGGLE_API_TOKEN") or os.environ.get("KAGGLE_KEY"):
+        return
+    api_key = os.environ.get("KAGGLE_API_KEY")
+    if not api_key:
+        return
+    if _LEGACY_KEY_RE.match(api_key.strip()):
+        os.environ["KAGGLE_KEY"] = api_key
+    else:
+        os.environ["KAGGLE_API_TOKEN"] = api_key
 
 
 def resolve_slug(competition, competition_id):
@@ -56,6 +82,7 @@ def submit(slug, file_path, message):
         ) from exc
 
     api = KaggleApi()
+    _ensure_kaggle_credentials()
     api.authenticate()
     return api.competition_submit(
         file_name=file_path, message=message, competition=slug

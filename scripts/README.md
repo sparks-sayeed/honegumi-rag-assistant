@@ -44,8 +44,14 @@ uploads to the competition leaderboard.
 
 **Prerequisites:**
 - `pip install kaggle`
-- Kaggle credentials via `KAGGLE_USERNAME` / `KAGGLE_KEY` env vars (or `~/.kaggle/kaggle.json`).
+- Kaggle credentials. Either the modern access token (`KAGGLE_API_TOKEN`) or the
+  legacy pair (`KAGGLE_USERNAME` + `KAGGLE_KEY`). `KAGGLE_API_KEY` is also
+  accepted and routed automatically (treated as a legacy key if 32-hex,
+  otherwise as an access token). Credentials in `~/.kaggle/kaggle.json` also work.
   Get an API token at https://www.kaggle.com/settings.
+- You must accept the competition's rules once on its Kaggle web page (e.g.
+  `https://www.kaggle.com/competitions/<slug>/rules`) before the API will accept
+  a submission; there is no API endpoint to accept rules.
 
 **Usage:**
 ```bash
