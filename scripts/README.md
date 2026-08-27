@@ -65,6 +65,30 @@ python scripts/submit_to_kaggle.py --competition-id branin_noisy_2d --file submi
 - `--file`: Path to the submission CSV (default: `submission.csv`)
 - `--message`: Submission message
 
+### `run_kaggle_branin.py`
+
+Runs the Acceleration Consortium Branin competition end-to-end by actually
+importing and calling the real competition package
+(`amanichabouni/branin-package`) via kagglehub. It runs the competition-legal
+12 campaigns x 40 evaluations against the hidden black-box objective and exports
+a `submission.csv`. A uniform-random sampler is used as a baseline; drop in the
+RAG-assistant-generated Ax code to replace `suggest` with Bayesian optimization.
+
+**Prerequisites:** `pip install kagglehub`
+
+**Usage:**
+```bash
+# Deterministic (vanilla) objective
+python scripts/run_kaggle_branin.py --yes
+
+# Noisy objective variant
+python scripts/run_kaggle_branin.py --yes --method predict_noisy
+```
+
+**Note:** The package executes downloaded code, so `--yes` (or
+`KAGGLEHUB_ALLOW_UNTRUSTED=1`) is required to bypass the interactive
+confirmation prompt in non-interactive environments.
+
 ### Future Scripts
 
 This directory can contain additional utility scripts such as:
