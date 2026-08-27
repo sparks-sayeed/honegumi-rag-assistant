@@ -34,6 +34,37 @@ python scripts/batch_process.py `
 
 **See Also:** `BATCH_PROCESSING.md` for comprehensive documentation
 
+### `submit_to_kaggle.py`
+
+Auto-submit an optimization result to an Acceleration Consortium Kaggle
+competition (see `data/raw/kaggle_competitions.yaml`). These competitions are
+non-hackable, black-box benchmarks: the objective is only reachable through a
+provided kagglehub package that writes a `submission.csv`, which this script
+uploads to the competition leaderboard.
+
+**Prerequisites:**
+- `pip install kaggle`
+- Kaggle credentials via `KAGGLE_USERNAME` / `KAGGLE_KEY` env vars (or `~/.kaggle/kaggle.json`).
+  Get an API token at https://www.kaggle.com/settings.
+
+**Usage:**
+```bash
+# By competition slug
+python scripts/submit_to_kaggle.py \
+    --competition noisy-vanilla-optimization-2-d-branin-function \
+    --file submission.csv \
+    --message "Honegumi RAG Assistant run"
+
+# Or by config id from data/raw/kaggle_competitions.yaml
+python scripts/submit_to_kaggle.py --competition-id branin_noisy_2d --file submission.csv
+```
+
+**Arguments:**
+- `--competition`: Full Kaggle competition slug
+- `--competition-id`: Competition id from `kaggle_competitions.yaml` (alternative to `--competition`)
+- `--file`: Path to the submission CSV (default: `submission.csv`)
+- `--message`: Submission message
+
 ### Future Scripts
 
 This directory can contain additional utility scripts such as:

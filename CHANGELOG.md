@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Kaggle competition benchmarks**: Added `data/raw/kaggle_competitions.yaml` defining the two Acceleration Consortium optimization competitions ([Noisy Vanilla Optimization (2D Branin)](https://www.kaggle.com/competitions/noisy-vanilla-optimization-2-d-branin-function) and [CrabNet Hyperparameter Optimization](https://www.kaggle.com/competitions/crab-net-hyperparameter-optimization)) as non-hackable, black-box evaluation targets. Each entry captures the search space, objectives, constraints, evaluation budget, the kagglehub package usage, a RAG assistant prompt, and the expected Honegumi grid selections. Added `scripts/submit_to_kaggle.py` to auto-submit a generated `submission.csv` to a competition via the Kaggle API (credentials from `KAGGLE_USERNAME`/`KAGGLE_KEY`). Documented Kaggle credentials in `.env.example` and usage in `scripts/README.md`.
+
 ### Changed
 - **API key environment variable**: Updated all code to use `LLM_API_KEY` instead of `OPENAI_API_KEY` for consistency with repository secrets configuration. This affects:
   - `src/honegumi_rag_assistant/app_config.py` - Settings class now reads from `LLM_API_KEY`
