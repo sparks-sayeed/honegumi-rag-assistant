@@ -2,3 +2,7 @@
 *
 # Except this file
 !.gitignore
+!README_RAG_EXPERIMENTS.md
+!problem_statements.yaml
+!rag_assistant_runs.yaml
+!kaggle_competitions.yaml

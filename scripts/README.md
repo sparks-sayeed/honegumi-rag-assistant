@@ -34,6 +34,88 @@ python scripts/batch_process.py `
 
 **See Also:** `BATCH_PROCESSING.md` for comprehensive documentation
 
+### `submit_to_kaggle.py`
+
+Auto-submit an optimization result to an Acceleration Consortium Kaggle
+competition (see `data/raw/kaggle_competitions.yaml`). These competitions are
+non-hackable, black-box benchmarks: the objective is only reachable through a
+provided kagglehub package that writes a `submission.csv`, which this script
+uploads to the competition leaderboard.
+
+**Prerequisites:**
+- `pip install kaggle`
+- Kaggle credentials. Either the modern access token (`KAGGLE_API_TOKEN`) or the
+  legacy pair (`KAGGLE_USERNAME` + `KAGGLE_KEY`). `KAGGLE_API_KEY` is also
+  accepted and routed automatically (treated as a legacy key if 32-hex,
+  otherwise as an access token). Credentials in `~/.kaggle/kaggle.json` also work.
+  Get an API token at https://www.kaggle.com/settings.
+- You must accept the competition's rules once on its Kaggle web page (e.g.
+  `https://www.kaggle.com/competitions/<slug>/rules`) before the API will accept
+  a submission; there is no API endpoint to accept rules.
+
+**Usage:**
+```bash
+# By competition slug
+python scripts/submit_to_kaggle.py \
+    --competition noisy-vanilla-optimization-2-d-branin-function \
+    --file submission.csv \
+    --message "Honegumi RAG Assistant run"
+
+# Or by config id from data/raw/kaggle_competitions.yaml
+python scripts/submit_to_kaggle.py --competition-id branin_noisy_2d --file submission.csv
+```
+
+**Arguments:**
+- `--competition`: Full Kaggle competition slug
+- `--competition-id`: Competition id from `kaggle_competitions.yaml` (alternative to `--competition`)
+- `--file`: Path to the submission CSV (default: `submission.csv`)
+- `--message`: Submission message
+
+### `run_kaggle_branin.py`
+
+Runs the Acceleration Consortium Branin competition end-to-end by actually
+importing and calling the real competition package
+(`amanichabouni/branin-package`) via kagglehub. It runs the competition-legal
+12 campaigns x 40 evaluations against the hidden black-box objective and exports
+a `submission.csv`. By default it uses Ax Bayesian optimization (`--strategy bo`),
+the same library the Honegumi RAG assistant generates code for; a uniform-random
+sampler (`--strategy random`) is kept as a baseline for comparison.
+
+On the live `vanilla-optimization-2-d-branin` leaderboard, BO scores ~6.1 versus
+~41.8 for the random baseline (lower is better), reaching the Branin global
+minimum (~0.3979) in every campaign.
+
+The `bo` strategy follows this repository's Honegumi RAG framework, run
+"manually" (the LLM operator is the human/agent here). The competition `prompt`
+in `data/raw/kaggle_competitions.yaml` maps to the `expected_grid_selections`
+recorded there (the parameter-selection step); this repo's `SkeletonGenerator`
+node feeds those to the Honegumi package to emit a reference Ax script, which you
+can print with `--print-skeleton`. The BO loop is the code-writer adaptation of
+that skeleton: the analytical Branin is replaced with the black-box package call
+and wrapped in the 12x40 campaign loop, widening the search space to the
+competition bounds (`x2` in `[0, 15]`).
+
+**Prerequisites:** `pip install kagglehub ax-platform honegumi`
+
+**Usage:**
+```bash
+# Bayesian optimization (default) on the deterministic (vanilla) objective
+python scripts/run_kaggle_branin.py --yes
+
+# Uniform-random baseline
+python scripts/run_kaggle_branin.py --yes --strategy random
+
+# Noisy objective variant
+python scripts/run_kaggle_branin.py --yes --method predict_noisy
+
+# Print the Honegumi reference skeleton (no Kaggle access needed)
+python scripts/run_kaggle_branin.py --print-skeleton
+```
+
+**Note:** The package executes downloaded code, so `--yes` (or
+`KAGGLEHUB_ALLOW_UNTRUSTED=1`) is required to bypass the interactive
+confirmation prompt in non-interactive environments.
+
 ### Future Scripts
 
 This directory can contain additional utility scripts such as:

@@ -1,0 +1,208 @@
+# Acceleration Consortium Kaggle optimization competitions.
+#
+# These competitions provide non-hackable, black-box benchmarks: the objective
+# functions are only accessible through a provided Python package, so the
+# generated Bayesian optimization code cannot "peek" at the analytical formula.
+# They are used as real-world evaluation targets for the Honegumi RAG Assistant,
+# and results can be auto-submitted with `scripts/submit_to_kaggle.py`.
+#
+# Host: https://www.kaggle.com/organizations/acceleration-consortium
+
+kaggle_competitions:
+  - id: branin_vanilla_2d
+    slug: vanilla-optimization-2-d-branin
+    url: https://www.kaggle.com/competitions/vanilla-optimization-2-d-branin
+    title: Vanilla Optimization (2D Branin Function)
+    description: |
+      The simplest, entry-point competition in the series: black-box,
+      single-objective, deterministic optimization of the 2D Branin function.
+      The objective is only accessible through the provided kagglehub package
+      (method `predict_single`); the analytical formula is hidden.
+    metric: combined final campaign score (lower is better)
+
+    # Prompt fed to the RAG assistant to generate targeted BO code.
+    prompt: |
+      I want to minimize a deterministic black-box function of two continuous
+      inputs, x1 in [-5, 10] and x2 in [0, 15]. I have a limited budget of 40
+      evaluations per campaign. Generate sample-efficient Bayesian optimization
+      code that balances exploration and exploitation.
+
+    package:
+      manager: kagglehub
+      import: "kagglehub.package_import('amanichabouni/branin-package/versions/17')"
+      # Verified against the real package: `Model.predict_single(x1, x2)`.
+      usage: |
+        import kagglehub
+        package = kagglehub.package_import('amanichabouni/branin-package/versions/17')
+        campaign = package.Model()
+        value = campaign.predict_single(2.35, 7.5)
+        package.Model.export_history()  # writes submission.csv
+
+    solution:
+      search_space:
+        - name: x1
+          type: continuous
+          bounds: [-5, 10]
+        - name: x2
+          type: continuous
+          bounds: [0, 15]
+      objective:
+        name: value
+        goal: minimize
+      noise_model: false
+      budget_per_campaign: 40
+      campaigns: 12
+      constraints: []
+
+    expected_grid_selections:
+      objective: Single
+      model: Default
+      task: Single
+      categorical: False
+      sum_constraint: False
+      order_constraint: False
+      linear_constraint: False
+      composition_constraint: False
+
+  - id: branin_noisy_2d
+    slug: noisy-vanilla-optimization-2-d-branin-function
+    url: https://www.kaggle.com/competitions/noisy-vanilla-optimization-2-d-branin-function
+    title: Noisy Vanilla Optimization (2D Branin Function)
+    description: |
+      Black-box, single-objective optimization of a noisy 2D Branin function.
+      The objective is only accessible through the provided kagglehub package;
+      the analytical formula is hidden. Each evaluation is stochastic.
+    metric: mean final campaign score (lower is better)
+
+    # Prompt fed to the RAG assistant to generate targeted BO code.
+    prompt: |
+      I want to minimize a noisy black-box function of two continuous inputs,
+      x1 in [-5, 10] and x2 in [0, 15]. The objective is stochastic (repeated
+      evaluations of the same point give different values), and I have a limited
+      budget of 40 evaluations per campaign. Generate sample-efficient Bayesian
+      optimization code that balances exploration and exploitation.
+
+    package:
+      manager: kagglehub
+      import: "kagglehub.package_import('amanichabouni/branin-package/versions/17')"
+      # Verified against the real package: `Model.predict_noisy(x1, x2, predictions=None)`
+      # adds Gaussian noise (std 0.1). Each call optionally takes in-sample
+      # predictions for previously measured points (see submission format).
+      usage: |
+        import kagglehub
+        package = kagglehub.package_import('amanichabouni/branin-package/versions/17')
+        campaign = package.Model()
+        value = campaign.predict_noisy(2.35, 9.5, predictions=[])
+        package.Model.export_history()  # writes submission.csv
+
+    solution:
+      search_space:
+        - name: x1
+          type: continuous
+          bounds: [-5, 10]
+        - name: x2
+          type: continuous
+          bounds: [0, 15]
+      objective:
+        name: value
+        goal: minimize
+      noise_model: true
+      budget_per_campaign: 40
+      campaigns: 12
+      constraints: []
+
+    expected_grid_selections:
+      objective: Single
+      model: Default
+      task: Single
+      categorical: False
+      sum_constraint: False
+      order_constraint: False
+      linear_constraint: False
+      composition_constraint: False
+
+  - id: crabnet_hpo
+    slug: crab-net-hyperparameter-optimization
+    url: https://www.kaggle.com/competitions/crab-net-hyperparameter-optimization
+    title: CrabNet Hyperparameter Optimization
+    description: |
+      Multi-objective, noisy, constrained, multi-fidelity black-box optimization
+      of CrabNet's hyperparameters. Four objectives (y1..y4) are all minimized;
+      y1, y2, y3 are stochastic (heteroskedastic noise) while y4 is deterministic
+      but still black-box. Interaction is only via the provided kagglehub package.
+    metric: hypervolume (higher is better)
+
+    prompt: |
+      I need multi-objective Bayesian optimization for a noisy, constrained,
+      multi-fidelity black-box problem with four objectives (y1, y2, y3, y4), all
+      to be minimized. The search space has 20 continuous parameters x1..x20 in
+      [0, 1], three categorical parameters (c1 with 2 levels, c2 with 2 levels,
+      c3 with 3 levels), and a fidelity parameter fidelity1 in [0, 1] where higher
+      fidelity is more expensive but more accurate. Constraints: x19 < x20 and
+      x6 + x15 <= 1.0. Objectives y1, y2, y3 are stochastic; y4 is deterministic.
+      Budget is 40 evaluations per campaign. Optimize the Pareto front
+      (hypervolume) while respecting the constraints.
+
+    package:
+      manager: kagglehub
+      import: "kagglehub.package_import('amanichabouni/crabnet-package/versions/19')"
+      usage: |
+        import kagglehub
+        package = kagglehub.package_import('amanichabouni/crabnet-package/versions/19')
+        campaign = package.Model()
+        campaign.predict(
+            0.5, 0.5, 1, 1, 1, 0, 1, 1, 1, 1,
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+            'c1_0', 'c2_0', 'c3_0', 1,
+        )
+        package.Model.export_history()  # writes submission.csv
+
+    solution:
+      search_space:
+        - name: x1_to_x20
+          type: continuous
+          bounds: [0, 1]
+          note: "20 continuous parameters x1..x20"
+        - name: c1
+          type: categorical
+          categories: ["c1_0", "c1_1"]
+        - name: c2
+          type: categorical
+          categories: ["c2_0", "c2_1"]
+        - name: c3
+          type: categorical
+          categories: ["c3_0", "c3_1", "c3_2"]
+        - name: fidelity1
+          type: continuous
+          bounds: [0, 1]
+          note: "multi-fidelity parameter (higher = more expensive, more accurate)"
+      objective:
+        - name: y1
+          goal: minimize
+          threshold: 0.2
+        - name: y2
+          goal: minimize
+          threshold: 0.7
+        - name: y3
+          goal: minimize
+          threshold: 1800
+        - name: y4
+          goal: minimize
+          threshold: 40000000
+      noise_model: true
+      budget_per_campaign: 40
+      constraints:
+        - type: order
+          description: "x19 < x20"
+        - type: linear
+          description: "x6 + x15 <= 1.0"
+
+    expected_grid_selections:
+      objective: Multi
+      model: Default
+      task: Single
+      categorical: True
+      sum_constraint: False
+      order_constraint: True
+      linear_constraint: True
+      composition_constraint: False
