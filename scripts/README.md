@@ -85,7 +85,17 @@ On the live `vanilla-optimization-2-d-branin` leaderboard, BO scores ~6.1 versus
 ~41.8 for the random baseline (lower is better), reaching the Branin global
 minimum (~0.3979) in every campaign.
 
-**Prerequisites:** `pip install kagglehub ax-platform`
+The `bo` strategy follows this repository's Honegumi RAG framework, run
+"manually" (the LLM operator is the human/agent here). The competition `prompt`
+in `data/raw/kaggle_competitions.yaml` maps to the `expected_grid_selections`
+recorded there (the parameter-selection step); this repo's `SkeletonGenerator`
+node feeds those to the Honegumi package to emit a reference Ax script, which you
+can print with `--print-skeleton`. The BO loop is the code-writer adaptation of
+that skeleton: the analytical Branin is replaced with the black-box package call
+and wrapped in the 12x40 campaign loop, widening the search space to the
+competition bounds (`x2` in `[0, 15]`).
+
+**Prerequisites:** `pip install kagglehub ax-platform honegumi`
 
 **Usage:**
 ```bash
@@ -97,6 +107,9 @@ python scripts/run_kaggle_branin.py --yes --strategy random
 
 # Noisy objective variant
 python scripts/run_kaggle_branin.py --yes --method predict_noisy
+
+# Print the Honegumi reference skeleton (no Kaggle access needed)
+python scripts/run_kaggle_branin.py --print-skeleton
 ```
 
 **Note:** The package executes downloaded code, so `--yes` (or

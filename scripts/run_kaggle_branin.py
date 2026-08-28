@@ -19,19 +19,80 @@ Two strategies are available via ``--strategy``:
   exploitation.
 * ``random`` — a uniform-random sampler kept as a baseline for comparison.
 
+The ``bo`` strategy follows this repository's Honegumi RAG framework. Running
+the framework "manually" (the language model is the operator here): the
+competition ``prompt`` in ``data/raw/kaggle_competitions.yaml`` maps to the
+``expected_grid_selections`` recorded there (the parameter-selection step),
+which this repo's ``SkeletonGenerator`` node feeds to the Honegumi package to
+emit a reference Ax script (see ``--print-skeleton``). The BO loop below is the
+code-writer adaptation of that skeleton: the analytical Branin is swapped for
+the black-box package call and wrapped in the 12x40 campaign loop, with the
+search space widened to the competition bounds (x2 in [0, 15]).
+
 Usage:
     python scripts/run_kaggle_branin.py --yes
     python scripts/run_kaggle_branin.py --yes --strategy random
     python scripts/run_kaggle_branin.py --yes --method predict_noisy
+    python scripts/run_kaggle_branin.py --print-skeleton  # no Kaggle needed
 """
 
 import argparse
 import os
+from pathlib import Path
 
 import numpy as np
 
 PACKAGE_HANDLE = "amanichabouni/branin-package/versions/17"
 BOUNDS = {"x1": (-5.0, 10.0), "x2": (0.0, 15.0)}
+COMPETITIONS_YAML = (
+    Path(__file__).resolve().parent.parent
+    / "data"
+    / "raw"
+    / "kaggle_competitions.yaml"
+)
+
+
+def honegumi_reference_skeleton(competition_id="branin_vanilla_2d"):
+    """Generate the Honegumi reference Ax skeleton via this repo's RAG node.
+
+    Acts out the framework's parameter-selection step manually: the competition
+    ``expected_grid_selections`` (derived by the LLM operator from the prompt)
+    are handed to the repository ``SkeletonGenerator`` node, which renders the
+    reference Ax script with the Honegumi package.
+    """
+    import sys
+
+    import yaml
+
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
+    from honegumi_rag_assistant.nodes.skeleton_generator import SkeletonGenerator
+
+    config = yaml.safe_load(COMPETITIONS_YAML.read_text())
+    comp = next(
+        c
+        for c in config["kaggle_competitions"]
+        if c["id"] == competition_id
+    )
+    grid = comp["expected_grid_selections"]
+    bo_params = {
+        "objective": grid["objective"],
+        "model": grid["model"],
+        "task": grid["task"],
+        "categorical": grid["categorical"],
+        "custom_gen": False,
+        "sum_constraint": grid["sum_constraint"],
+        "order_constraint": grid["order_constraint"],
+        "linear_constraint": grid["linear_constraint"],
+        "composition_constraint": grid["composition_constraint"],
+        "custom_threshold": False,
+        "existing_data": False,
+        "synchrony": "Single",
+        "visualize": False,
+    }
+    result = SkeletonGenerator.generate_skeleton({"bo_params": bo_params})
+    if result.get("error"):
+        raise RuntimeError(result["error"])
+    return result["skeleton_code"]
 
 
 def suggest(rng):
@@ -116,7 +177,19 @@ def main():
         action="store_true",
         help="Bypass the kagglehub untrusted-code confirmation prompt.",
     )
+    parser.add_argument(
+        "--print-skeleton",
+        action="store_true",
+        help=(
+            "Print the Honegumi reference Ax skeleton for this benchmark "
+            "(via this repo's RAG SkeletonGenerator node) and exit."
+        ),
+    )
     args = parser.parse_args()
+
+    if args.print_skeleton:
+        print(honegumi_reference_skeleton())
+        return
 
     import kagglehub
 
