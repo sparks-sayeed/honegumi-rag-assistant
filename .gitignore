@@ -58,3 +58,7 @@ MANIFEST
 .venv*/
 .conda*/
 .python-version
+
+# kaggle-benchmarks evaluation artifacts (written to CWD by scripts/kbench_honegumi_eval.py)
+*.task.json
+*.run.json
