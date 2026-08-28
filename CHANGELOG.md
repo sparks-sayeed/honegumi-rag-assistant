@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Domain diversity**: 17 domains covered including materials_science (9), pharmaceutical (2), energy (2), chemical_engineering (2), computational (2), manufacturing (2), and 11 others.
 - **Complexity balance**: Simple (12), intermediate (11), advanced (7) problems for varied difficulty levels.
 - **Feature diversity**: 10 multi-objective problems, 8 composition constraints, 5 order constraints, 2 sum constraints.
+- **kaggle-benchmarks evaluation proof-of-concept** (2026-08-28): Added `scripts/kbench_honegumi_eval.py`, which wraps the RAG grid-selection check as a `kaggle_benchmarks` task. It joins `data/raw/rag_assistant_runs.yaml` (actual outputs) with the `expected_grid_selections` ground truth in `data/raw/problem_statements.yaml`, scores each run's grid-selection accuracy across the 8 Honegumi grid dimensions, and (when a generated script is present on disk) asserts it runs without error. Runs offline over already-generated results with no extra credentials. `kaggle-benchmarks` is not on PyPI and is not added as a project dependency; install it separately to run the script.
 
 ### Changed
 - **API key environment variable**: Updated all code to use `LLM_API_KEY` instead of `OPENAI_API_KEY` for consistency with repository secrets configuration. This affects:

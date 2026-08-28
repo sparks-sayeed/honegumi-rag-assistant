@@ -1,0 +1,6 @@
+{
+  "versionNumber": 1,
+  "name": "honegumi_grid_selection",
+  "description": "Honegumi RAG grid-selection accuracy vs. ground truth.",
+  "definition": "@kbench.benchmark(\n    name=\"honegumi_grid_selection\",\n    description=\"Honegumi RAG grid-selection accuracy vs. ground truth.\",\n)\ndef honegumi_grid_selection(llm, experiment_id, expected, actual, script_path) -> float:\n    \"\"\"Score one RAG run and, when available, check its generated code runs.\"\"\"\n    for dim in GRID_DIMENSIONS:\n        kbench.assertions.assert_equal(\n            expected[dim],\n            actual[dim],\n            expectation=f\"{experiment_id}: {dim}\",\n        )\n\n    script = Path(script_path) if script_path else None\n    if script and script.exists():\n        kbench.assertions.assert_raises_no_exceptions(\n            lambda: subprocess.run(\n                [sys.executable, str(script)],\n                capture_output=True,\n                check=True,\n                timeout=600,\n            ),\n            expectation=f\"{experiment_id}: generated code runs without error\",\n        )\n\n    correct = sum(expected[dim] == actual[dim] for dim in GRID_DIMENSIONS)\n    return correct / len(GRID_DIMENSIONS)\n"
+}
