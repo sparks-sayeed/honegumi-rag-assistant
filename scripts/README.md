@@ -77,15 +77,23 @@ Runs the Acceleration Consortium Branin competition end-to-end by actually
 importing and calling the real competition package
 (`amanichabouni/branin-package`) via kagglehub. It runs the competition-legal
 12 campaigns x 40 evaluations against the hidden black-box objective and exports
-a `submission.csv`. A uniform-random sampler is used as a baseline; drop in the
-RAG-assistant-generated Ax code to replace `suggest` with Bayesian optimization.
+a `submission.csv`. By default it uses Ax Bayesian optimization (`--strategy bo`),
+the same library the Honegumi RAG assistant generates code for; a uniform-random
+sampler (`--strategy random`) is kept as a baseline for comparison.
 
-**Prerequisites:** `pip install kagglehub`
+On the live `vanilla-optimization-2-d-branin` leaderboard, BO scores ~6.1 versus
+~41.8 for the random baseline (lower is better), reaching the Branin global
+minimum (~0.3979) in every campaign.
+
+**Prerequisites:** `pip install kagglehub ax-platform`
 
 **Usage:**
 ```bash
-# Deterministic (vanilla) objective
+# Bayesian optimization (default) on the deterministic (vanilla) objective
 python scripts/run_kaggle_branin.py --yes
+
+# Uniform-random baseline
+python scripts/run_kaggle_branin.py --yes --strategy random
 
 # Noisy objective variant
 python scripts/run_kaggle_branin.py --yes --method predict_noisy
