@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Expanded problem set to 30 diverse BO problems with full Honegumi tutorial coverage**: Added 27 new problems (IDs 4-30) covering diverse domains and complexity levels. Each problem includes 3 personas (experimentalist_basic, industrial_practitioner, research_scientist) providing 90 total persona-problem combinations. All 6 Honegumi tutorials are represented.
+- **Problems 4-14**: Initial expansion including battery electrolyte, drug formulation, catalyst synthesis, alloy composition, bioreactor, concrete mix, drug discovery pipeline, MAX phase featurization, multi-task ceramic binder, acquisition function benchmarking, and RGB liquid color matching.
+- **Problems 15-30**: Additional expansion including solar cells, food formulation, laser cutting, adhesive formulation, chemical reactor, LED packaging, water treatment, spray coating, ML hyperparameters, conductive ink, fermentation medium, composite curing, optical glass, solvent extraction, battery charging, and food packaging.
+- **Complete Honegumi tutorial coverage**: All problems now reference relevant tutorials (SOBO, MOBO, Batch, Featurization, Multi-Task, Benchmarking).
+- **Extended problem set with 2 additional personas**: Added `industrial_practitioner` and `research_scientist` personas to original 3 problems. Problem statements now use a nested structure where each problem ID contains multiple persona variations under a `personas` key, making it easier to track different communication styles for the same underlying optimization problem.
+- **Industrial practitioner persona**: Practical, cost-conscious user with production constraints and informal language style. Applied to all 30 problems.
+- **Research scientist persona**: Academic researcher with formal, hypothesis-driven approach and scientific language. Applied to all 30 problems.
+- **Domain diversity**: 17 domains covered including materials_science (9), pharmaceutical (2), energy (2), chemical_engineering (2), computational (2), manufacturing (2), and 11 others.
+- **Complexity balance**: Simple (12), intermediate (11), advanced (7) problems for varied difficulty levels.
+- **Feature diversity**: 10 multi-objective problems, 8 composition constraints, 5 order constraints, 2 sum constraints.
+
 ### Changed
 - **API key environment variable**: Updated all code to use `LLM_API_KEY` instead of `OPENAI_API_KEY` for consistency with repository secrets configuration. This affects:
   - `src/honegumi_rag_assistant/app_config.py` - Settings class now reads from `LLM_API_KEY`
