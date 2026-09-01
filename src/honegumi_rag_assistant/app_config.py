@@ -40,7 +40,10 @@ The following configuration options are supported:
     ``OUTPUT_DIR`` environment variable.
 """
 
+from contextlib import contextmanager
+from contextvars import ContextVar
 from dataclasses import dataclass
+from typing import Any, Dict, Iterator
 import os
 
 # Load environment variables from .env file if it exists
@@ -168,5 +171,77 @@ class Settings:
         self.output_dir = os.getenv("OUTPUT_DIR", "./honegumi_rag_output")
 
 
+# Process-wide defaults, populated from the environment at import time.  The
+# CLI entry points mutate this directly: they own the whole process and run one
+# pipeline in it, so a global is the right scope for them.
+_defaults = Settings()
+
+# Per-run overrides.  A ContextVar is scoped to the current thread or async
+# task rather than to the process, and LangGraph propagates the active context
+# into the worker threads it spawns for parallel ``Send`` branches -- so an
+# override set by one request is visible to every node of that request, and to
+# no other request.
+_run_overrides: ContextVar[Dict[str, Any]] = ContextVar("run_overrides", default={})
+
+
+class _SettingsProxy:
+    """Attribute access that prefers the active run's overrides.
+
+    Reads resolve against :data:`_run_overrides` first and fall back to the
+    process-wide :data:`_defaults`.  Writes always land on the defaults, which
+    keeps ``settings.debug = True`` working for the CLI and keeps
+    ``monkeypatch.setattr(settings, ...)`` working in the tests.
+    """
+
+    def __getattr__(self, name: str) -> Any:
+        overrides = _run_overrides.get()
+        if name in overrides:
+            return overrides[name]
+        return getattr(_defaults, name)
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        setattr(_defaults, name, value)
+
+    def __delattr__(self, name: str) -> None:
+        delattr(_defaults, name)
+
+    def __repr__(self) -> str:  # pragma: no cover - debugging aid
+        return f"<settings overrides={_run_overrides.get()!r} defaults={_defaults!r}>"
+
+
 # A singleton instance for easy access throughout the package
-settings = Settings()
+settings = _SettingsProxy()
+
+
+@contextmanager
+def override_settings(**values: Any) -> Iterator[None]:
+    """Apply per-run settings visible only to the current request.
+
+    Any concurrent caller -- another Gradio request, another MCP tool call --
+    keeps its own values, because the overrides live in a
+    :class:`~contextvars.ContextVar` rather than on the shared singleton.
+    Nested scopes merge, with the inner values winning.
+
+    Parameters
+    ----------
+    **values
+        Setting names and the values they should take for the duration of the
+        block.  Names are not validated against :class:`Settings`, so a typo
+        silently does nothing -- pass keywords that match real fields.
+
+    Yields
+    ------
+    None
+        The block runs with the overrides applied; they are removed on exit,
+        including when the block raises.
+
+    Examples
+    --------
+    >>> with override_settings(debug=True, code_writer_model="claude-opus-5"):
+    ...     run_from_text("maximise yield ...")   # doctest: +SKIP
+    """
+    token = _run_overrides.set({**_run_overrides.get(), **values})
+    try:
+        yield
+    finally:
+        _run_overrides.reset(token)
