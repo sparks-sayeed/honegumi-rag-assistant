@@ -15,7 +15,7 @@ from __future__ import annotations
 from typing import Dict, Any, Literal
 from pydantic import BaseModel, Field
 
-from langchain_openai import ChatOpenAI
+from langchain_anthropic import ChatAnthropic
 
 from ..states import HonegumiRAGState
 from ..app_config import settings
@@ -80,7 +80,7 @@ class ReviewerAgent:
                 "critique_report": [f"Approved after {review_count} revision attempts (max reached)."],
             }
         
-        if not settings.openai_api_key:
+        if not settings.anthropic_api_key:
             # Without API key, do simple checks and approve
             lower = code.lower()
             if "notimplementederror" in lower or "todo" in lower:
@@ -130,16 +130,17 @@ Keep in mind: This is review attempt {review_count + 1}/3. Be thorough but fair.
 """
 
         try:
-            # Use LangChain's ChatOpenAI for LangSmith tracing
-            llm = ChatOpenAI(
+            # Use LangChain's ChatAnthropic for LangSmith tracing
+            llm = ChatAnthropic(
                 model=settings.reviewer_model,
-                api_key=settings.openai_api_key,
+                api_key=settings.anthropic_api_key,
+                max_tokens=settings.structured_max_tokens,
             )
-            
+
             # Use structured output with Pydantic model
             structured_llm = llm.with_structured_output(
                 ReviewDecision,
-                method="function_calling",
+                method="json_schema",
                 include_raw=False,
             )
             

@@ -1,17 +1,17 @@
 """
-Lightweight wrappers around the OpenAI function calling API used by the
+Structured-output wrappers around the Anthropic Messages API used by the
 Honegumi RAG Assistant.
 
-This module defines extractor classes that use structured output via
-Pydantic models and LangChain's function calling with validation for
-robust parameter extraction. The :class:`ParameterExtractor` exposes
-an :meth:`invoke` method that accepts a problem description and returns
-a validated dictionary containing the selected Bayesian optimisation
-parameters.
+This module defines extractor classes that use Claude's native structured
+outputs via Pydantic models for robust parameter extraction. The
+:class:`ParameterExtractor` exposes an :meth:`invoke` method that accepts a
+problem description and returns a validated dictionary containing the
+selected Bayesian optimisation parameters.
 
-The structured output approach uses LangChain's with_structured_output()
-which provides automatic validation, retry on validation failures, and
-type coercion through Pydantic schemas.
+Both extractors call ``with_structured_output(..., method="json_schema")``,
+which constrains Claude's response to the Pydantic schema and validates the
+result against it.  This is preferred over the older forced-tool-calling
+path, which interacts poorly with thinking.
 """
 
 from __future__ import annotations
@@ -19,7 +19,7 @@ from __future__ import annotations
 from typing import Dict, Any, Literal, List, Optional
 
 from pydantic import BaseModel, Field, model_validator
-from langchain_openai import ChatOpenAI
+from langchain_anthropic import ChatAnthropic
 
 from .app_config import settings
 
@@ -165,12 +165,14 @@ class ProblemStructure(BaseModel):
                 "Please ensure the problem description clearly states what should be maximized or minimized."
             )
         
-        # Warning for missing parameters (not a hard error since some descriptions might be very high-level)
+        # An empty search space is not a hard error here: some descriptions are
+        # genuinely high-level, and raising would abort the run rather than
+        # retry it.  Note that Stage 2 cannot recover missing parameters -- it
+        # only reads this structure -- so ParameterSelector treats an empty
+        # search space as a failed extraction and spends a retry on it.
         if not self.search_space or len(self.search_space) == 0:
-            # Don't fail here - the LLM might infer parameters in Stage 2
-            # But this indicates the extraction might be incomplete
             pass
-        
+
         return self
 
 
@@ -364,20 +366,21 @@ class ProblemStructureExtractor:
             A dictionary with a 'problem_structure' key containing the
             extracted structure, or an 'error' key if extraction failed.
         """
-        if not settings.openai_api_key:
+        if not settings.anthropic_api_key:
             raise RuntimeError(
-                "OPENAI_API_KEY is not set. Provide an API key via the environment or settings."
+                "ANTHROPIC_API_KEY is not set. Provide an API key via the environment or settings."
             )
 
         try:
-            llm = ChatOpenAI(
+            llm = ChatAnthropic(
                 model=settings.model_name,
-                api_key=settings.openai_api_key,
+                api_key=settings.anthropic_api_key,
+                max_tokens=settings.structured_max_tokens,
             )
-            
+
             structured_llm = llm.with_structured_output(
                 ProblemStructure,
-                method="function_calling",
+                method="json_schema",
                 include_raw=False,
             )
             
@@ -422,21 +425,18 @@ Extract the complete problem structure. You MUST identify at least one objective
 class ParameterExtractor:
     """Extract optimisation parameters using structured output.
 
-    This class uses LangChain's ChatOpenAI with structured output to
-    reliably extract Bayesian optimization parameters from a natural
-    language problem description. 
-    
+    This class uses ChatAnthropic with structured output to reliably
+    extract Bayesian optimization parameters from a natural language
+    problem description.
+
     This is the second stage of a two-stage extraction process. It can
     optionally accept a ProblemStructure from the first stage to improve
     grid selection accuracy by reasoning over explicit problem elements.
-    
-    The structured output approach provides automatic validation via 
-    Pydantic, retry logic on validation failures, and type coercion, 
-    making it more robust than manual JSON parsing.
-    
-    Note: LangChain's with_structured_output() internally uses validation
-    and retry mechanisms similar to TrustCall when method='function_calling'
-    is used (the default).
+
+    The structured output approach provides automatic validation via
+    Pydantic and type coercion, making it more robust than manual JSON
+    parsing.  Note that this stage cannot recover information the first
+    stage missed -- it reasons only over the structure handed to it.
     """
 
     @classmethod
@@ -461,28 +461,26 @@ class ParameterExtractor:
             call fails, ``bo_params`` will be ``None`` and an ``error``
             key will contain the error message.
         """
-        if not settings.openai_api_key:
+        if not settings.anthropic_api_key:
             raise RuntimeError(
-                "LLM_API_KEY is not set. Provide an API key via the environment or settings."
+                "ANTHROPIC_API_KEY is not set. Provide an API key via the environment or settings."
             )
 
         try:
-            # Create a ChatOpenAI instance
-            llm = ChatOpenAI(
+            llm = ChatAnthropic(
                 model=settings.model_name,
-                api_key=settings.openai_api_key,
+                api_key=settings.anthropic_api_key,
+                max_tokens=settings.structured_max_tokens,
             )
-            
-            # Enable structured output with the Pydantic model
-            # with_structured_output uses function calling by default, which includes:
-            # - Automatic validation against the Pydantic schema
-            # - Retry with error messages if validation fails
-            # - Type coercion for compatible types
-            # Set include_raw=False to get just the parsed model (not the raw response)
+
+            # Constrain the response to the Pydantic schema.  method="json_schema"
+            # uses Claude's native structured outputs, which validates against the
+            # schema and coerces compatible types.  include_raw=False returns just
+            # the parsed model rather than the raw response alongside it.
             structured_llm = llm.with_structured_output(
                 OptimizationParameters,
-                method="function_calling",  # Explicit: use function calling (default)
-                include_raw=False,  # Return only the validated Pydantic model
+                method="json_schema",
+                include_raw=False,
             )
             
             # Build the prompt, optionally including problem structure

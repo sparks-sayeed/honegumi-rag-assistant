@@ -16,7 +16,7 @@ from __future__ import annotations
 from typing import Dict, Any, List, Literal
 from pydantic import BaseModel, Field
 
-from langchain_openai import ChatOpenAI
+from langchain_anthropic import ChatAnthropic
 
 from ..states import HonegumiRAGState
 from ..app_config import settings
@@ -91,7 +91,7 @@ class RetrievalPlannerAgent:
             print(f"Parameters: {list(bo_params.keys())}")
             print(f"Problem structure keys: {list(problem_structure.keys()) if problem_structure else 'None'}")
         
-        if not settings.openai_api_key:
+        if not settings.anthropic_api_key:
             if settings.debug:
                 print("[RETRIEVAL PLANNER] No API key, skipping retrieval\n")
             return {"retrieval_queries": []}
@@ -178,14 +178,15 @@ Consider if you need clarification on:
             if not settings.debug:
                 print("Planning retrieval strategy...")
             
-            llm = ChatOpenAI(
+            llm = ChatAnthropic(
                 model=settings.retrieval_planner_model,
-                api_key=settings.openai_api_key,
+                api_key=settings.anthropic_api_key,
+                max_tokens=settings.structured_max_tokens,
             )
-            
+
             structured_llm = llm.with_structured_output(
                 RetrievalPlan,
-                method="function_calling",
+                method="json_schema",
                 include_raw=False,
             )
             

@@ -6,13 +6,17 @@ myst-parser[linkify]
 sphinx-rtd-theme
 
 # Package dependencies (needed for autodoc to work)
-openai==2.3.0
-langchain-openai==0.3.35
+anthropic==0.120.0
+langchain-anthropic==1.5.2
+langchain-core==1.5.1
+langgraph==1.2.9
 honegumi==0.4.3
-langchain==0.3.27
-langchain-community==0.3.31
-langgraph==0.6.10
-faiss-cpu==1.12.0
+ax-platform==0.4.3
+langchain-community==0.4.2
+langchain-text-splitters==1.1.2
+langchain-huggingface==1.2.2
+sentence-transformers==5.6.1
+faiss-cpu==1.14.3
 python-dotenv
 numpy
 pandas

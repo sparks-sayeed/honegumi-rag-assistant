@@ -11,7 +11,7 @@ This node implements a two-stage extraction process:
 
 The heavy lifting is delegated to :class:`~honegumi_rag_assistant.extractors.ProblemStructureExtractor`
 and :class:`~honegumi_rag_assistant.extractors.ParameterExtractor`, which invoke
-language models via the OpenAI function calling interface.
+language models using Claude's native structured outputs.
 
 The output of this node is merged into the global state under the
 ``bo_params`` key.  If an error occurs during extraction, the error
@@ -80,26 +80,37 @@ class ParameterSelector:
                 continue
             
             problem_structure = structure_result.get("problem_structure")
-            
-            # Validate that we got meaningful structure
+
+            # Validate that we got meaningful structure.  An optimisation problem
+            # needs both something to optimise (an objective) and something to
+            # optimise over (a search space).  Stage 2 reasons only over this
+            # structure and cannot recover either, so an empty one is a failed
+            # extraction and is worth spending a retry on.
             if problem_structure:
                 num_params = len(problem_structure.get('search_space', []))
                 num_objectives = len(problem_structure.get('objective', []))
-                
-                # Check if extraction is reasonable (at least has objectives)
-                if num_objectives > 0:
+
+                if num_objectives > 0 and num_params > 0:
                     break  # Good extraction, proceed
                 elif attempt < max_retries - 1:
                     if settings.debug:
                         print(f"\n⚠️ Stage 1 extraction incomplete (attempt {attempt + 1}/{max_retries}): {num_objectives} objectives, {num_params} parameters. Retrying...")
                     continue
         
-        # If we still have empty/invalid structure after retries, proceed with warning
+        # If the structure is still incomplete after every retry, carry on but say
+        # so plainly -- a missing objective or an empty search space means every
+        # downstream stage is working from a bad reading of the problem, and that
+        # is worth surfacing rather than discovering in the generated code.
         if problem_structure:
             num_params = len(problem_structure.get('search_space', []))
             num_objectives = len(problem_structure.get('objective', []))
-            if num_objectives == 0 and settings.debug:
-                print("\n⚠️ WARNING: Stage 1 extraction may be incomplete. Proceeding with Stage 2...")
+            if num_objectives == 0 or num_params == 0:
+                print(
+                    f"\n⚠️  Stage 1 extraction looks incomplete after {max_retries} attempts "
+                    f"({num_objectives} objectives, {num_params} parameters). The generated "
+                    "code may not match your problem — consider restating it with explicit "
+                    "parameters, ranges and objectives.\n"
+                )
         
         # Debug: Print extracted structure
         if settings.debug:

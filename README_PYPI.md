@@ -1,6 +1,6 @@
 # Honegumi RAG Assistant
 
-An **agentic workflow** for Bayesian optimization code generation, built with **LangGraph** and powered by OpenAI models. Honegumi RAG Assistant codifies the end-to-end pipeline—parameter extraction, skeleton code generation, documentation retrieval, and code synthesis—into reusable nodes orchestrated as a LangGraph. LangSmith integration tracks and visualizes your graph executions. The result? Complete, ready-to-run Bayesian optimization code generated in seconds from natural language descriptions.
+An **agentic workflow** for Bayesian optimization code generation, built with **LangGraph** and powered by Anthropic Claude models. Honegumi RAG Assistant codifies the end-to-end pipeline—parameter extraction, skeleton code generation, documentation retrieval, and code synthesis—into reusable nodes orchestrated as a LangGraph. LangSmith integration tracks and visualizes your graph executions. The result? Complete, ready-to-run Bayesian optimization code generated in seconds from natural language descriptions.
 
 ---
 
@@ -19,7 +19,7 @@ An **agentic workflow** for Bayesian optimization code generation, built with **
 
 - **Conda** (Miniconda or Anaconda)
 - **Python 3.11+**
-- [**OpenAI API key**](https://platform.openai.com/api-keys)
+- [**Anthropic API key**](https://console.anthropic.com/settings/keys)
 - [**LangSmith API key**](https://docs.smith.langchain.com/administration/how_to_guides/organization_management/create_account_api_key) (optional)
 
 ---
@@ -33,12 +33,12 @@ To help you get started quickly, we've prepared an interactive Google Colab tuto
 In this tutorial, you'll learn how to:
 
 - Install Honegumi RAG Assistant and all necessary dependencies on Colab
-- Set up API keys using Colab Secrets
+- Set up your API key using Colab Secrets
 - Build a vector store from Ax Platform documentation
 - Describe your optimization problem and generate code
 - View the generated code in your Google Drive
 
-The tutorial runs entirely in Colab—no local setup required. All you need is access to your Google Drive and valid OpenAI/LangSmith API keys.
+The tutorial runs entirely in Colab—no local setup required. All you need is access to your Google Drive and a valid Anthropic API key (LangSmith optional).
 
 ---
 
@@ -62,7 +62,7 @@ The tutorial runs entirely in Colab—no local setup required. All you need is a
    In the folder where you'll run the CLI (or in any ancestor), create a file called **`.env`** containing:
 
    ```bash
-   OPENAI_API_KEY=sk-...
+   ANTHROPIC_API_KEY=sk-ant-...
    LANGCHAIN_API_KEY=lsv2_...
    ```
 
@@ -129,9 +129,9 @@ Customize which GPT models are used for each agent:
 
 ```bash
 honegumi-rag \
-  --code-writer-model gpt-5 \
-  --param-selector-model gpt-4o \
-  --retrieval-planner-model gpt-4o
+  --code-writer-model claude-opus-5 \
+  --param-selector-model claude-sonnet-5 \
+  --retrieval-planner-model claude-sonnet-5
 ```
 
 ---
@@ -143,13 +143,14 @@ honegumi-rag \
 - **Skeleton Generator**: Uses [Honegumi](https://honegumi.readthedocs.io/en/latest/) for deterministic code templates
 - **Retrieval Planner**: Generates intelligent documentation queries
 - **Parallel Retrievers**: Concurrent documentation retrieval for speed
-- **Code Writer**: GPT-5 powered code generation with streaming
+- **Code Writer**: Claude-powered code generation with adaptive thinking and streaming
 - **Reviewer** (optional): Quality assessment and refinement
 
 ### Advanced Features
 - **LangSmith Integration**: Full tracing and debugging support
 - **Streaming Output**: See code generation in real-time
-- **Flexible Models**: Mix GPT-5 and GPT-4o for cost-performance optimization
+- **Local Embeddings**: Documentation retrieval runs offline via sentence-transformers — no embedding API key or cost
+- **Tunable Reasoning**: Configurable effort level to trade reasoning depth against token spend
 - **Optional Save**: Print code or save to file—your choice
 
 ---
@@ -161,10 +162,11 @@ honegumi-rag \
 | `--output-dir` | Save generated script to specified directory (if omitted, code is only printed, not saved) | `None` (no save) |
 | `--debug` | Enable debug mode with detailed logging | `False` |
 | `--review` | Enable Reviewer agent (slower, more accurate) | `False` |
-| `--param-selector-model` | Model for Parameter Selector | `gpt-5` |
-| `--retrieval-planner-model` | Model for Retrieval Planner | `gpt-5` |
-| `--code-writer-model` | Model for Code Writer agent | `gpt-5` |
-| `--reviewer-model` | Model for Reviewer agent | `gpt-4o` |
+| `--effort` | Code Writer reasoning effort (`low`..`max`) | `high` |
+| `--param-selector-model` | Model for Parameter Selector | `claude-sonnet-5` |
+| `--retrieval-planner-model` | Model for Retrieval Planner | `claude-sonnet-5` |
+| `--code-writer-model` | Model for Code Writer agent | `claude-sonnet-5` |
+| `--reviewer-model` | Model for Reviewer agent | `claude-sonnet-5` |
 
 ---
 

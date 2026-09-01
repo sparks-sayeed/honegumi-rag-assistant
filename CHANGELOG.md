@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed — migrated from OpenAI to Anthropic Claude
+
+- **LLM provider**: All five agents (both parameter-extraction stages, retrieval planner, code writer, reviewer) now call Claude via `langchain-anthropic` instead of OpenAI via `langchain-openai`. Every agent defaults to `claude-sonnet-5`; per-agent overrides remain available through the existing CLI flags and environment variables. OpenAI packages have been removed from the dependency tree entirely.
+- **API key**: `ANTHROPIC_API_KEY` replaces the `LLM_API_KEY` / `OPENAI_API_KEY` split (see the superseded entry below). `settings.openai_api_key` is renamed `settings.anthropic_api_key`. Because embeddings now run locally, this is the only credential the pipeline requires.
+- **LangChain stack upgraded to 1.x**: `langchain-core` 1.5.1, `langgraph` 1.2.9, `langchain-community` 0.4.2, `langchain-anthropic` 1.5.2. This was required — `thinking`, `output_config` and `reasoning_effort` do not exist on the final 0.3-line release of `langchain-anthropic`. Import paths moved accordingly: `langchain.text_splitter` → `langchain_text_splitters`, `langchain.docstore.document` → `langchain_core.documents`, `langgraph.constants.Send` → `langgraph.types.Send`. The `langchain` metapackage is no longer a dependency. The graph topology itself needed no changes; `Send` fan-out, the custom reducers and `MemorySaver` all work unchanged under LangGraph 1.x.
+- **Structured output**: The four structured-output agents now use `with_structured_output(..., method="json_schema")` — Claude's native structured outputs — rather than forced tool calling, which interacts poorly with thinking.
+- **Explicit `max_tokens`**: Required by the Anthropic API, and it caps thinking *plus* visible output. Configurable via `CODE_WRITER_MAX_TOKENS` (default 16000) and `STRUCTURED_MAX_TOKENS` (default 8192).
+- **Embeddings are now local and free**: `BAAI/bge-large-en-v1.5` via `langchain-huggingface`/`sentence-transformers` replaces OpenAI `text-embedding-3-large`. MTEB average 64.23 vs 64.6 — effectively equivalent quality at no cost and with no API key. Embeddings are L2-normalised, as BGE models are trained for cosine similarity. **Existing vector stores must be rebuilt**: dimensions drop 3072 → 1024 and a build/query model mismatch produces meaningless results rather than an error.
+- **Chunk size reduced 2000 → 1400 characters** (overlap 400 → 300). bge-large-en-v1.5 accepts a maximum of 512 tokens and silently truncates anything longer, which would have discarded the tail of every chunk. Smaller chunks also cut the Code Writer's dominant input-token cost by roughly 30%.
+- **Gradio app and vector-store test script** updated for Claude models and local embeddings.
+
+### Added
+- **Adaptive thinking on the Code Writer**, with `display: "summarized"`. Reasoning depth is controlled by a new `--effort` flag (`low`/`medium`/`high`/`xhigh`/`max`, default `high`), also settable via `CODE_WRITER_EFFORT`.
+- **Reasoning-aware streaming**: with thinking enabled, message content is a list of blocks rather than a string. New `extract_text()` / `extract_reasoning()` helpers in `nodes/code_writer.py` separate the two, handling raw Anthropic blocks, LangChain's normalised blocks, and `non_standard` wrappers. In debug mode the reasoning summary is streamed under its own header; otherwise a single `Generating code...` line covers the pause before the first visible token. Only text blocks accumulate into the generated script — reasoning can never reach the `.py` file.
+- **Vector-store load cache** (`nodes/retriever.py`): the embedding model and FAISS index are now loaded once and shared across the parallel retrievers rather than reloaded per branch. With local embeddings this avoids repeating a multi-second model load up to seven times per run.
+- **Test suite** (68 tests, no API key required): state reducers and fan-in accumulation, graph topology and `Send` fan-out routing, reviewer routing, Pydantic validators, the vector-store cache including concurrent access, and the reasoning/text separation boundary. Replaces an empty `tests/` directory that the `--cov` configuration was measuring against.
+- **Testable routing functions**: `continue_to_retrieval` and `route_after_review` extracted from closures inside `build_graph` to module level in `orchestrator.py`.
+
+### Fixed
+- **Stage 1 extraction no longer fails silently on an empty search space.** The retry gate required only `num_objectives > 0`, so a structure with objectives but no parameters was accepted and passed to Stage 2 — which cannot recover it, since it reasons only over Stage 1's output. The gate now requires both, and an incomplete structure surviving all retries prints a visible warning instead of a debug-only message.
+
+### Superseded
+- The `LLM_API_KEY` change described below is superseded by the move to `ANTHROPIC_API_KEY`.
+
 ### Changed
 - **API key environment variable**: Updated all code to use `LLM_API_KEY` instead of `OPENAI_API_KEY` for consistency with repository secrets configuration. This affects:
   - `src/honegumi_rag_assistant/app_config.py` - Settings class now reads from `LLM_API_KEY`

@@ -1,6 +1,6 @@
 #!/bin/bash
 # Script to run RAG experiments and upload artifacts to GitHub Actions
-# Expects OPENAI_API_KEY to be available from GitHub Actions environment
+# Expects ANTHROPIC_API_KEY to be available from the GitHub Actions environment
 
 set -e
 
@@ -8,7 +8,7 @@ echo "================================================"
 echo "Honegumi RAG Assistant Experiment Runner"
 echo "================================================"
 
-# Note: OPENAI_API_KEY is expected to be available from GitHub Actions
+# Note: ANTHROPIC_API_KEY is expected to be available from GitHub Actions
 # repository secrets. No check needed here as honegumi-rag will handle it.
 
 echo "Running experiments (using GitHub Actions environment secrets)..."
