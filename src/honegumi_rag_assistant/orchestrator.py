@@ -43,7 +43,7 @@ from .nodes import (
     ReviewerAgent,
 )
 from .nodes.retriever import retrieve_single_query
-from .app_config import settings
+from .app_config import settings, override_settings
 
 
 def continue_to_retrieval(state: HonegumiRAGState) -> list:
@@ -229,6 +229,32 @@ def run_from_text(
     skip_review: bool = False,
     enable_review: bool = False,
 ) -> str:
+    """Run the pipeline on a problem description, isolated from other callers.
+
+    Thin wrapper around :func:`_run_from_text` that confines ``debug`` -- and
+    any other per-run setting a caller layers on top -- to this call.  Two
+    concurrent callers therefore cannot overwrite each other's configuration.
+    See :func:`_run_from_text` for the full parameter documentation.
+    """
+    with override_settings(debug=debug):
+        return _run_from_text(
+            problem,
+            output_dir=output_dir,
+            debug=debug,
+            run_id=run_id,
+            skip_review=skip_review,
+            enable_review=enable_review,
+        )
+
+
+def _run_from_text(
+    problem: str,
+    output_dir: str | None = None,
+    debug: bool = False,
+    run_id: str | None = None,
+    skip_review: bool = False,
+    enable_review: bool = False,
+) -> str:
     """Run the full pipeline on a problem description string and optionally write the code to disk.
 
     Parameters
@@ -254,9 +280,6 @@ def run_from_text(
         The generated Python script.  Raises if the pipeline fails.
     """
     import hashlib
-    
-    # Set debug mode in settings
-    settings.debug = debug
     
     # Start timing
     start_time = time.time()
@@ -392,6 +415,21 @@ def run_from_text_with_state(
     output_dir: str | None = None,
     run_id: str | None = None,
 ) -> Dict[str, Any]:
+    """Run the pipeline and return the full state, isolated from other callers.
+
+    Thin wrapper around :func:`_run_from_text_with_state`; the suppressed debug
+    output is scoped to this call rather than set on the shared singleton.  See
+    that function for the full parameter documentation.
+    """
+    with override_settings(debug=False):
+        return _run_from_text_with_state(problem, output_dir=output_dir, run_id=run_id)
+
+
+def _run_from_text_with_state(
+    problem: str,
+    output_dir: str | None = None,
+    run_id: str | None = None,
+) -> Dict[str, Any]:
     """Run the pipeline and return the full state (for batch processing).
 
     Parameters
@@ -421,9 +459,6 @@ def run_from_text_with_state(
         - error: Error message if failed (or None)
     """
     import hashlib
-    
-    # Always use debug mode for batch processing (but suppress print output)
-    settings.debug = False  # We'll collect data without printing
     
     # Determine the output directory
     target_dir = Path(output_dir or settings.output_dir)

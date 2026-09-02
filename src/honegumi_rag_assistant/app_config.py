@@ -10,7 +10,7 @@ The following configuration options are supported:
 
 ``model_name``
     The name of the Claude model to use for the Parameter Selector.
-    Defaults to ``"claude-sonnet-5"``.  Override via the
+    Defaults to ``"claude-haiku-4-5"``.  Override via the
     ``ANTHROPIC_MODEL_NAME`` environment variable.
 
 ``anthropic_api_key``
@@ -40,7 +40,10 @@ The following configuration options are supported:
     ``OUTPUT_DIR`` environment variable.
 """
 
+from contextlib import contextmanager
+from contextvars import ContextVar
 from dataclasses import dataclass
+from typing import Any, Dict, Iterator
 import os
 
 # Load environment variables from .env file if it exists
@@ -51,9 +54,18 @@ except ImportError:
     pass  # python-dotenv not installed, skip
 
 
-# Default Claude model for every agent in the pipeline.  Claude model IDs are
-# complete as written -- never append a date suffix.
-DEFAULT_MODEL = "claude-sonnet-5"
+# Default Claude model for the structured-output agents (parameter selection,
+# retrieval planning, review).  They emit a few hundred tokens of schema-
+# constrained JSON, which Haiku handles at half Sonnet's price.  Claude model
+# IDs are complete as written -- never append a date suffix.
+DEFAULT_MODEL = "claude-haiku-4-5"
+
+# The Code Writer stays on Sonnet.  It is the only agent that passes
+# ``thinking={"type": "adaptive"}`` and ``output_config={"effort": ...}``, and
+# both are 4.6+ features: Haiku 4.5 rejects them with a 400.  It is also the
+# quality-critical agent -- a weaker model here shows up directly as stale-API
+# errors in the generated script, which is what the sweep measures.
+DEFAULT_CODE_WRITER_MODEL = "claude-sonnet-5"
 
 # Default local embedding model.  bge-large-en-v1.5 scores 64.23 on the MTEB
 # average, effectively matching OpenAI's text-embedding-3-large (64.6) while
@@ -118,6 +130,14 @@ class Settings:
     embedding_model : str
         Local sentence-transformers model used for both indexing and
         querying.  Must match the model the store was built with.
+    embedding_local_files_only : bool
+        When True, load the embedding model strictly from the local cache and
+        never contact the HuggingFace Hub.  Loading otherwise issues ~25 HTTP
+        requests to check the cached weights are current, which is startup
+        latency in a container and a hard failure on a host without egress.
+        Off by default, because a machine that has never downloaded the model
+        needs the Hub to fetch it.  Turn it on wherever the weights are baked
+        into the image.  Override via ``EMBEDDING_LOCAL_FILES_ONLY``.
     output_dir : str
         Directory where the generated code and artefacts should be
         written by the :func:`run` function.  The directory will be
@@ -132,7 +152,7 @@ class Settings:
     """
 
     model_name: str = os.getenv("ANTHROPIC_MODEL_NAME", DEFAULT_MODEL)
-    code_writer_model: str = os.getenv("CODE_WRITER_MODEL", DEFAULT_MODEL)
+    code_writer_model: str = os.getenv("CODE_WRITER_MODEL", DEFAULT_CODE_WRITER_MODEL)
     reviewer_model: str = os.getenv("REVIEWER_MODEL", DEFAULT_MODEL)
     retrieval_planner_model: str = os.getenv("RETRIEVAL_PLANNER_MODEL", DEFAULT_MODEL)
     anthropic_api_key: str = os.getenv("ANTHROPIC_API_KEY", "")
@@ -143,6 +163,10 @@ class Settings:
     retrieval_top_k: int = int(os.getenv("RETRIEVAL_TOP_K", "5"))
     embedding_model: str = os.getenv("EMBEDDING_MODEL", DEFAULT_EMBEDDING_MODEL)
     embedding_device: str = os.getenv("EMBEDDING_DEVICE", "cpu")
+    embedding_local_files_only: bool = (
+        os.getenv("EMBEDDING_LOCAL_FILES_ONLY", "").strip().lower()
+        in {"1", "true", "yes", "on"}
+    )
     output_dir: str = os.getenv("OUTPUT_DIR", "./honegumi_rag_output")
     debug: bool = False  # Set at runtime, not from environment
     stream_code: bool = False  # Set at runtime to enable streaming output
@@ -154,7 +178,7 @@ class Settings:
         such as in Jupyter/Colab notebooks.
         """
         self.model_name = os.getenv("ANTHROPIC_MODEL_NAME", DEFAULT_MODEL)
-        self.code_writer_model = os.getenv("CODE_WRITER_MODEL", DEFAULT_MODEL)
+        self.code_writer_model = os.getenv("CODE_WRITER_MODEL", DEFAULT_CODE_WRITER_MODEL)
         self.reviewer_model = os.getenv("REVIEWER_MODEL", DEFAULT_MODEL)
         self.retrieval_planner_model = os.getenv("RETRIEVAL_PLANNER_MODEL", DEFAULT_MODEL)
         self.anthropic_api_key = os.getenv("ANTHROPIC_API_KEY", "")
@@ -165,8 +189,84 @@ class Settings:
         self.retrieval_top_k = int(os.getenv("RETRIEVAL_TOP_K", "5"))
         self.embedding_model = os.getenv("EMBEDDING_MODEL", DEFAULT_EMBEDDING_MODEL)
         self.embedding_device = os.getenv("EMBEDDING_DEVICE", "cpu")
+        self.embedding_local_files_only = (
+            os.getenv("EMBEDDING_LOCAL_FILES_ONLY", "").strip().lower()
+            in {"1", "true", "yes", "on"}
+        )
         self.output_dir = os.getenv("OUTPUT_DIR", "./honegumi_rag_output")
 
 
+# Process-wide defaults, populated from the environment at import time.  The
+# CLI entry points mutate this directly: they own the whole process and run one
+# pipeline in it, so a global is the right scope for them.
+_defaults = Settings()
+
+# Per-run overrides.  A ContextVar is scoped to the current thread or async
+# task rather than to the process, and LangGraph propagates the active context
+# into the worker threads it spawns for parallel ``Send`` branches -- so an
+# override set by one request is visible to every node of that request, and to
+# no other request.
+_run_overrides: ContextVar[Dict[str, Any]] = ContextVar("run_overrides", default={})
+
+
+class _SettingsProxy:
+    """Attribute access that prefers the active run's overrides.
+
+    Reads resolve against :data:`_run_overrides` first and fall back to the
+    process-wide :data:`_defaults`.  Writes always land on the defaults, which
+    keeps ``settings.debug = True`` working for the CLI and keeps
+    ``monkeypatch.setattr(settings, ...)`` working in the tests.
+    """
+
+    def __getattr__(self, name: str) -> Any:
+        overrides = _run_overrides.get()
+        if name in overrides:
+            return overrides[name]
+        return getattr(_defaults, name)
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        setattr(_defaults, name, value)
+
+    def __delattr__(self, name: str) -> None:
+        delattr(_defaults, name)
+
+    def __repr__(self) -> str:  # pragma: no cover - debugging aid
+        return f"<settings overrides={_run_overrides.get()!r} defaults={_defaults!r}>"
+
+
 # A singleton instance for easy access throughout the package
-settings = Settings()
+settings = _SettingsProxy()
+
+
+@contextmanager
+def override_settings(**values: Any) -> Iterator[None]:
+    """Apply per-run settings visible only to the current request.
+
+    Any concurrent caller -- another Gradio request, another MCP tool call --
+    keeps its own values, because the overrides live in a
+    :class:`~contextvars.ContextVar` rather than on the shared singleton.
+    Nested scopes merge, with the inner values winning.
+
+    Parameters
+    ----------
+    **values
+        Setting names and the values they should take for the duration of the
+        block.  Names are not validated against :class:`Settings`, so a typo
+        silently does nothing -- pass keywords that match real fields.
+
+    Yields
+    ------
+    None
+        The block runs with the overrides applied; they are removed on exit,
+        including when the block raises.
+
+    Examples
+    --------
+    >>> with override_settings(debug=True, code_writer_model="claude-opus-5"):
+    ...     run_from_text("maximise yield ...")   # doctest: +SKIP
+    """
+    token = _run_overrides.set({**_run_overrides.get(), **values})
+    try:
+        yield
+    finally:
+        _run_overrides.reset(token)

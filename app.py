@@ -34,7 +34,7 @@ except ImportError:
     pass  # python-dotenv not installed, skip
 
 from honegumi_rag_assistant.orchestrator import run_from_text
-from honegumi_rag_assistant.app_config import settings, DEFAULT_MODEL
+from honegumi_rag_assistant.app_config import settings, override_settings, DEFAULT_MODEL
 
 
 # Claude models offered in the UI dropdowns.
@@ -87,18 +87,20 @@ def generate_code(
         return "", "⚠️ Please enter your Anthropic API key."
     
     try:
-        # Update settings with user selections
-        settings.anthropic_api_key = api_key.strip()
-        settings.model_name = param_selector_model
-        settings.retrieval_planner_model = retrieval_planner_model
-        settings.code_writer_model = code_writer_model
-        settings.stream_code = not enable_review  # Enable streaming when review is disabled
-        
         # Update progress
         progress(0.1, desc="Initializing pipeline...")
-        
-        # Create temporary output directory
-        with tempfile.TemporaryDirectory() as temp_dir:
+
+        # Per-request settings live in a context-local scope rather than on the
+        # shared singleton.  Gradio serves requests concurrently, so mutating
+        # the singleton here let one visitor's model choices -- and their API
+        # key -- bleed into another visitor's in-flight run.
+        with override_settings(
+            anthropic_api_key=api_key.strip(),
+            model_name=param_selector_model,
+            retrieval_planner_model=retrieval_planner_model,
+            code_writer_model=code_writer_model,
+            stream_code=not enable_review,  # stream when review is disabled
+        ), tempfile.TemporaryDirectory() as temp_dir:
             progress(0.2, desc="Analyzing problem...")
             
             # Run the pipeline

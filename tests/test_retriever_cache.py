@@ -203,3 +203,46 @@ class TestRetrieveSingleQuery:
             assert ctx["query_index"] == 3
             assert ctx["metadata"] == {"source": "ax-docs"}
         assert result["contexts"][0]["text"] == "chunk one"
+
+
+class TestLocalFilesOnly:
+    """Opt-in flag that stops the loader contacting the HuggingFace Hub."""
+
+    def test_absent_by_default(self, counting_loaders):
+        """A machine that has never downloaded the model still needs the Hub."""
+        retriever._load_vectorstore("/tmp/store", "BAAI/bge-large-en-v1.5")
+        assert "local_files_only" not in counting_loaders["last_kwargs"]["model_kwargs"]
+
+    def test_passed_through_when_enabled(self, counting_loaders, monkeypatch):
+        monkeypatch.setattr(retriever.settings, "embedding_local_files_only", True)
+        retriever._load_vectorstore("/tmp/store", "BAAI/bge-large-en-v1.5")
+        assert counting_loaders["last_kwargs"]["model_kwargs"]["local_files_only"] is True
+
+
+class TestWarmVectorstore:
+    """Startup warmup: the first caller must not pay the 1.2 GB load."""
+
+    def test_populates_the_cache(self, counting_loaders, monkeypatch, tmp_path):
+        monkeypatch.setattr(retriever.settings, "retrieval_vectorstore_path", str(tmp_path))
+
+        assert retriever.warm_vectorstore() is True
+        assert counting_loaders["load_local"] == 1
+
+        # A subsequent retrieval must be served from cache, not reload.
+        retriever._load_vectorstore(str(tmp_path), retriever.settings.embedding_model)
+        assert counting_loaders["load_local"] == 1
+
+    def test_no_store_configured_is_not_an_error(self, monkeypatch):
+        """A server with no vector store must still start."""
+        monkeypatch.setattr(retriever.settings, "retrieval_vectorstore_path", "")
+        assert retriever.warm_vectorstore() is False
+
+    def test_load_failure_is_not_fatal(self, counting_loaders, monkeypatch, tmp_path):
+        """Startup must survive a corrupt or missing index."""
+        monkeypatch.setattr(retriever.settings, "retrieval_vectorstore_path", str(tmp_path))
+
+        def boom(*args, **kwargs):
+            raise RuntimeError("corrupt index")
+
+        monkeypatch.setattr(retriever, "_load_vectorstore", boom)
+        assert retriever.warm_vectorstore() is False
