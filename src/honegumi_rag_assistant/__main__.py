@@ -23,7 +23,7 @@ except ImportError:
     pass  # python-dotenv not installed, skip
 
 from .orchestrator import run_from_text
-from .app_config import settings, DEFAULT_MODEL
+from .app_config import settings, DEFAULT_MODEL, DEFAULT_CODE_WRITER_MODEL
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -63,8 +63,8 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument(
         "--code-writer-model",
-        default=DEFAULT_MODEL,
-        help=f"Claude model to use for the Code Writer agent. Default: {DEFAULT_MODEL}",
+        default=DEFAULT_CODE_WRITER_MODEL,
+        help=f"Claude model to use for the Code Writer agent. Default: {DEFAULT_CODE_WRITER_MODEL}",
     )
     parser.add_argument(
         "--reviewer-model",

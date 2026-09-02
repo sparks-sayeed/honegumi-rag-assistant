@@ -29,3 +29,5 @@ python-dotenv
 # Optional dependencies (included by default)
 numpy==2.3.3
 pandas==2.3.3
+
+mcp==2.1.1

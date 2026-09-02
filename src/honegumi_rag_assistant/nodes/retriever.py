@@ -73,9 +73,15 @@ def _load_vectorstore(path: str, model_name: str) -> Any:
         if cached is not None:
             return cached
 
+        # Only add local_files_only when it is on, so the default request to
+        # sentence-transformers stays byte-identical to what it always was.
+        model_kwargs: Dict[str, Any] = {"device": device}
+        if settings.embedding_local_files_only:
+            model_kwargs["local_files_only"] = True
+
         embeddings = HuggingFaceEmbeddings(
             model_name=model_name,
-            model_kwargs={"device": device},
+            model_kwargs=model_kwargs,
             encode_kwargs={"normalize_embeddings": True},
         )
 
@@ -95,6 +101,46 @@ def _load_vectorstore(path: str, model_name: str) -> Any:
         )
         _STORE_CACHE[key] = store
         return store
+
+
+def warm_vectorstore() -> bool:
+    """Load the vector store now, so the first request does not pay for it.
+
+    The store is otherwise loaded lazily inside the retrieval fan-out, which
+    means whoever calls first waits for the ~1.2 GB embedding model and the
+    FAISS deserialization -- several seconds warm, far worse on a cold machine.
+    A long-lived server should absorb that at startup instead; a CLI run, which
+    exits after one pipeline, gains nothing and should not call this.
+
+    Returns
+    -------
+    bool
+        True if the store is loaded and cached.  False when there is nothing to
+        warm or the load failed.  Never raises: a server that cannot warm its
+        cache must still start and degrade to no retrieval, exactly as the
+        fan-out does.
+    """
+    if not settings.retrieval_vectorstore_path:
+        print("No vector store configured - starting without retrieval.")
+        return False
+
+    if FAISS is None or HuggingFaceEmbeddings is None:
+        print("Retrieval dependencies unavailable - starting without retrieval.")
+        return False
+
+    start = time.time()
+    print(f"Warming vector store from {settings.retrieval_vectorstore_path} ...")
+    try:
+        _load_vectorstore(
+            settings.retrieval_vectorstore_path,
+            settings.embedding_model,
+        )
+    except Exception as exc:  # noqa: BLE001 - startup must not be fatal
+        print(f"Vector store warmup failed ({exc}) - continuing without retrieval.")
+        return False
+
+    print(f"Vector store ready in {time.time() - start:.1f}s.")
+    return True
 
 
 def retrieve_single_query(query: str, query_index: int) -> Dict[str, Any]:
