@@ -1,0 +1,10 @@
+.git
+__pycache__
+*.pyc
+.pytest_cache
+.coverage
+notebooks/
+docs/
+runs/
+honegumi_rag_output/
+.env
