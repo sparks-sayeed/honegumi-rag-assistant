@@ -138,6 +138,22 @@ class Settings:
         Off by default, because a machine that has never downloaded the model
         needs the Hub to fetch it.  Turn it on wherever the weights are baked
         into the image.  Override via ``EMBEDDING_LOCAL_FILES_ONLY``.
+    mcp_host : str
+        Interface the MCP server binds to.  Defaults to ``"127.0.0.1"``:
+        loopback only, so a server started on a laptop is reachable from that
+        laptop and nowhere else.  A container must override this to
+        ``"0.0.0.0"`` -- inside one, ``127.0.0.1`` is the container's own
+        loopback, so the port would be published and still refuse every
+        connection.  Override via ``MCP_HOST``.
+    mcp_port : int
+        Port the MCP server listens on.  Override via ``MCP_PORT``.
+    mcp_auth_token : str
+        Shared secret callers must present as ``Authorization: Bearer <token>``.
+        Empty disables the check, which is only safe on loopback: every call to
+        this server spends *your* Anthropic budget, so an open public endpoint
+        is an open wallet.  :func:`~honegumi_rag_assistant.mcp_server.main`
+        refuses to start on a non-loopback interface without one.  Override via
+        ``MCP_AUTH_TOKEN``.
     output_dir : str
         Directory where the generated code and artefacts should be
         written by the :func:`run` function.  The directory will be
@@ -167,6 +183,9 @@ class Settings:
         os.getenv("EMBEDDING_LOCAL_FILES_ONLY", "").strip().lower()
         in {"1", "true", "yes", "on"}
     )
+    mcp_host: str = os.getenv("MCP_HOST", "127.0.0.1")
+    mcp_port: int = int(os.getenv("MCP_PORT", "8000"))
+    mcp_auth_token: str = os.getenv("MCP_AUTH_TOKEN", "")
     output_dir: str = os.getenv("OUTPUT_DIR", "./honegumi_rag_output")
     debug: bool = False  # Set at runtime, not from environment
     stream_code: bool = False  # Set at runtime to enable streaming output
@@ -193,6 +212,9 @@ class Settings:
             os.getenv("EMBEDDING_LOCAL_FILES_ONLY", "").strip().lower()
             in {"1", "true", "yes", "on"}
         )
+        self.mcp_host = os.getenv("MCP_HOST", "127.0.0.1")
+        self.mcp_port = int(os.getenv("MCP_PORT", "8000"))
+        self.mcp_auth_token = os.getenv("MCP_AUTH_TOKEN", "")
         self.output_dir = os.getenv("OUTPUT_DIR", "./honegumi_rag_output")
 
 
