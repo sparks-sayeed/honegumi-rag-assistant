@@ -1,8 +1,8 @@
-validation_timestamp: 2025-10-31 14:17:26 UTC
+validation_timestamp: 2025-11-06 06:30:10 UTC
 summary:
-  total_files: 2
-  passed_files: 1
-  failed_files: 1
+  total_files: 20
+  passed_files: 8
+  failed_files: 12
 results:
 - file: data/processed/evaluation/code_files/honegumi_generated_1_experimentalist_basic_corrected.py
   syntax_check:
@@ -13,272 +13,222 @@ results:
     error: null
   runtime_check:
     passed: false
-    error: "Non-zero exit code 1: [WARNING 10-31 14:16:07] ax.service.utils.with_db_settings_base:\
+    error: "Non-zero exit code 1: [WARNING 11-06 04:39:36] ax.service.utils.with_db_settings_base:\
       \ Ax currently requires a sqlalchemy version below 2.0. This will be addressed\
       \ in a future release. Disabling SQL storage in Ax for now, if you would like\
       \ to use SQL storage please install Ax with mysql extras via `pip install ax-platform[mysql]`.\n\
-      [INFO 10-31 14:16:08] ax.service.ax_client: Starting optimization with verbose\
+      [INFO 11-06 04:39:36] ax.service.ax_client: Starting optimization with verbose\
       \ logging. To disable logging, set the `verbose_logging` argument to `False`.\
       \ Note that float values in the logs are rounded to 6 decimal points.\n[INFO\
-      \ 10-31 14:16:08] ax.service.utils.instantiation: Inferred value type of ParameterType.FLOAT\
+      \ 11-06 04:39:36] ax.service.utils.instantiation: Inferred value type of ParameterType.FLOAT\
       \ for parameter x1. If that is not the expected value type, you can explicitly\
       \ specify 'value_type' ('int', 'float', 'bool' or 'str') in parameter dict.\n\
-      [INFO 10-31 14:16:08] ax.service.utils.instantiation: Inferred value type of\
+      [INFO 11-06 04:39:36] ax.service.utils.instantiation: Inferred value type of\
       \ ParameterType.FLOAT for parameter x2. If that is not the expected value type,\
       \ you can explicitly specify 'value_type' ('int', 'float', 'bool' or 'str')\
-      \ in parameter dict.\n[INFO 10-31 14:16:08] ax.service.utils.instantiation:\
+      \ in parameter dict.\n[INFO 11-06 04:39:36] ax.service.utils.instantiation:\
       \ Created search space: SearchSpace(parameters=[RangeParameter(name='x1', parameter_type=FLOAT,\
       \ range=[-5.0, 10.0]), RangeParameter(name='x2', parameter_type=FLOAT, range=[0.0,\
-      \ 10.0])], parameter_constraints=[]).\n[INFO 10-31 14:16:08] ax.modelbridge.dispatch_utils:\
+      \ 10.0])], parameter_constraints=[]).\n[INFO 11-06 04:39:36] ax.modelbridge.dispatch_utils:\
       \ Using Models.BOTORCH_MODULAR since there is at least one ordered parameter\
-      \ and there are no unordered categorical parameters.\n[INFO 10-31 14:16:08]\
+      \ and there are no unordered categorical parameters.\n[INFO 11-06 04:39:36]\
       \ ax.modelbridge.dispatch_utils: Calculating the number of remaining initialization\
       \ trials based on num_initialization_trials=None max_initialization_trials=None\
-      \ num_tunable_parameters=2 num_trials=None use_batch_trials=False\n[INFO 10-31\
-      \ 14:16:08] ax.modelbridge.dispatch_utils: calculated num_initialization_trials=5\n\
-      [INFO 10-31 14:16:08] ax.modelbridge.dispatch_utils: num_completed_initialization_trials=0\
-      \ num_remaining_initialization_trials=5\n[INFO 10-31 14:16:08] ax.modelbridge.dispatch_utils:\
+      \ num_tunable_parameters=2 num_trials=None use_batch_trials=False\n[INFO 11-06\
+      \ 04:39:36] ax.modelbridge.dispatch_utils: calculated num_initialization_trials=5\n\
+      [INFO 11-06 04:39:36] ax.modelbridge.dispatch_utils: num_completed_initialization_trials=0\
+      \ num_remaining_initialization_trials=5\n[INFO 11-06 04:39:36] ax.modelbridge.dispatch_utils:\
       \ `verbose`, `disable_progbar`, and `jit_compile` are not yet supported when\
       \ using `choose_generation_strategy` with ModularBoTorchModel, dropping these\
-      \ arguments.\n[INFO 10-31 14:16:08] ax.modelbridge.dispatch_utils: Using Bayesian\
+      \ arguments.\n[INFO 11-06 04:39:36] ax.modelbridge.dispatch_utils: Using Bayesian\
       \ Optimization generation strategy: GenerationStrategy(name='Sobol+BoTorch',\
       \ steps=[Sobol for 5 trials, BoTorch for subsequent trials]). Iterations after\
       \ 5 will take longer to generate due to model-fitting.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/ax/modelbridge/cross_validation.py:463:\
       \ UserWarning: Encountered exception in computing model fit quality: RandomModelBridge\
       \ does not support prediction.\n  warn(\"Encountered exception in computing\
-      \ model fit quality: \" + str(e))\n[INFO 10-31 14:16:08] ax.service.ax_client:\
-      \ Generated new trial 0 with parameters {'x1': 7.972481, 'x2': 1.440977} using\
-      \ model Sobol.\n[INFO 10-31 14:16:08] ax.service.ax_client: Completed trial\
-      \ 0 with data: {'branin': (8.871454, None)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/ax/modelbridge/cross_validation.py:463:\
+      \ model fit quality: \" + str(e))\n[INFO 11-06 04:39:36] ax.service.ax_client:\
+      \ Generated new trial 0 with parameters {'x1': -3.708669, 'x2': 8.212934} using\
+      \ model Sobol.\n[INFO 11-06 04:39:36] ax.service.ax_client: Completed trial\
+      \ 0 with data: {'branin': (31.782708, None)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/ax/modelbridge/cross_validation.py:463:\
       \ UserWarning: Encountered exception in computing model fit quality: RandomModelBridge\
       \ does not support prediction.\n  warn(\"Encountered exception in computing\
-      \ model fit quality: \" + str(e))\n[INFO 10-31 14:16:08] ax.service.ax_client:\
-      \ Generated new trial 1 with parameters {'x1': -3.313142, 'x2': 5.41216} using\
-      \ model Sobol.\n[INFO 10-31 14:16:08] ax.service.ax_client: Completed trial\
-      \ 1 with data: {'branin': (53.521435, None)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/ax/modelbridge/cross_validation.py:463:\
+      \ model fit quality: \" + str(e))\n[INFO 11-06 04:39:36] ax.service.ax_client:\
+      \ Generated new trial 1 with parameters {'x1': 4.084201, 'x2': 3.737664} using\
+      \ model Sobol.\n[INFO 11-06 04:39:36] ax.service.ax_client: Completed trial\
+      \ 1 with data: {'branin': (8.695861, None)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/ax/modelbridge/cross_validation.py:463:\
       \ UserWarning: Encountered exception in computing model fit quality: RandomModelBridge\
       \ does not support prediction.\n  warn(\"Encountered exception in computing\
-      \ model fit quality: \" + str(e))\n[INFO 10-31 14:16:08] ax.service.ax_client:\
-      \ Generated new trial 2 with parameters {'x1': -0.808358, 'x2': 3.320445} using\
-      \ model Sobol.\n[INFO 10-31 14:16:08] ax.service.ax_client: Completed trial\
-      \ 2 with data: {'branin': (33.038691, None)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/ax/modelbridge/cross_validation.py:463:\
+      \ model fit quality: \" + str(e))\n[INFO 11-06 04:39:36] ax.service.ax_client:\
+      \ Generated new trial 2 with parameters {'x1': 8.816428, 'x2': 5.160455} using\
+      \ model Sobol.\n[INFO 11-06 04:39:36] ax.service.ax_client: Completed trial\
+      \ 2 with data: {'branin': (12.048123, None)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/ax/modelbridge/cross_validation.py:463:\
       \ UserWarning: Encountered exception in computing model fit quality: RandomModelBridge\
       \ does not support prediction.\n  warn(\"Encountered exception in computing\
-      \ model fit quality: \" + str(e))\n[INFO 10-31 14:16:08] ax.service.ax_client:\
-      \ Generated new trial 3 with parameters {'x1': 2.860215, 'x2': 9.821535} using\
-      \ model Sobol.\n[INFO 10-31 14:16:08] ax.service.ax_client: Completed trial\
-      \ 3 with data: {'branin': (54.312124, None)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/ax/modelbridge/cross_validation.py:463:\
+      \ model fit quality: \" + str(e))\n[INFO 11-06 04:39:36] ax.service.ax_client:\
+      \ Generated new trial 3 with parameters {'x1': 1.023362, 'x2': 0.388936} using\
+      \ model Sobol.\n[INFO 11-06 04:39:36] ax.service.ax_client: Completed trial\
+      \ 3 with data: {'branin': (31.952718, None)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/ax/modelbridge/cross_validation.py:463:\
       \ UserWarning: Encountered exception in computing model fit quality: RandomModelBridge\
       \ does not support prediction.\n  warn(\"Encountered exception in computing\
-      \ model fit quality: \" + str(e))\n[INFO 10-31 14:16:08] ax.service.ax_client:\
-      \ Generated new trial 4 with parameters {'x1': 6.221484, 'x2': 4.671385} using\
-      \ model Sobol.\n[INFO 10-31 14:16:08] ax.service.ax_client: Completed trial\
-      \ 4 with data: {'branin': (32.349151, None)}.\n[INFO 10-31 14:16:08] ax.service.ax_client:\
-      \ Generated new trial 5 with parameters {'x1': 10.0, 'x2': 0.0} using model\
-      \ BoTorch.\n[INFO 10-31 14:16:08] ax.service.ax_client: Completed trial 5 with\
-      \ data: {'branin': (10.960889, None)}.\n[INFO 10-31 14:16:10] ax.service.ax_client:\
-      \ Generated new trial 6 with parameters {'x1': 3.84175, 'x2': 0.0} using model\
-      \ BoTorch.\n[INFO 10-31 14:16:10] ax.service.ax_client: Completed trial 6 with\
-      \ data: {'branin': (5.86923, None)}.\n[INFO 10-31 14:16:11] ax.service.ax_client:\
-      \ Generated new trial 7 with parameters {'x1': 5.632563, 'x2': 0.0} using model\
-      \ BoTorch.\n[INFO 10-31 14:16:11] ax.service.ax_client: Completed trial 7 with\
-      \ data: {'branin': (18.926369, None)}.\n[INFO 10-31 14:16:12] ax.service.ax_client:\
-      \ Generated new trial 8 with parameters {'x1': 2.294937, 'x2': 0.0} using model\
-      \ BoTorch.\n[INFO 10-31 14:16:12] ax.service.ax_client: Completed trial 8 with\
-      \ data: {'branin': (12.806703, None)}.\n[INFO 10-31 14:16:13] ax.service.ax_client:\
-      \ Generated new trial 9 with parameters {'x1': 10.0, 'x2': 1.210355} using model\
-      \ BoTorch.\n[INFO 10-31 14:16:13] ax.service.ax_client: Completed trial 9 with\
-      \ data: {'branin': (5.156561, None)}.\n[INFO 10-31 14:16:14] ax.service.ax_client:\
-      \ Generated new trial 10 with parameters {'x1': -5.0, 'x2': 0.0} using model\
-      \ BoTorch.\n[INFO 10-31 14:16:14] ax.service.ax_client: Completed trial 10 with\
-      \ data: {'branin': (308.129096, None)}.\n[INFO 10-31 14:16:15] ax.service.ax_client:\
-      \ Generated new trial 11 with parameters {'x1': 10.0, 'x2': 3.104419} using\
-      \ model BoTorch.\n[INFO 10-31 14:16:15] ax.service.ax_client: Completed trial\
-      \ 11 with data: {'branin': (1.953435, None)}.\n[INFO 10-31 14:16:17] ax.service.ax_client:\
-      \ Generated new trial 12 with parameters {'x1': 9.274763, 'x2': 3.18918} using\
-      \ model BoTorch.\n[INFO 10-31 14:16:17] ax.service.ax_client: Completed trial\
-      \ 12 with data: {'branin': (1.207661, None)}.\n[INFO 10-31 14:16:19] ax.service.ax_client:\
-      \ Generated new trial 13 with parameters {'x1': 10.0, 'x2': 9.091949} using\
-      \ model BoTorch.\n[INFO 10-31 14:16:19] ax.service.ax_client: Completed trial\
-      \ 13 with data: {'branin': (39.018971, None)}.\n[INFO 10-31 14:16:20] ax.service.ax_client:\
-      \ Generated new trial 14 with parameters {'x1': 9.367486, 'x2': 2.390438} using\
-      \ model BoTorch.\n[INFO 10-31 14:16:20] ax.service.ax_client: Completed trial\
-      \ 14 with data: {'branin': (0.414986, None)}.\n[INFO 10-31 14:16:22] ax.service.ax_client:\
-      \ Generated new trial 15 with parameters {'x1': 3.09043, 'x2': 2.532309} using\
-      \ model BoTorch.\n[INFO 10-31 14:16:22] ax.service.ax_client: Completed trial\
-      \ 15 with data: {'branin': (0.457572, None)}.\n[INFO 10-31 14:16:24] ax.service.ax_client:\
-      \ Generated new trial 16 with parameters {'x1': 3.38992, 'x2': 1.844951} using\
-      \ model BoTorch.\n[INFO 10-31 14:16:24] ax.service.ax_client: Completed trial\
-      \ 16 with data: {'branin': (0.752143, None)}.\n[INFO 10-31 14:16:27] ax.service.ax_client:\
-      \ Generated new trial 17 with parameters {'x1': 2.537025, 'x2': 2.830672} using\
-      \ model BoTorch.\n[INFO 10-31 14:16:27] ax.service.ax_client: Completed trial\
-      \ 17 with data: {'branin': (2.101251, None)}.\n[INFO 10-31 14:16:30] ax.service.ax_client:\
-      \ Generated new trial 18 with parameters {'x1': -1.017131, 'x2': 10.0} using\
-      \ model BoTorch.\n[INFO 10-31 14:16:30] ax.service.ax_client: Completed trial\
-      \ 18 with data: {'branin': (20.100303, None)}.\n[WARNING 10-31 14:16:30] ax.service.utils.report_utils:\
-      \ Column reason missing for all trials. Not appending column.\n[INFO 10-31 14:16:30]\
+      \ model fit quality: \" + str(e))\n[INFO 11-06 04:39:36] ax.service.ax_client:\
+      \ Generated new trial 4 with parameters {'x1': 0.41579, 'x2': 6.723523} using\
+      \ model Sobol.\n[INFO 11-06 04:39:36] ax.service.ax_client: Completed trial\
+      \ 4 with data: {'branin': (20.641594, None)}.\n[INFO 11-06 04:39:38] ax.service.ax_client:\
+      \ Generated new trial 5 with parameters {'x1': -2.767496, 'x2': 4.337838} using\
+      \ model BoTorch.\n[INFO 11-06 04:39:38] ax.service.ax_client: Completed trial\
+      \ 5 with data: {'branin': (50.85192, None)}.\n[INFO 11-06 04:39:39] ax.service.ax_client:\
+      \ Generated new trial 6 with parameters {'x1': 4.900631, 'x2': 6.835032} using\
+      \ model BoTorch.\n[INFO 11-06 04:39:39] ax.service.ax_client: Completed trial\
+      \ 6 with data: {'branin': (42.401105, None)}.\n[INFO 11-06 04:39:40] ax.service.ax_client:\
+      \ Generated new trial 7 with parameters {'x1': 5.965583, 'x2': 4.014323} using\
+      \ model BoTorch.\n[INFO 11-06 04:39:40] ax.service.ax_client: Completed trial\
+      \ 7 with data: {'branin': (27.598137, None)}.\n[INFO 11-06 04:39:43] ax.service.ax_client:\
+      \ Generated new trial 8 with parameters {'x1': 3.383923, 'x2': 3.231705} using\
+      \ model BoTorch.\n[INFO 11-06 04:39:43] ax.service.ax_client: Completed trial\
+      \ 8 with data: {'branin': (1.973724, None)}.\n[INFO 11-06 04:39:44] ax.service.ax_client:\
+      \ Generated new trial 9 with parameters {'x1': 2.485886, 'x2': 3.992959} using\
+      \ model BoTorch.\n[INFO 11-06 04:39:44] ax.service.ax_client: Completed trial\
+      \ 9 with data: {'branin': (3.714134, None)}.\n[INFO 11-06 04:39:45] ax.service.ax_client:\
+      \ Generated new trial 10 with parameters {'x1': 10.0, 'x2': 2.891521} using\
+      \ model BoTorch.\n[INFO 11-06 04:39:45] ax.service.ax_client: Completed trial\
+      \ 10 with data: {'branin': (1.955559, None)}.\n[INFO 11-06 04:39:46] ax.service.ax_client:\
+      \ Generated new trial 11 with parameters {'x1': 9.308025, 'x2': 0.480923} using\
+      \ model BoTorch.\n[INFO 11-06 04:39:46] ax.service.ax_client: Completed trial\
+      \ 11 with data: {'branin': (4.063212, None)}.\n[INFO 11-06 04:39:47] ax.service.ax_client:\
+      \ Generated new trial 12 with parameters {'x1': 4.498255, 'x2': 0.125397} using\
+      \ model BoTorch.\n[INFO 11-06 04:39:47] ax.service.ax_client: Completed trial\
+      \ 12 with data: {'branin': (9.726749, None)}.\n[INFO 11-06 04:39:48] ax.service.ax_client:\
+      \ Generated new trial 13 with parameters {'x1': 10.0, 'x2': 0.927019} using\
+      \ model BoTorch.\n[INFO 11-06 04:39:48] ax.service.ax_client: Completed trial\
+      \ 13 with data: {'branin': (6.252659, None)}.\n[INFO 11-06 04:39:49] ax.service.ax_client:\
+      \ Generated new trial 14 with parameters {'x1': 9.124314, 'x2': 2.265534} using\
+      \ model BoTorch.\n[INFO 11-06 04:39:49] ax.service.ax_client: Completed trial\
+      \ 14 with data: {'branin': (0.829113, None)}.\n[INFO 11-06 04:39:50] ax.service.ax_client:\
+      \ Generated new trial 15 with parameters {'x1': 3.21808, 'x2': 2.436184} using\
+      \ model BoTorch.\n[INFO 11-06 04:39:50] ax.service.ax_client: Completed trial\
+      \ 15 with data: {'branin': (0.474396, None)}.\n[INFO 11-06 04:39:51] ax.service.ax_client:\
+      \ Generated new trial 16 with parameters {'x1': 7.738077, 'x2': 0.0} using model\
+      \ BoTorch.\n[INFO 11-06 04:39:51] ax.service.ax_client: Completed trial 16 with\
+      \ data: {'branin': (13.126145, None)}.\n[INFO 11-06 04:39:52] ax.service.ax_client:\
+      \ Generated new trial 17 with parameters {'x1': 9.436861, 'x2': 2.564477} using\
+      \ model BoTorch.\n[INFO 11-06 04:39:52] ax.service.ax_client: Completed trial\
+      \ 17 with data: {'branin': (0.404871, None)}.\n[INFO 11-06 04:39:53] ax.service.ax_client:\
+      \ Generated new trial 18 with parameters {'x1': 10.0, 'x2': 10.0} using model\
+      \ BoTorch.\n[INFO 11-06 04:39:53] ax.service.ax_client: Completed trial 18 with\
+      \ data: {'branin': (50.901757, None)}.\n[WARNING 11-06 04:39:53] ax.service.utils.report_utils:\
+      \ Column reason missing for all trials. Not appending column.\n[INFO 11-06 04:39:53]\
       \ ax.service.ax_client: Starting optimization with verbose logging. To disable\
       \ logging, set the `verbose_logging` argument to `False`. Note that float values\
-      \ in the logs are rounded to 6 decimal points.\n[INFO 10-31 14:16:30] ax.service.utils.instantiation:\
+      \ in the logs are rounded to 6 decimal points.\n[INFO 11-06 04:39:53] ax.service.utils.instantiation:\
       \ Inferred value type of ParameterType.FLOAT for parameter temperature_celsius.\
       \ If that is not the expected value type, you can explicitly specify 'value_type'\
-      \ ('int', 'float', 'bool' or 'str') in parameter dict.\n[INFO 10-31 14:16:30]\
+      \ ('int', 'float', 'bool' or 'str') in parameter dict.\n[INFO 11-06 04:39:53]\
       \ ax.service.utils.instantiation: Inferred value type of ParameterType.FLOAT\
       \ for parameter sintering_time_hours. If that is not the expected value type,\
       \ you can explicitly specify 'value_type' ('int', 'float', 'bool' or 'str')\
-      \ in parameter dict.\n[INFO 10-31 14:16:30] ax.service.utils.instantiation:\
+      \ in parameter dict.\n[INFO 11-06 04:39:53] ax.service.utils.instantiation:\
       \ Created search space: SearchSpace(parameters=[RangeParameter(name='temperature_celsius',\
       \ parameter_type=FLOAT, range=[800.0, 1200.0]), RangeParameter(name='sintering_time_hours',\
       \ parameter_type=FLOAT, range=[1.0, 6.0])], parameter_constraints=[]).\n[INFO\
-      \ 10-31 14:16:30] ax.modelbridge.dispatch_utils: Using Models.BOTORCH_MODULAR\
+      \ 11-06 04:39:53] ax.modelbridge.dispatch_utils: Using Models.BOTORCH_MODULAR\
       \ since there is at least one ordered parameter and there are no unordered categorical\
-      \ parameters.\n[INFO 10-31 14:16:30] ax.modelbridge.dispatch_utils: Calculating\
+      \ parameters.\n[INFO 11-06 04:39:53] ax.modelbridge.dispatch_utils: Calculating\
       \ the number of remaining initialization trials based on num_initialization_trials=None\
       \ max_initialization_trials=None num_tunable_parameters=2 num_trials=None use_batch_trials=False\n\
-      [INFO 10-31 14:16:30] ax.modelbridge.dispatch_utils: calculated num_initialization_trials=5\n\
-      [INFO 10-31 14:16:30] ax.modelbridge.dispatch_utils: num_completed_initialization_trials=0\
-      \ num_remaining_initialization_trials=5\n[INFO 10-31 14:16:30] ax.modelbridge.dispatch_utils:\
+      [INFO 11-06 04:39:53] ax.modelbridge.dispatch_utils: calculated num_initialization_trials=5\n\
+      [INFO 11-06 04:39:53] ax.modelbridge.dispatch_utils: num_completed_initialization_trials=0\
+      \ num_remaining_initialization_trials=5\n[INFO 11-06 04:39:53] ax.modelbridge.dispatch_utils:\
       \ `verbose`, `disable_progbar`, and `jit_compile` are not yet supported when\
       \ using `choose_generation_strategy` with ModularBoTorchModel, dropping these\
-      \ arguments.\n[INFO 10-31 14:16:30] ax.modelbridge.dispatch_utils: Using Bayesian\
+      \ arguments.\n[INFO 11-06 04:39:53] ax.modelbridge.dispatch_utils: Using Bayesian\
       \ Optimization generation strategy: GenerationStrategy(name='Sobol+BoTorch',\
       \ steps=[Sobol for 5 trials, BoTorch for subsequent trials]). Iterations after\
       \ 5 will take longer to generate due to model-fitting.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/ax/modelbridge/cross_validation.py:463:\
       \ UserWarning: Encountered exception in computing model fit quality: RandomModelBridge\
       \ does not support prediction.\n  warn(\"Encountered exception in computing\
-      \ model fit quality: \" + str(e))\n[INFO 10-31 14:16:30] ax.service.ax_client:\
-      \ Generated new trial 0 with parameters {'temperature_celsius': 1102.414989,\
-      \ 'sintering_time_hours': 3.283178} using model Sobol.\n[INFO 10-31 14:16:30]\
-      \ ax.service.ax_client: Completed trial 0 with data: {'density_g_per_cm3': (4.574837,\
+      \ model fit quality: \" + str(e))\n[INFO 11-06 04:39:53] ax.service.ax_client:\
+      \ Generated new trial 0 with parameters {'temperature_celsius': 851.366872,\
+      \ 'sintering_time_hours': 5.632035} using model Sobol.\n[INFO 11-06 04:39:53]\
+      \ ax.service.ax_client: Completed trial 0 with data: {'density_g_per_cm3': (3.061582,\
       \ 0.03)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/ax/modelbridge/cross_validation.py:463:\
       \ UserWarning: Encountered exception in computing model fit quality: RandomModelBridge\
       \ does not support prediction.\n  warn(\"Encountered exception in computing\
-      \ model fit quality: \" + str(e))\n[INFO 10-31 14:16:30] ax.service.ax_client:\
-      \ Generated new trial 1 with parameters {'temperature_celsius': 961.398505,\
-      \ 'sintering_time_hours': 4.85091} using model Sobol.\n[INFO 10-31 14:16:30]\
-      \ ax.service.ax_client: Completed trial 1 with data: {'density_g_per_cm3': (3.457399,\
+      \ model fit quality: \" + str(e))\n[INFO 11-06 04:39:53] ax.service.ax_client:\
+      \ Generated new trial 1 with parameters {'temperature_celsius': 1100.396677,\
+      \ 'sintering_time_hours': 1.228094} using model Sobol.\n[INFO 11-06 04:39:53]\
+      \ ax.service.ax_client: Completed trial 1 with data: {'density_g_per_cm3': (3.237669,\
       \ 0.03)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/ax/modelbridge/cross_validation.py:463:\
       \ UserWarning: Encountered exception in computing model fit quality: RandomModelBridge\
       \ does not support prediction.\n  warn(\"Encountered exception in computing\
-      \ model fit quality: \" + str(e))\n[INFO 10-31 14:16:30] ax.service.ax_client:\
-      \ Generated new trial 2 with parameters {'temperature_celsius': 853.292968,\
-      \ 'sintering_time_hours': 2.142242} using model Sobol.\n[INFO 10-31 14:16:30]\
-      \ ax.service.ax_client: Completed trial 2 with data: {'density_g_per_cm3': (3.042518,\
+      \ model fit quality: \" + str(e))\n[INFO 11-06 04:39:53] ax.service.ax_client:\
+      \ Generated new trial 2 with parameters {'temperature_celsius': 1088.698838,\
+      \ 'sintering_time_hours': 3.932823} using model Sobol.\n[INFO 11-06 04:39:53]\
+      \ ax.service.ax_client: Completed trial 2 with data: {'density_g_per_cm3': (4.958002,\
       \ 0.03)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/ax/modelbridge/cross_validation.py:463:\
       \ UserWarning: Encountered exception in computing model fit quality: RandomModelBridge\
       \ does not support prediction.\n  warn(\"Encountered exception in computing\
-      \ model fit quality: \" + str(e))\n[INFO 10-31 14:16:30] ax.service.ax_client:\
-      \ Generated new trial 3 with parameters {'temperature_celsius': 1007.5907, 'sintering_time_hours':\
-      \ 3.728819} using model Sobol.\n[INFO 10-31 14:16:30] ax.service.ax_client:\
-      \ Completed trial 3 with data: {'density_g_per_cm3': (3.775926, 0.03)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/ax/modelbridge/cross_validation.py:463:\
+      \ model fit quality: \" + str(e))\n[INFO 11-06 04:39:53] ax.service.ax_client:\
+      \ Generated new trial 3 with parameters {'temperature_celsius': 938.05784, 'sintering_time_hours':\
+      \ 3.200752} using model Sobol.\n[INFO 11-06 04:39:53] ax.service.ax_client:\
+      \ Completed trial 3 with data: {'density_g_per_cm3': (3.127153, 0.03)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/ax/modelbridge/cross_validation.py:463:\
       \ UserWarning: Encountered exception in computing model fit quality: RandomModelBridge\
       \ does not support prediction.\n  warn(\"Encountered exception in computing\
-      \ model fit quality: \" + str(e))\n[INFO 10-31 14:16:30] ax.service.ax_client:\
-      \ Generated new trial 4 with parameters {'temperature_celsius': 1089.310258,\
-      \ 'sintering_time_hours': 1.287662} using model Sobol.\n[INFO 10-31 14:16:30]\
-      \ ax.service.ax_client: Completed trial 4 with data: {'density_g_per_cm3': (3.153073,\
-      \ 0.03)}.\n[INFO 10-31 14:16:32] ax.service.ax_client: Generated new trial 5\
-      \ with parameters {'temperature_celsius': 1146.278746, 'sintering_time_hours':\
-      \ 3.549559} using model BoTorch.\n[INFO 10-31 14:16:32] ax.service.ax_client:\
-      \ Completed trial 5 with data: {'density_g_per_cm3': (4.813271, 0.03)}.\n[INFO\
-      \ 10-31 14:16:33] ax.service.ax_client: Generated new trial 6 with parameters\
-      \ {'temperature_celsius': 1200.0, 'sintering_time_hours': 3.244181} using model\
-      \ BoTorch.\n[INFO 10-31 14:16:33] ax.service.ax_client: Completed trial 6 with\
-      \ data: {'density_g_per_cm3': (4.533321, 0.03)}.\n[INFO 10-31 14:16:33] ax.service.ax_client:\
-      \ Generated new trial 7 with parameters {'temperature_celsius': 1146.703696,\
-      \ 'sintering_time_hours': 4.258314} using model BoTorch.\n[INFO 10-31 14:16:34]\
-      \ ax.service.ax_client: Completed trial 7 with data: {'density_g_per_cm3': (5.254561,\
-      \ 0.03)}.\n[INFO 10-31 14:16:34] ax.service.ax_client: Generated new trial 8\
-      \ with parameters {'temperature_celsius': 1141.396727, 'sintering_time_hours':\
-      \ 5.479015} using model BoTorch.\n[INFO 10-31 14:16:34] ax.service.ax_client:\
-      \ Completed trial 8 with data: {'density_g_per_cm3': (5.442724, 0.03)}.\n[INFO\
-      \ 10-31 14:16:35] ax.service.ax_client: Generated new trial 9 with parameters\
-      \ {'temperature_celsius': 1200.0, 'sintering_time_hours': 5.650622} using model\
-      \ BoTorch.\n[INFO 10-31 14:16:35] ax.service.ax_client: Completed trial 9 with\
-      \ data: {'density_g_per_cm3': (5.341828, 0.03)}.\n[INFO 10-31 14:16:36] ax.service.ax_client:\
-      \ Generated new trial 10 with parameters {'temperature_celsius': 1157.071001,\
-      \ 'sintering_time_hours': 5.289904} using model BoTorch.\n[INFO 10-31 14:16:36]\
-      \ ax.service.ax_client: Completed trial 10 with data: {'density_g_per_cm3':\
-      \ (5.281696, 0.03)}.\n[INFO 10-31 14:16:36] ax.service.ax_client: Generated\
-      \ new trial 11 with parameters {'temperature_celsius': 1105.265936, 'sintering_time_hours':\
-      \ 5.275726} using model BoTorch.\n[INFO 10-31 14:16:36] ax.service.ax_client:\
-      \ Completed trial 11 with data: {'density_g_per_cm3': (5.292617, 0.03)}.\n[INFO\
-      \ 10-31 14:16:37] ax.service.ax_client: Generated new trial 12 with parameters\
-      \ {'temperature_celsius': 1134.284305, 'sintering_time_hours': 6.0} using model\
-      \ BoTorch.\n[INFO 10-31 14:16:37] ax.service.ax_client: Completed trial 12 with\
-      \ data: {'density_g_per_cm3': (5.479049, 0.03)}.\n[INFO 10-31 14:16:38] ax.service.ax_client:\
-      \ Generated new trial 13 with parameters {'temperature_celsius': 1170.77465,\
-      \ 'sintering_time_hours': 6.0} using model BoTorch.\n[INFO 10-31 14:16:38] ax.service.ax_client:\
-      \ Completed trial 13 with data: {'density_g_per_cm3': (5.300221, 0.03)}.\n[INFO\
-      \ 10-31 14:16:38] ax.service.ax_client: Generated new trial 14 with parameters\
-      \ {'temperature_celsius': 800.0, 'sintering_time_hours': 6.0} using model BoTorch.\n\
-      [INFO 10-31 14:16:38] ax.service.ax_client: Completed trial 14 with data: {'density_g_per_cm3':\
-      \ (3.010325, 0.03)}.\n[INFO 10-31 14:16:39] ax.service.ax_client: Generated\
-      \ new trial 15 with parameters {'temperature_celsius': 1127.279306, 'sintering_time_hours':\
-      \ 5.109814} using model BoTorch.\n[INFO 10-31 14:16:39] ax.service.ax_client:\
-      \ Completed trial 15 with data: {'density_g_per_cm3': (5.434894, 0.03)}.\n[INFO\
-      \ 10-31 14:16:40] ax.service.ax_client: Generated new trial 16 with parameters\
-      \ {'temperature_celsius': 964.378759, 'sintering_time_hours': 1.0} using model\
-      \ BoTorch.\n[INFO 10-31 14:16:40] ax.service.ax_client: Completed trial 16 with\
-      \ data: {'density_g_per_cm3': (3.0, 0.03)}.\n[INFO 10-31 14:16:41] ax.service.ax_client:\
-      \ Generated new trial 17 with parameters {'temperature_celsius': 1124.39436,\
-      \ 'sintering_time_hours': 6.0} using model BoTorch.\n[INFO 10-31 14:16:41] ax.service.ax_client:\
-      \ Completed trial 17 with data: {'density_g_per_cm3': (5.499277, 0.03)}.\n[INFO\
-      \ 10-31 14:16:43] ax.service.ax_client: Generated new trial 18 with parameters\
-      \ {'temperature_celsius': 800.0, 'sintering_time_hours': 1.0} using model BoTorch.\n\
-      [INFO 10-31 14:16:43] ax.service.ax_client: Completed trial 18 with data: {'density_g_per_cm3':\
-      \ (3.0, 0.03)}.\n[INFO 10-31 14:16:44] ax.service.ax_client: Generated new trial\
-      \ 19 with parameters {'temperature_celsius': 1128.984864, 'sintering_time_hours':\
-      \ 6.0} using model BoTorch.\n[INFO 10-31 14:16:44] ax.service.ax_client: Completed\
-      \ trial 19 with data: {'density_g_per_cm3': (5.4941, 0.03)}.\n[INFO 10-31 14:16:46]\
-      \ ax.service.ax_client: Generated new trial 20 with parameters {'temperature_celsius':\
-      \ 1116.898622, 'sintering_time_hours': 6.0} using model BoTorch.\n[INFO 10-31\
-      \ 14:16:46] ax.service.ax_client: Completed trial 20 with data: {'density_g_per_cm3':\
-      \ (5.514927, 0.03)}.\n[INFO 10-31 14:16:49] ax.service.ax_client: Generated\
-      \ new trial 21 with parameters {'temperature_celsius': 886.061245, 'sintering_time_hours':\
-      \ 6.0} using model BoTorch.\n[INFO 10-31 14:16:49] ax.service.ax_client: Completed\
-      \ trial 21 with data: {'density_g_per_cm3': (3.029951, 0.03)}.\n[INFO 10-31\
-      \ 14:16:50] ax.service.ax_client: Generated new trial 22 with parameters {'temperature_celsius':\
-      \ 1121.333041, 'sintering_time_hours': 6.0} using model BoTorch.\n[INFO 10-31\
-      \ 14:16:50] ax.service.ax_client: Completed trial 22 with data: {'density_g_per_cm3':\
-      \ (5.488604, 0.03)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/botorch/optim/optimize.py:568:\
-      \ RuntimeWarning: Optimization failed in `gen_candidates_scipy` with the following\
-      \ warning(s):\n[OptimizationWarning('Optimization failed within `scipy.optimize.minimize`\
-      \ with status 2 and message ABNORMAL: .')]\nTrying again with a new set of initial\
-      \ conditions.\n  return _optimize_acqf_batch(opt_inputs=opt_inputs)\n[INFO 10-31\
-      \ 14:16:52] ax.service.ax_client: Generated new trial 23 with parameters {'temperature_celsius':\
-      \ 1200.0, 'sintering_time_hours': 6.0} using model BoTorch.\n[INFO 10-31 14:16:52]\
-      \ ax.service.ax_client: Completed trial 23 with data: {'density_g_per_cm3':\
-      \ (5.397826, 0.03)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/linear_operator/utils/cholesky.py:40:\
-      \ NumericalWarning: A not p.d., added jitter of 1.0e-08 to the diagonal\n  warnings.warn(\n\
-      [INFO 10-31 14:16:53] ax.service.ax_client: Generated new trial 24 with parameters\
-      \ {'temperature_celsius': 1028.198462, 'sintering_time_hours': 6.0} using model\
-      \ BoTorch.\n[INFO 10-31 14:16:53] ax.service.ax_client: Completed trial 24 with\
-      \ data: {'density_g_per_cm3': (4.344503, 0.03)}.\n[INFO 10-31 14:16:56] ax.service.ax_client:\
-      \ Generated new trial 25 with parameters {'temperature_celsius': 1112.13833,\
-      \ 'sintering_time_hours': 6.0} using model BoTorch.\n[INFO 10-31 14:16:56] ax.service.ax_client:\
-      \ Completed trial 25 with data: {'density_g_per_cm3': (5.455762, 0.03)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/linear_operator/utils/cholesky.py:40:\
-      \ NumericalWarning: A not p.d., added jitter of 1.0e-08 to the diagonal\n  warnings.warn(\n\
-      [INFO 10-31 14:16:59] ax.service.ax_client: Generated new trial 26 with parameters\
-      \ {'temperature_celsius': 1125.840125, 'sintering_time_hours': 5.750973} using\
-      \ model BoTorch.\n[INFO 10-31 14:16:59] ax.service.ax_client: Completed trial\
-      \ 26 with data: {'density_g_per_cm3': (5.449238, 0.03)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/botorch/optim/optimize.py:568:\
+      \ model fit quality: \" + str(e))\n[INFO 11-06 04:39:53] ax.service.ax_client:\
+      \ Generated new trial 4 with parameters {'temperature_celsius': 958.645289,\
+      \ 'sintering_time_hours': 4.155763} using model Sobol.\n[INFO 11-06 04:39:53]\
+      \ ax.service.ax_client: Completed trial 4 with data: {'density_g_per_cm3': (3.317889,\
+      \ 0.03)}.\n[INFO 11-06 04:39:54] ax.service.ax_client: Generated new trial 5\
+      \ with parameters {'temperature_celsius': 1110.11677, 'sintering_time_hours':\
+      \ 4.669706} using model BoTorch.\n[INFO 11-06 04:39:54] ax.service.ax_client:\
+      \ Completed trial 5 with data: {'density_g_per_cm3': (5.339673, 0.03)}.\n[INFO\
+      \ 11-06 04:39:55] ax.service.ax_client: Generated new trial 6 with parameters\
+      \ {'temperature_celsius': 1167.588467, 'sintering_time_hours': 4.862719} using\
+      \ model BoTorch.\n[INFO 11-06 04:39:55] ax.service.ax_client: Completed trial\
+      \ 6 with data: {'density_g_per_cm3': (5.206443, 0.03)}.\n[INFO 11-06 04:39:56]\
+      \ ax.service.ax_client: Generated new trial 7 with parameters {'temperature_celsius':\
+      \ 1124.598573, 'sintering_time_hours': 5.748683} using model BoTorch.\n[INFO\
+      \ 11-06 04:39:56] ax.service.ax_client: Completed trial 7 with data: {'density_g_per_cm3':\
+      \ (5.468686, 0.03)}.\n[INFO 11-06 04:39:57] ax.service.ax_client: Generated\
+      \ new trial 8 with parameters {'temperature_celsius': 1123.914727, 'sintering_time_hours':\
+      \ 5.432013} using model BoTorch.\n[INFO 11-06 04:39:57] ax.service.ax_client:\
+      \ Completed trial 8 with data: {'density_g_per_cm3': (5.463655, 0.03)}.\n[INFO\
+      \ 11-06 04:39:59] ax.service.ax_client: Generated new trial 9 with parameters\
+      \ {'temperature_celsius': 1100.9917, 'sintering_time_hours': 6.0} using model\
+      \ BoTorch.\n[INFO 11-06 04:39:59] ax.service.ax_client: Completed trial 9 with\
+      \ data: {'density_g_per_cm3': (5.406899, 0.03)}.\n[INFO 11-06 04:40:00] ax.service.ax_client:\
+      \ Generated new trial 10 with parameters {'temperature_celsius': 800.0, 'sintering_time_hours':\
+      \ 1.0} using model BoTorch.\n[INFO 11-06 04:40:00] ax.service.ax_client: Completed\
+      \ trial 10 with data: {'density_g_per_cm3': (3.01971, 0.03)}.\n[INFO 11-06 04:40:01]\
+      \ ax.service.ax_client: Generated new trial 11 with parameters {'temperature_celsius':\
+      \ 1116.449902, 'sintering_time_hours': 5.513377} using model BoTorch.\n[INFO\
+      \ 11-06 04:40:01] ax.service.ax_client: Completed trial 11 with data: {'density_g_per_cm3':\
+      \ (5.369477, 0.03)}.\n[INFO 11-06 04:40:03] ax.service.ax_client: Generated\
+      \ new trial 12 with parameters {'temperature_celsius': 1130.873774, 'sintering_time_hours':\
+      \ 6.0} using model BoTorch.\n[INFO 11-06 04:40:03] ax.service.ax_client: Completed\
+      \ trial 12 with data: {'density_g_per_cm3': (5.483712, 0.03)}.\n[INFO 11-06\
+      \ 04:40:05] ax.service.ax_client: Generated new trial 13 with parameters {'temperature_celsius':\
+      \ 1122.327803, 'sintering_time_hours': 6.0} using model BoTorch.\n[INFO 11-06\
+      \ 04:40:05] ax.service.ax_client: Completed trial 13 with data: {'density_g_per_cm3':\
+      \ (5.552038, 0.03)}.\n[INFO 11-06 04:40:06] ax.service.ax_client: Generated\
+      \ new trial 14 with parameters {'temperature_celsius': 1140.709562, 'sintering_time_hours':\
+      \ 6.0} using model BoTorch.\n[INFO 11-06 04:40:06] ax.service.ax_client: Completed\
+      \ trial 14 with data: {'density_g_per_cm3': (5.490934, 0.03)}.\n[INFO 11-06\
+      \ 04:40:08] ax.service.ax_client: Generated new trial 15 with parameters {'temperature_celsius':\
+      \ 1200.0, 'sintering_time_hours': 2.363508} using model BoTorch.\n[INFO 11-06\
+      \ 04:40:08] ax.service.ax_client: Completed trial 15 with data: {'density_g_per_cm3':\
+      \ (3.762662, 0.03)}.\n[INFO 11-06 04:40:09] ax.service.ax_client: Generated\
+      \ new trial 16 with parameters {'temperature_celsius': 1134.561539, 'sintering_time_hours':\
+      \ 6.0} using model BoTorch.\n[INFO 11-06 04:40:09] ax.service.ax_client: Completed\
+      \ trial 16 with data: {'density_g_per_cm3': (5.470383, 0.03)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/botorch/optim/optimize.py:568:\
       \ RuntimeWarning: Optimization failed in `gen_candidates_scipy` with the following\
       \ warning(s):\n[NumericalWarning('A not p.d., added jitter of 1.0e-08 to the\
       \ diagonal'), OptimizationWarning('Optimization failed within `scipy.optimize.minimize`\
-      \ with status 2 and message ABNORMAL: .'), NumericalWarning('A not p.d., added\
-      \ jitter of 1.0e-08 to the diagonal')]\nTrying again with a new set of initial\
-      \ conditions.\n  return _optimize_acqf_batch(opt_inputs=opt_inputs)\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/botorch/optim/optimize.py:568:\
-      \ RuntimeWarning: Optimization failed on the second try, after generating a\
-      \ new set of initial conditions.\n  return _optimize_acqf_batch(opt_inputs=opt_inputs)\n\
-      /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/linear_operator/utils/cholesky.py:40:\
-      \ NumericalWarning: A not p.d., added jitter of 1.0e-08 to the diagonal\n  warnings.warn(\n\
-      [INFO 10-31 14:17:03] ax.service.ax_client: Generated new trial 27 with parameters\
-      \ {'temperature_celsius': 1126.622547, 'sintering_time_hours': 6.0} using model\
-      \ BoTorch.\n[INFO 10-31 14:17:03] ax.service.ax_client: Completed trial 27 with\
-      \ data: {'density_g_per_cm3': (5.528376, 0.03)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/linear_operator/utils/cholesky.py:40:\
-      \ NumericalWarning: A not p.d., added jitter of 1.0e-08 to the diagonal\n  warnings.warn(\n\
-      /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/botorch/optim/optimize.py:568:\
+      \ with status 2 and message ABNORMAL: .')]\nTrying again with a new set of initial\
+      \ conditions.\n  return _optimize_acqf_batch(opt_inputs=opt_inputs)\n[INFO 11-06\
+      \ 04:40:15] ax.service.ax_client: Generated new trial 17 with parameters {'temperature_celsius':\
+      \ 1127.037612, 'sintering_time_hours': 6.0} using model BoTorch.\n[INFO 11-06\
+      \ 04:40:15] ax.service.ax_client: Completed trial 17 with data: {'density_g_per_cm3':\
+      \ (5.503173, 0.03)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/botorch/optim/optimize.py:568:\
       \ RuntimeWarning: Optimization failed in `gen_candidates_scipy` with the following\
       \ warning(s):\n[NumericalWarning('A not p.d., added jitter of 1.0e-08 to the\
       \ diagonal'), OptimizationWarning('Optimization failed within `scipy.optimize.minimize`\
@@ -290,21 +240,117 @@ results:
       \ new set of initial conditions.\n  return _optimize_acqf_batch(opt_inputs=opt_inputs)\n\
       /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/linear_operator/utils/cholesky.py:40:\
       \ NumericalWarning: A not p.d., added jitter of 1.0e-08 to the diagonal\n  warnings.warn(\n\
-      [INFO 10-31 14:17:09] ax.service.ax_client: Generated new trial 28 with parameters\
-      \ {'temperature_celsius': 1122.731525, 'sintering_time_hours': 6.0} using model\
-      \ BoTorch.\n[INFO 10-31 14:17:09] ax.service.ax_client: Completed trial 28 with\
-      \ data: {'density_g_per_cm3': (5.495639, 0.03)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/linear_operator/utils/cholesky.py:40:\
+      [INFO 11-06 04:40:20] ax.service.ax_client: Generated new trial 18 with parameters\
+      \ {'temperature_celsius': 1131.992985, 'sintering_time_hours': 5.81361} using\
+      \ model BoTorch.\n[INFO 11-06 04:40:20] ax.service.ax_client: Completed trial\
+      \ 18 with data: {'density_g_per_cm3': (5.431664, 0.03)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/botorch/optim/optimize.py:568:\
+      \ RuntimeWarning: Optimization failed in `gen_candidates_scipy` with the following\
+      \ warning(s):\n[NumericalWarning('A not p.d., added jitter of 1.0e-08 to the\
+      \ diagonal'), NumericalWarning('A not p.d., added jitter of 1.0e-08 to the diagonal'),\
+      \ NumericalWarning('A not p.d., added jitter of 1.0e-08 to the diagonal'), NumericalWarning('A\
+      \ not p.d., added jitter of 1.0e-08 to the diagonal'), OptimizationWarning('Optimization\
+      \ failed within `scipy.optimize.minimize` with status 2 and message ABNORMAL:\
+      \ .'), NumericalWarning('A not p.d., added jitter of 1.0e-08 to the diagonal')]\n\
+      Trying again with a new set of initial conditions.\n  return _optimize_acqf_batch(opt_inputs=opt_inputs)\n\
+      /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/botorch/optim/optimize.py:568:\
+      \ RuntimeWarning: Optimization failed on the second try, after generating a\
+      \ new set of initial conditions.\n  return _optimize_acqf_batch(opt_inputs=opt_inputs)\n\
+      /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/linear_operator/utils/cholesky.py:40:\
       \ NumericalWarning: A not p.d., added jitter of 1.0e-08 to the diagonal\n  warnings.warn(\n\
-      [INFO 10-31 14:17:11] ax.service.ax_client: Generated new trial 29 with parameters\
-      \ {'temperature_celsius': 1125.540396, 'sintering_time_hours': 6.0} using model\
-      \ BoTorch.\n[INFO 10-31 14:17:11] ax.service.ax_client: Completed trial 29 with\
-      \ data: {'density_g_per_cm3': (5.522554, 0.03)}.\nTraceback (most recent call\
-      \ last):\n  File \"/home/runner/work/honegumi-rag-assistant/honegumi-rag-assistant/data/processed/evaluation/code_files/honegumi_generated_1_experimentalist_basic_corrected.py\"\
+      [INFO 11-06 04:40:25] ax.service.ax_client: Generated new trial 19 with parameters\
+      \ {'temperature_celsius': 1124.697769, 'sintering_time_hours': 6.0} using model\
+      \ BoTorch.\n[INFO 11-06 04:40:25] ax.service.ax_client: Completed trial 19 with\
+      \ data: {'density_g_per_cm3': (5.48968, 0.03)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/linear_operator/utils/cholesky.py:40:\
+      \ NumericalWarning: A not p.d., added jitter of 1.0e-08 to the diagonal\n  warnings.warn(\n\
+      [INFO 11-06 04:40:26] ax.service.ax_client: Generated new trial 20 with parameters\
+      \ {'temperature_celsius': 1200.0, 'sintering_time_hours': 6.0} using model BoTorch.\n\
+      [INFO 11-06 04:40:26] ax.service.ax_client: Completed trial 20 with data: {'density_g_per_cm3':\
+      \ (5.420005, 0.03)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/linear_operator/utils/cholesky.py:40:\
+      \ NumericalWarning: A not p.d., added jitter of 1.0e-08 to the diagonal\n  warnings.warn(\n\
+      [INFO 11-06 04:40:28] ax.service.ax_client: Generated new trial 21 with parameters\
+      \ {'temperature_celsius': 1150.85799, 'sintering_time_hours': 6.0} using model\
+      \ BoTorch.\n[INFO 11-06 04:40:28] ax.service.ax_client: Completed trial 21 with\
+      \ data: {'density_g_per_cm3': (5.374909, 0.03)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/linear_operator/utils/cholesky.py:40:\
+      \ NumericalWarning: A not p.d., added jitter of 1.0e-08 to the diagonal\n  warnings.warn(\n\
+      /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/botorch/optim/optimize.py:568:\
+      \ RuntimeWarning: Optimization failed in `gen_candidates_scipy` with the following\
+      \ warning(s):\n[NumericalWarning('A not p.d., added jitter of 1.0e-08 to the\
+      \ diagonal'), OptimizationWarning('Optimization failed within `scipy.optimize.minimize`\
+      \ with status 2 and message ABNORMAL: .'), NumericalWarning('A not p.d., added\
+      \ jitter of 1.0e-08 to the diagonal'), NumericalWarning('A not p.d., added jitter\
+      \ of 1.0e-08 to the diagonal')]\nTrying again with a new set of initial conditions.\n\
+      \  return _optimize_acqf_batch(opt_inputs=opt_inputs)\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/linear_operator/utils/cholesky.py:40:\
+      \ NumericalWarning: A not p.d., added jitter of 1.0e-08 to the diagonal\n  warnings.warn(\n\
+      [INFO 11-06 04:40:30] ax.service.ax_client: Generated new trial 22 with parameters\
+      \ {'temperature_celsius': 1200.0, 'sintering_time_hours': 5.222843} using model\
+      \ BoTorch.\n[INFO 11-06 04:40:30] ax.service.ax_client: Completed trial 22 with\
+      \ data: {'density_g_per_cm3': (5.274612, 0.03)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/linear_operator/utils/cholesky.py:40:\
+      \ NumericalWarning: A not p.d., added jitter of 1.0e-08 to the diagonal\n  warnings.warn(\n\
+      /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/botorch/optim/optimize.py:568:\
+      \ RuntimeWarning: Optimization failed in `gen_candidates_scipy` with the following\
+      \ warning(s):\n[NumericalWarning('A not p.d., added jitter of 1.0e-08 to the\
+      \ diagonal'), NumericalWarning('A not p.d., added jitter of 1.0e-07 to the diagonal'),\
+      \ NumericalWarning('A not p.d., added jitter of 1.0e-08 to the diagonal'), OptimizationWarning('Optimization\
+      \ failed within `scipy.optimize.minimize` with status 2 and message ABNORMAL:\
+      \ .'), NumericalWarning('A not p.d., added jitter of 1.0e-08 to the diagonal')]\n\
+      Trying again with a new set of initial conditions.\n  return _optimize_acqf_batch(opt_inputs=opt_inputs)\n\
+      /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/botorch/optim/optimize.py:568:\
+      \ RuntimeWarning: Optimization failed on the second try, after generating a\
+      \ new set of initial conditions.\n  return _optimize_acqf_batch(opt_inputs=opt_inputs)\n\
+      /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/linear_operator/utils/cholesky.py:40:\
+      \ NumericalWarning: A not p.d., added jitter of 1.0e-08 to the diagonal\n  warnings.warn(\n\
+      /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/linear_operator/utils/cholesky.py:40:\
+      \ NumericalWarning: A not p.d., added jitter of 1.0e-07 to the diagonal\n  warnings.warn(\n\
+      [INFO 11-06 04:40:33] ax.service.ax_client: Generated new trial 23 with parameters\
+      \ {'temperature_celsius': 1118.837875, 'sintering_time_hours': 6.0} using model\
+      \ BoTorch.\n[INFO 11-06 04:40:33] ax.service.ax_client: Completed trial 23 with\
+      \ data: {'density_g_per_cm3': (5.500859, 0.03)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/linear_operator/utils/cholesky.py:40:\
+      \ NumericalWarning: A not p.d., added jitter of 1.0e-08 to the diagonal\n  warnings.warn(\n\
+      [INFO 11-06 04:40:36] ax.service.ax_client: Generated new trial 24 with parameters\
+      \ {'temperature_celsius': 1120.675319, 'sintering_time_hours': 6.0} using model\
+      \ BoTorch.\n[INFO 11-06 04:40:36] ax.service.ax_client: Completed trial 24 with\
+      \ data: {'density_g_per_cm3': (5.482483, 0.03)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/linear_operator/utils/cholesky.py:40:\
+      \ NumericalWarning: A not p.d., added jitter of 1.0e-08 to the diagonal\n  warnings.warn(\n\
+      [INFO 11-06 04:40:36] ax.service.ax_client: Generated new trial 25 with parameters\
+      \ {'temperature_celsius': 1122.814428, 'sintering_time_hours': 5.885723} using\
+      \ model BoTorch.\n[INFO 11-06 04:40:36] ax.service.ax_client: Completed trial\
+      \ 25 with data: {'density_g_per_cm3': (5.472559, 0.03)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/linear_operator/utils/cholesky.py:40:\
+      \ NumericalWarning: A not p.d., added jitter of 1.0e-08 to the diagonal\n  warnings.warn(\n\
+      [INFO 11-06 04:40:37] ax.service.ax_client: Generated new trial 26 with parameters\
+      \ {'temperature_celsius': 1116.083362, 'sintering_time_hours': 6.0} using model\
+      \ BoTorch.\n[INFO 11-06 04:40:37] ax.service.ax_client: Completed trial 26 with\
+      \ data: {'density_g_per_cm3': (5.477432, 0.03)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/linear_operator/utils/cholesky.py:40:\
+      \ NumericalWarning: A not p.d., added jitter of 1.0e-08 to the diagonal\n  warnings.warn(\n\
+      /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/botorch/optim/optimize.py:568:\
+      \ RuntimeWarning: Optimization failed in `gen_candidates_scipy` with the following\
+      \ warning(s):\n[NumericalWarning('A not p.d., added jitter of 1.0e-08 to the\
+      \ diagonal'), OptimizationWarning('Optimization failed within `scipy.optimize.minimize`\
+      \ with status 2 and message ABNORMAL: .')]\nTrying again with a new set of initial\
+      \ conditions.\n  return _optimize_acqf_batch(opt_inputs=opt_inputs)\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/botorch/optim/optimize.py:568:\
+      \ RuntimeWarning: Optimization failed on the second try, after generating a\
+      \ new set of initial conditions.\n  return _optimize_acqf_batch(opt_inputs=opt_inputs)\n\
+      /opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/linear_operator/utils/cholesky.py:40:\
+      \ NumericalWarning: A not p.d., added jitter of 1.0e-08 to the diagonal\n  warnings.warn(\n\
+      [INFO 11-06 04:40:40] ax.service.ax_client: Generated new trial 27 with parameters\
+      \ {'temperature_celsius': 1119.604496, 'sintering_time_hours': 5.82333} using\
+      \ model BoTorch.\n[INFO 11-06 04:40:40] ax.service.ax_client: Completed trial\
+      \ 27 with data: {'density_g_per_cm3': (5.46828, 0.03)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/linear_operator/utils/cholesky.py:40:\
+      \ NumericalWarning: A not p.d., added jitter of 1.0e-08 to the diagonal\n  warnings.warn(\n\
+      [INFO 11-06 04:40:42] ax.service.ax_client: Generated new trial 28 with parameters\
+      \ {'temperature_celsius': 997.653474, 'sintering_time_hours': 1.0} using model\
+      \ BoTorch.\n[INFO 11-06 04:40:42] ax.service.ax_client: Completed trial 28 with\
+      \ data: {'density_g_per_cm3': (3.037276, 0.03)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/linear_operator/utils/cholesky.py:40:\
+      \ NumericalWarning: A not p.d., added jitter of 1.0e-08 to the diagonal\n  warnings.warn(\n\
+      [INFO 11-06 04:40:43] ax.service.ax_client: Generated new trial 29 with parameters\
+      \ {'temperature_celsius': 1126.562914, 'sintering_time_hours': 5.874474} using\
+      \ model BoTorch.\n[INFO 11-06 04:40:43] ax.service.ax_client: Completed trial\
+      \ 29 with data: {'density_g_per_cm3': (5.492481, 0.03)}.\nTraceback (most recent\
+      \ call last):\n  File \"/home/runner/work/honegumi-rag-assistant/honegumi-rag-assistant/data/processed/evaluation/code_files/honegumi_generated_1_experimentalist_basic_corrected.py\"\
       , line 209, in <module>\n    main()\n  File \"/home/runner/work/honegumi-rag-assistant/honegumi-rag-assistant/data/processed/evaluation/code_files/honegumi_generated_1_experimentalist_basic_corrected.py\"\
       , line 178, in main\n    best_density = best_values[objective_name][\"mean\"\
       ]\n                   ~~~~~~~~~~~^^^^^^^^^^^^^^^^\nTypeError: tuple indices\
       \ must be integers or slices, not str\n"
-    execution_time: 66.96s
+    execution_time: 70.85s
     timed_out: false
   overall_passed: false
 - file: data/processed/evaluation/code_files/honegumi_generated_1_experimentalist_basic_natural.py
@@ -317,6 +363,984 @@ results:
   runtime_check:
     passed: true
     error: null
-    execution_time: 85.72s
+    execution_time: 69.88s
     timed_out: false
   overall_passed: true
+- file: data/processed/evaluation/code_files/honegumi_generated_1_industrial_practitioner_corrected.py
+  syntax_check:
+    passed: true
+    error: null
+  import_check:
+    passed: true
+    error: null
+  runtime_check:
+    passed: false
+    error: "Non-zero exit code 1: [WARNING 11-06 04:41:57] ax.service.utils.with_db_settings_base:\
+      \ Ax currently requires a sqlalchemy version below 2.0. This will be addressed\
+      \ in a future release. Disabling SQL storage in Ax for now, if you would like\
+      \ to use SQL storage please install Ax with mysql extras via `pip install ax-platform[mysql]`.\n\
+      [INFO 11-06 04:41:57] ax.service.ax_client: Starting optimization with verbose\
+      \ logging. To disable logging, set the `verbose_logging` argument to `False`.\
+      \ Note that float values in the logs are rounded to 6 decimal points.\n[WARNING\
+      \ 11-06 04:41:57] ax.service.ax_client: Random seed set to 2025. Note that this\
+      \ setting only affects the Sobol quasi-random generator and BoTorch-powered\
+      \ Bayesian optimization models. For the latter models, setting random seed to\
+      \ the same number for two optimizations will make the generated trials similar,\
+      \ but not exactly the same, and over time the trials will diverge more.\n[INFO\
+      \ 11-06 04:41:57] ax.service.utils.instantiation: Inferred value type of ParameterType.FLOAT\
+      \ for parameter furnace_temperature_c. If that is not the expected value type,\
+      \ you can explicitly specify 'value_type' ('int', 'float', 'bool' or 'str')\
+      \ in parameter dict.\n[INFO 11-06 04:41:57] ax.service.utils.instantiation:\
+      \ Inferred value type of ParameterType.FLOAT for parameter sintering_time_h.\
+      \ If that is not the expected value type, you can explicitly specify 'value_type'\
+      \ ('int', 'float', 'bool' or 'str') in parameter dict.\n[INFO 11-06 04:41:57]\
+      \ ax.service.utils.instantiation: Created search space: SearchSpace(parameters=[RangeParameter(name='furnace_temperature_c',\
+      \ parameter_type=FLOAT, range=[800.0, 1200.0]), RangeParameter(name='sintering_time_h',\
+      \ parameter_type=FLOAT, range=[1.0, 6.0])], parameter_constraints=[]).\n[INFO\
+      \ 11-06 04:41:57] ax.modelbridge.dispatch_utils: Using Models.BOTORCH_MODULAR\
+      \ since there is at least one ordered parameter and there are no unordered categorical\
+      \ parameters.\n[INFO 11-06 04:41:57] ax.modelbridge.dispatch_utils: Calculating\
+      \ the number of remaining initialization trials based on num_initialization_trials=None\
+      \ max_initialization_trials=None num_tunable_parameters=2 num_trials=None use_batch_trials=False\n\
+      [INFO 11-06 04:41:57] ax.modelbridge.dispatch_utils: calculated num_initialization_trials=5\n\
+      [INFO 11-06 04:41:57] ax.modelbridge.dispatch_utils: num_completed_initialization_trials=0\
+      \ num_remaining_initialization_trials=5\n[INFO 11-06 04:41:57] ax.modelbridge.dispatch_utils:\
+      \ `verbose`, `disable_progbar`, and `jit_compile` are not yet supported when\
+      \ using `choose_generation_strategy` with ModularBoTorchModel, dropping these\
+      \ arguments.\n[INFO 11-06 04:41:57] ax.modelbridge.dispatch_utils: Using Bayesian\
+      \ Optimization generation strategy: GenerationStrategy(name='Sobol+BoTorch',\
+      \ steps=[Sobol for 5 trials, BoTorch for subsequent trials]). Iterations after\
+      \ 5 will take longer to generate due to model-fitting.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/ax/modelbridge/cross_validation.py:463:\
+      \ UserWarning: Encountered exception in computing model fit quality: RandomModelBridge\
+      \ does not support prediction.\n  warn(\"Encountered exception in computing\
+      \ model fit quality: \" + str(e))\n[INFO 11-06 04:41:57] ax.service.ax_client:\
+      \ Generated new trial 0 with parameters {'furnace_temperature_c': 969.496226,\
+      \ 'sintering_time_h': 3.391982} using model Sobol.\n[INFO 11-06 04:41:57] ax.service.ax_client:\
+      \ Completed trial 0 with data: {'part_density': (3.59734, None)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/ax/modelbridge/cross_validation.py:463:\
+      \ UserWarning: Encountered exception in computing model fit quality: RandomModelBridge\
+      \ does not support prediction.\n  warn(\"Encountered exception in computing\
+      \ model fit quality: \" + str(e))\n[INFO 11-06 04:41:57] ax.service.ax_client:\
+      \ Generated new trial 1 with parameters {'furnace_temperature_c': 1159.52871,\
+      \ 'sintering_time_h': 5.556918} using model Sobol.\n[INFO 11-06 04:41:57] ax.service.ax_client:\
+      \ Completed trial 1 with data: {'part_density': (3.674813, None)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/ax/modelbridge/cross_validation.py:463:\
+      \ UserWarning: Encountered exception in computing model fit quality: RandomModelBridge\
+      \ does not support prediction.\n  warn(\"Encountered exception in computing\
+      \ model fit quality: \" + str(e))\n[INFO 11-06 04:41:57] ax.service.ax_client:\
+      \ Generated new trial 2 with parameters {'furnace_temperature_c': 1033.215107,\
+      \ 'sintering_time_h': 2.132404} using model Sobol.\n[INFO 11-06 04:41:57] ax.service.ax_client:\
+      \ Completed trial 2 with data: {'part_density': (3.583983, None)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/ax/modelbridge/cross_validation.py:463:\
+      \ UserWarning: Encountered exception in computing model fit quality: RandomModelBridge\
+      \ does not support prediction.\n  warn(\"Encountered exception in computing\
+      \ model fit quality: \" + str(e))\n[INFO 11-06 04:41:57] ax.service.ax_client:\
+      \ Generated new trial 3 with parameters {'furnace_temperature_c': 848.648703,\
+      \ 'sintering_time_h': 4.336402} using model Sobol.\n[INFO 11-06 04:41:57] ax.service.ax_client:\
+      \ Completed trial 3 with data: {'part_density': (3.502535, None)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/ax/modelbridge/cross_validation.py:463:\
+      \ UserWarning: Encountered exception in computing model fit quality: RandomModelBridge\
+      \ does not support prediction.\n  warn(\"Encountered exception in computing\
+      \ model fit quality: \" + str(e))\n[INFO 11-06 04:41:57] ax.service.ax_client:\
+      \ Generated new trial 4 with parameters {'furnace_temperature_c': 863.12221,\
+      \ 'sintering_time_h': 1.549859} using model Sobol.\n[INFO 11-06 04:41:57] ax.service.ax_client:\
+      \ Completed trial 4 with data: {'part_density': (3.501302, None)}.\n[INFO 11-06\
+      \ 04:41:58] ax.service.ax_client: Generated new trial 5 with parameters {'furnace_temperature_c':\
+      \ 1200.0, 'sintering_time_h': 2.09336} using model BoTorch.\n[INFO 11-06 04:41:58]\
+      \ ax.service.ax_client: Completed trial 5 with data: {'part_density': (3.538868,\
+      \ None)}.\n[INFO 11-06 04:41:59] ax.service.ax_client: Generated new trial 6\
+      \ with parameters {'furnace_temperature_c': 1087.571757, 'sintering_time_h':\
+      \ 5.73212} using model BoTorch.\n[INFO 11-06 04:41:59] ax.service.ax_client:\
+      \ Completed trial 6 with data: {'part_density': (3.666279, None)}.\n[INFO 11-06\
+      \ 04:42:00] ax.service.ax_client: Generated new trial 7 with parameters {'furnace_temperature_c':\
+      \ 1115.295311, 'sintering_time_h': 4.940793} using model BoTorch.\n[INFO 11-06\
+      \ 04:42:00] ax.service.ax_client: Completed trial 7 with data: {'part_density':\
+      \ (3.771704, None)}.\n[INFO 11-06 04:42:01] ax.service.ax_client: Generated\
+      \ new trial 8 with parameters {'furnace_temperature_c': 1118.097385, 'sintering_time_h':\
+      \ 4.470598} using model BoTorch.\n[INFO 11-06 04:42:01] ax.service.ax_client:\
+      \ Completed trial 8 with data: {'part_density': (3.856565, None)}.\n[INFO 11-06\
+      \ 04:42:03] ax.service.ax_client: Generated new trial 9 with parameters {'furnace_temperature_c':\
+      \ 1145.848032, 'sintering_time_h': 4.084303} using model BoTorch.\n[INFO 11-06\
+      \ 04:42:03] ax.service.ax_client: Completed trial 9 with data: {'part_density':\
+      \ (3.870451, None)}.\n[INFO 11-06 04:42:04] ax.service.ax_client: Generated\
+      \ new trial 10 with parameters {'furnace_temperature_c': 1113.736793, 'sintering_time_h':\
+      \ 4.005721} using model BoTorch.\n[INFO 11-06 04:42:04] ax.service.ax_client:\
+      \ Completed trial 10 with data: {'part_density': (3.889399, None)}.\n[INFO 11-06\
+      \ 04:42:05] ax.service.ax_client: Generated new trial 11 with parameters {'furnace_temperature_c':\
+      \ 1117.661842, 'sintering_time_h': 3.821131} using model BoTorch.\n[INFO 11-06\
+      \ 04:42:05] ax.service.ax_client: Completed trial 11 with data: {'part_density':\
+      \ (3.886589, None)}.\n[INFO 11-06 04:42:06] ax.service.ax_client: Generated\
+      \ new trial 12 with parameters {'furnace_temperature_c': 1101.914981, 'sintering_time_h':\
+      \ 3.944463} using model BoTorch.\n[INFO 11-06 04:42:06] ax.service.ax_client:\
+      \ Completed trial 12 with data: {'part_density': (3.865302, None)}.\n[INFO 11-06\
+      \ 04:42:08] ax.service.ax_client: Generated new trial 13 with parameters {'furnace_temperature_c':\
+      \ 1133.981314, 'sintering_time_h': 3.894811} using model BoTorch.\n[INFO 11-06\
+      \ 04:42:08] ax.service.ax_client: Completed trial 13 with data: {'part_density':\
+      \ (3.889444, None)}.\n[INFO 11-06 04:42:10] ax.service.ax_client: Generated\
+      \ new trial 14 with parameters {'furnace_temperature_c': 1126.239249, 'sintering_time_h':\
+      \ 3.971063} using model BoTorch.\n[INFO 11-06 04:42:10] ax.service.ax_client:\
+      \ Completed trial 14 with data: {'part_density': (3.89672, None)}.\n[INFO 11-06\
+      \ 04:42:11] ax.service.ax_client: Generated new trial 15 with parameters {'furnace_temperature_c':\
+      \ 963.079289, 'sintering_time_h': 6.0} using model BoTorch.\n[INFO 11-06 04:42:11]\
+      \ ax.service.ax_client: Completed trial 15 with data: {'part_density': (3.594169,\
+      \ None)}.\n[INFO 11-06 04:42:13] ax.service.ax_client: Generated new trial 16\
+      \ with parameters {'furnace_temperature_c': 1153.423484, 'sintering_time_h':\
+      \ 3.851868} using model BoTorch.\n[INFO 11-06 04:42:13] ax.service.ax_client:\
+      \ Completed trial 16 with data: {'part_density': (3.846255, None)}.\n[INFO 11-06\
+      \ 04:42:15] ax.service.ax_client: Generated new trial 17 with parameters {'furnace_temperature_c':\
+      \ 1118.360546, 'sintering_time_h': 3.923376} using model BoTorch.\n[INFO 11-06\
+      \ 04:42:15] ax.service.ax_client: Completed trial 17 with data: {'part_density':\
+      \ (3.892839, None)}.\n[INFO 11-06 04:42:16] ax.service.ax_client: Generated\
+      \ new trial 18 with parameters {'furnace_temperature_c': 800.0, 'sintering_time_h':\
+      \ 6.0} using model BoTorch.\n[INFO 11-06 04:42:16] ax.service.ax_client: Completed\
+      \ trial 18 with data: {'part_density': (3.500371, None)}.\n[INFO 11-06 04:42:17]\
+      \ ax.service.ax_client: Generated new trial 19 with parameters {'furnace_temperature_c':\
+      \ 967.082517, 'sintering_time_h': 1.0} using model BoTorch.\n[INFO 11-06 04:42:17]\
+      \ ax.service.ax_client: Completed trial 19 with data: {'part_density': (3.511882,\
+      \ None)}.\n[INFO 11-06 04:42:19] ax.service.ax_client: Generated new trial 20\
+      \ with parameters {'furnace_temperature_c': 1110.179798, 'sintering_time_h':\
+      \ 3.844522} using model BoTorch.\n[INFO 11-06 04:42:19] ax.service.ax_client:\
+      \ Completed trial 20 with data: {'part_density': (3.878469, None)}.\n[INFO 11-06\
+      \ 04:42:22] ax.service.ax_client: Generated new trial 21 with parameters {'furnace_temperature_c':\
+      \ 1124.653457, 'sintering_time_h': 3.841428} using model BoTorch.\n[INFO 11-06\
+      \ 04:42:22] ax.service.ax_client: Completed trial 21 with data: {'part_density':\
+      \ (3.891283, None)}.\n[INFO 11-06 04:42:23] ax.service.ax_client: Generated\
+      \ new trial 22 with parameters {'furnace_temperature_c': 1111.225982, 'sintering_time_h':\
+      \ 1.0} using model BoTorch.\n[INFO 11-06 04:42:23] ax.service.ax_client: Completed\
+      \ trial 22 with data: {'part_density': (3.518058, None)}.\n[INFO 11-06 04:42:25]\
+      \ ax.service.ax_client: Generated new trial 23 with parameters {'furnace_temperature_c':\
+      \ 1121.817493, 'sintering_time_h': 4.019011} using model BoTorch.\n[INFO 11-06\
+      \ 04:42:26] ax.service.ax_client: Completed trial 23 with data: {'part_density':\
+      \ (3.896532, None)}.\n[INFO 11-06 04:42:27] ax.service.ax_client: Generated\
+      \ new trial 24 with parameters {'furnace_temperature_c': 800.0, 'sintering_time_h':\
+      \ 2.787469} using model BoTorch.\n[INFO 11-06 04:42:27] ax.service.ax_client:\
+      \ Completed trial 24 with data: {'part_density': (3.500307, None)}.\nTraceback\
+      \ (most recent call last):\n  File \"/home/runner/work/honegumi-rag-assistant/honegumi-rag-assistant/data/processed/evaluation/code_files/honegumi_generated_1_industrial_practitioner_corrected.py\"\
+      , line 94, in <module>\n    best_density = best_metrics[metric_name][0] if isinstance(best_metrics[metric_name],\
+      \ tuple) else best_metrics[metric_name]\n                                  \
+      \                            ~~~~~~~~~~~~^^^^^^^^^^^^^\nTypeError: tuple indices\
+      \ must be integers or slices, not str\n"
+    execution_time: 34.11s
+    timed_out: false
+  overall_passed: false
+- file: data/processed/evaluation/code_files/honegumi_generated_1_industrial_practitioner_natural.py
+  syntax_check:
+    passed: true
+    error: null
+  import_check:
+    passed: true
+    error: null
+  runtime_check:
+    passed: false
+    error: "Non-zero exit code 1: [WARNING 11-06 04:42:31] ax.service.utils.with_db_settings_base:\
+      \ Ax currently requires a sqlalchemy version below 2.0. This will be addressed\
+      \ in a future release. Disabling SQL storage in Ax for now, if you would like\
+      \ to use SQL storage please install Ax with mysql extras via `pip install ax-platform[mysql]`.\n\
+      [INFO 11-06 04:42:31] ax.service.ax_client: Starting optimization with verbose\
+      \ logging. To disable logging, set the `verbose_logging` argument to `False`.\
+      \ Note that float values in the logs are rounded to 6 decimal points.\n[WARNING\
+      \ 11-06 04:42:31] ax.service.ax_client: Random seed set to 12345. Note that\
+      \ this setting only affects the Sobol quasi-random generator and BoTorch-powered\
+      \ Bayesian optimization models. For the latter models, setting random seed to\
+      \ the same number for two optimizations will make the generated trials similar,\
+      \ but not exactly the same, and over time the trials will diverge more.\n[INFO\
+      \ 11-06 04:42:31] ax.service.utils.instantiation: Inferred value type of ParameterType.FLOAT\
+      \ for parameter temperature_celsius. If that is not the expected value type,\
+      \ you can explicitly specify 'value_type' ('int', 'float', 'bool' or 'str')\
+      \ in parameter dict.\n[INFO 11-06 04:42:31] ax.service.utils.instantiation:\
+      \ Inferred value type of ParameterType.FLOAT for parameter time_hours. If that\
+      \ is not the expected value type, you can explicitly specify 'value_type' ('int',\
+      \ 'float', 'bool' or 'str') in parameter dict.\n[INFO 11-06 04:42:31] ax.service.utils.instantiation:\
+      \ Created search space: SearchSpace(parameters=[RangeParameter(name='temperature_celsius',\
+      \ parameter_type=FLOAT, range=[800.0, 1200.0]), RangeParameter(name='time_hours',\
+      \ parameter_type=FLOAT, range=[1.0, 6.0])], parameter_constraints=[]).\n[INFO\
+      \ 11-06 04:42:31] ax.modelbridge.dispatch_utils: Using Models.BOTORCH_MODULAR\
+      \ since there is at least one ordered parameter and there are no unordered categorical\
+      \ parameters.\n[INFO 11-06 04:42:31] ax.modelbridge.dispatch_utils: Calculating\
+      \ the number of remaining initialization trials based on num_initialization_trials=None\
+      \ max_initialization_trials=None num_tunable_parameters=2 num_trials=None use_batch_trials=False\n\
+      [INFO 11-06 04:42:31] ax.modelbridge.dispatch_utils: calculated num_initialization_trials=5\n\
+      [INFO 11-06 04:42:31] ax.modelbridge.dispatch_utils: num_completed_initialization_trials=0\
+      \ num_remaining_initialization_trials=5\n[INFO 11-06 04:42:31] ax.modelbridge.dispatch_utils:\
+      \ `verbose`, `disable_progbar`, and `jit_compile` are not yet supported when\
+      \ using `choose_generation_strategy` with ModularBoTorchModel, dropping these\
+      \ arguments.\n[INFO 11-06 04:42:31] ax.modelbridge.dispatch_utils: Using Bayesian\
+      \ Optimization generation strategy: GenerationStrategy(name='Sobol+BoTorch',\
+      \ steps=[Sobol for 5 trials, BoTorch for subsequent trials]). Iterations after\
+      \ 5 will take longer to generate due to model-fitting.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/ax/modelbridge/cross_validation.py:463:\
+      \ UserWarning: Encountered exception in computing model fit quality: RandomModelBridge\
+      \ does not support prediction.\n  warn(\"Encountered exception in computing\
+      \ model fit quality: \" + str(e))\n[INFO 11-06 04:42:31] ax.service.ax_client:\
+      \ Generated new trial 0 with parameters {'temperature_celsius': 1036.118817,\
+      \ 'time_hours': 3.177248} using model Sobol.\n[INFO 11-06 04:42:31] ax.service.ax_client:\
+      \ Completed trial 0 with data: {'density': (99.041602, 0.0)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/ax/modelbridge/cross_validation.py:463:\
+      \ UserWarning: Encountered exception in computing model fit quality: RandomModelBridge\
+      \ does not support prediction.\n  warn(\"Encountered exception in computing\
+      \ model fit quality: \" + str(e))\n[INFO 11-06 04:42:31] ax.service.ax_client:\
+      \ Generated new trial 1 with parameters {'temperature_celsius': 935.44846, 'time_hours':\
+      \ 4.397369} using model Sobol.\n[INFO 11-06 04:42:31] ax.service.ax_client:\
+      \ Completed trial 1 with data: {'density': (92.977202, 0.0)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/ax/modelbridge/cross_validation.py:463:\
+      \ UserWarning: Encountered exception in computing model fit quality: RandomModelBridge\
+      \ does not support prediction.\n  warn(\"Encountered exception in computing\
+      \ model fit quality: \" + str(e))\n[INFO 11-06 04:42:31] ax.service.ax_client:\
+      \ Generated new trial 2 with parameters {'temperature_celsius': 867.346747,\
+      \ 'time_hours': 2.124588} using model Sobol.\n[INFO 11-06 04:42:31] ax.service.ax_client:\
+      \ Completed trial 2 with data: {'density': (71.032107, 0.0)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/ax/modelbridge/cross_validation.py:463:\
+      \ UserWarning: Encountered exception in computing model fit quality: RandomModelBridge\
+      \ does not support prediction.\n  warn(\"Encountered exception in computing\
+      \ model fit quality: \" + str(e))\n[INFO 11-06 04:42:31] ax.service.ax_client:\
+      \ Generated new trial 3 with parameters {'temperature_celsius': 1166.652008,\
+      \ 'time_hours': 5.904505} using model Sobol.\n[INFO 11-06 04:42:31] ax.service.ax_client:\
+      \ Completed trial 3 with data: {'density': (88.710373, 0.0)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/ax/modelbridge/cross_validation.py:463:\
+      \ UserWarning: Encountered exception in computing model fit quality: RandomModelBridge\
+      \ does not support prediction.\n  warn(\"Encountered exception in computing\
+      \ model fit quality: \" + str(e))\n[INFO 11-06 04:42:31] ax.service.ax_client:\
+      \ Generated new trial 4 with parameters {'temperature_celsius': 1101.968179,\
+      \ 'time_hours': 1.224159} using model Sobol.\n[INFO 11-06 04:42:31] ax.service.ax_client:\
+      \ Completed trial 4 with data: {'density': (95.832037, 0.0)}.\n[INFO 11-06 04:42:33]\
+      \ ax.service.ax_client: Generated new trial 5 with parameters {'temperature_celsius':\
+      \ 1024.665651, 'time_hours': 4.992831} using model BoTorch.\n[INFO 11-06 04:42:33]\
+      \ ax.service.ax_client: Completed trial 5 with data: {'density': (99.121989,\
+      \ 0.0)}.\n[INFO 11-06 04:42:34] ax.service.ax_client: Generated new trial 6\
+      \ with parameters {'temperature_celsius': 995.336489, 'time_hours': 1.0} using\
+      \ model BoTorch.\n[INFO 11-06 04:42:34] ax.service.ax_client: Completed trial\
+      \ 6 with data: {'density': (84.573656, 0.0)}.\n[INFO 11-06 04:42:35] ax.service.ax_client:\
+      \ Generated new trial 7 with parameters {'temperature_celsius': 1080.521442,\
+      \ 'time_hours': 3.542029} using model BoTorch.\n[INFO 11-06 04:42:35] ax.service.ax_client:\
+      \ Completed trial 7 with data: {'density': (98.264046, 0.0)}.\n[INFO 11-06 04:42:36]\
+      \ ax.service.ax_client: Generated new trial 8 with parameters {'temperature_celsius':\
+      \ 1026.611431, 'time_hours': 4.143133} using model BoTorch.\n[INFO 11-06 04:42:36]\
+      \ ax.service.ax_client: Completed trial 8 with data: {'density': (99.088187,\
+      \ 0.0)}.\n[INFO 11-06 04:42:37] ax.service.ax_client: Generated new trial 9\
+      \ with parameters {'temperature_celsius': 983.79522, 'time_hours': 6.0} using\
+      \ model BoTorch.\n[INFO 11-06 04:42:37] ax.service.ax_client: Completed trial\
+      \ 9 with data: {'density': (98.233117, 0.0)}.\n[INFO 11-06 04:42:38] ax.service.ax_client:\
+      \ Generated new trial 10 with parameters {'temperature_celsius': 1062.042903,\
+      \ 'time_hours': 2.93356} using model BoTorch.\n[INFO 11-06 04:42:38] ax.service.ax_client:\
+      \ Completed trial 10 with data: {'density': (98.968617, 0.0)}.\n[INFO 11-06\
+      \ 04:42:39] ax.service.ax_client: Generated new trial 11 with parameters {'temperature_celsius':\
+      \ 1034.769704, 'time_hours': 6.0} using model BoTorch.\n[INFO 11-06 04:42:39]\
+      \ ax.service.ax_client: Completed trial 11 with data: {'density': (99.239701,\
+      \ 0.0)}.\n[INFO 11-06 04:42:40] ax.service.ax_client: Generated new trial 12\
+      \ with parameters {'temperature_celsius': 1200.0, 'time_hours': 1.152892} using\
+      \ model BoTorch.\n[INFO 11-06 04:42:40] ax.service.ax_client: Completed trial\
+      \ 12 with data: {'density': (86.772702, 0.0)}.\n[INFO 11-06 04:42:41] ax.service.ax_client:\
+      \ Generated new trial 13 with parameters {'temperature_celsius': 800.0, 'time_hours':\
+      \ 6.0} using model BoTorch.\n[INFO 11-06 04:42:41] ax.service.ax_client: Completed\
+      \ trial 13 with data: {'density': (70.758685, 0.0)}.\n[INFO 11-06 04:42:43]\
+      \ ax.service.ax_client: Generated new trial 14 with parameters {'temperature_celsius':\
+      \ 1020.331866, 'time_hours': 6.0} using model BoTorch.\n[INFO 11-06 04:42:43]\
+      \ ax.service.ax_client: Completed trial 14 with data: {'density': (99.083321,\
+      \ 0.0)}.\n[INFO 11-06 04:42:45] ax.service.ax_client: Generated new trial 15\
+      \ with parameters {'temperature_celsius': 1045.96443, 'time_hours': 5.555774}\
+      \ using model BoTorch.\n[INFO 11-06 04:42:45] ax.service.ax_client: Completed\
+      \ trial 15 with data: {'density': (99.252563, 0.0)}.\n[INFO 11-06 04:42:46]\
+      \ ax.service.ax_client: Generated new trial 16 with parameters {'temperature_celsius':\
+      \ 1043.230362, 'time_hours': 5.830005} using model BoTorch.\n[INFO 11-06 04:42:46]\
+      \ ax.service.ax_client: Completed trial 16 with data: {'density': (99.260396,\
+      \ 0.0)}.\n[INFO 11-06 04:42:48] ax.service.ax_client: Generated new trial 17\
+      \ with parameters {'temperature_celsius': 1045.696552, 'time_hours': 3.696495}\
+      \ using model BoTorch.\n[INFO 11-06 04:42:48] ax.service.ax_client: Completed\
+      \ trial 17 with data: {'density': (99.210893, 0.0)}.\n[INFO 11-06 04:42:49]\
+      \ ax.service.ax_client: Generated new trial 18 with parameters {'temperature_celsius':\
+      \ 1038.788656, 'time_hours': 5.673388} using model BoTorch.\n[INFO 11-06 04:42:49]\
+      \ ax.service.ax_client: Completed trial 18 with data: {'density': (99.256305,\
+      \ 0.0)}.\n[INFO 11-06 04:42:52] ax.service.ax_client: Generated new trial 19\
+      \ with parameters {'temperature_celsius': 1046.750085, 'time_hours': 6.0} using\
+      \ model BoTorch.\n[INFO 11-06 04:42:52] ax.service.ax_client: Completed trial\
+      \ 19 with data: {'density': (99.249807, 0.0)}.\n[INFO 11-06 04:42:54] ax.service.ax_client:\
+      \ Generated new trial 20 with parameters {'temperature_celsius': 1041.514188,\
+      \ 'time_hours': 5.771853} using model BoTorch.\n[INFO 11-06 04:42:54] ax.service.ax_client:\
+      \ Completed trial 20 with data: {'density': (99.261049, 0.0)}.\n[INFO 11-06\
+      \ 04:42:57] ax.service.ax_client: Generated new trial 21 with parameters {'temperature_celsius':\
+      \ 1041.597322, 'time_hours': 5.141889} using model BoTorch.\n[INFO 11-06 04:42:57]\
+      \ ax.service.ax_client: Completed trial 21 with data: {'density': (99.257924,\
+      \ 0.0)}.\n[INFO 11-06 04:43:01] ax.service.ax_client: Generated new trial 22\
+      \ with parameters {'temperature_celsius': 1041.288393, 'time_hours': 5.447418}\
+      \ using model BoTorch.\n[INFO 11-06 04:43:01] ax.service.ax_client: Completed\
+      \ trial 22 with data: {'density': (99.259712, 0.0)}.\n[INFO 11-06 04:43:04]\
+      \ ax.service.ax_client: Generated new trial 23 with parameters {'temperature_celsius':\
+      \ 1041.831226, 'time_hours': 6.0} using model BoTorch.\n[INFO 11-06 04:43:04]\
+      \ ax.service.ax_client: Completed trial 23 with data: {'density': (99.261617,\
+      \ 0.0)}.\n[INFO 11-06 04:43:08] ax.service.ax_client: Generated new trial 24\
+      \ with parameters {'temperature_celsius': 800.0, 'time_hours': 1.0} using model\
+      \ BoTorch.\n[INFO 11-06 04:43:08] ax.service.ax_client: Completed trial 24 with\
+      \ data: {'density': (60.651344, 0.0)}.\nTraceback (most recent call last):\n\
+      \  File \"/home/runner/work/honegumi-rag-assistant/honegumi-rag-assistant/data/processed/evaluation/code_files/honegumi_generated_1_industrial_practitioner_natural.py\"\
+      , line 90, in <module>\n    for metric_name, metric_dict in best_metrics.items():\n\
+      \                                    ^^^^^^^^^^^^^^^^^^\nAttributeError: 'tuple'\
+      \ object has no attribute 'items'\n"
+    execution_time: 40.88s
+    timed_out: false
+  overall_passed: false
+- file: data/processed/evaluation/code_files/honegumi_generated_1_research_scientist_corrected.py
+  syntax_check:
+    passed: true
+    error: null
+  import_check:
+    passed: true
+    error: null
+  runtime_check:
+    passed: false
+    error: "Non-zero exit code 1: [WARNING 11-06 04:43:35] ax.service.utils.with_db_settings_base:\
+      \ Ax currently requires a sqlalchemy version below 2.0. This will be addressed\
+      \ in a future release. Disabling SQL storage in Ax for now, if you would like\
+      \ to use SQL storage please install Ax with mysql extras via `pip install ax-platform[mysql]`.\n\
+      [INFO 11-06 04:43:36] ax.service.ax_client: Starting optimization with verbose\
+      \ logging. To disable logging, set the `verbose_logging` argument to `False`.\
+      \ Note that float values in the logs are rounded to 6 decimal points.\n[INFO\
+      \ 11-06 04:43:36] ax.service.utils.instantiation: Inferred value type of ParameterType.FLOAT\
+      \ for parameter x1. If that is not the expected value type, you can explicitly\
+      \ specify 'value_type' ('int', 'float', 'bool' or 'str') in parameter dict.\n\
+      [INFO 11-06 04:43:36] ax.service.utils.instantiation: Inferred value type of\
+      \ ParameterType.FLOAT for parameter x2. If that is not the expected value type,\
+      \ you can explicitly specify 'value_type' ('int', 'float', 'bool' or 'str')\
+      \ in parameter dict.\n[INFO 11-06 04:43:36] ax.service.utils.instantiation:\
+      \ Created search space: SearchSpace(parameters=[RangeParameter(name='x1', parameter_type=FLOAT,\
+      \ range=[-5.0, 10.0]), RangeParameter(name='x2', parameter_type=FLOAT, range=[0.0,\
+      \ 10.0])], parameter_constraints=[]).\n[INFO 11-06 04:43:36] ax.modelbridge.dispatch_utils:\
+      \ Using Models.BOTORCH_MODULAR since there is at least one ordered parameter\
+      \ and there are no unordered categorical parameters.\n[INFO 11-06 04:43:36]\
+      \ ax.modelbridge.dispatch_utils: Calculating the number of remaining initialization\
+      \ trials based on num_initialization_trials=None max_initialization_trials=None\
+      \ num_tunable_parameters=2 num_trials=None use_batch_trials=False\n[INFO 11-06\
+      \ 04:43:36] ax.modelbridge.dispatch_utils: calculated num_initialization_trials=5\n\
+      [INFO 11-06 04:43:36] ax.modelbridge.dispatch_utils: num_completed_initialization_trials=0\
+      \ num_remaining_initialization_trials=5\n[INFO 11-06 04:43:36] ax.modelbridge.dispatch_utils:\
+      \ `verbose`, `disable_progbar`, and `jit_compile` are not yet supported when\
+      \ using `choose_generation_strategy` with ModularBoTorchModel, dropping these\
+      \ arguments.\n[INFO 11-06 04:43:36] ax.modelbridge.dispatch_utils: Using Bayesian\
+      \ Optimization generation strategy: GenerationStrategy(name='Sobol+BoTorch',\
+      \ steps=[Sobol for 5 trials, BoTorch for subsequent trials]). Iterations after\
+      \ 5 will take longer to generate due to model-fitting.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/ax/modelbridge/cross_validation.py:463:\
+      \ UserWarning: Encountered exception in computing model fit quality: RandomModelBridge\
+      \ does not support prediction.\n  warn(\"Encountered exception in computing\
+      \ model fit quality: \" + str(e))\n[INFO 11-06 04:43:36] ax.service.ax_client:\
+      \ Generated new trial 0 with parameters {'x1': 0.471643, 'x2': 9.197371} using\
+      \ model Sobol.\n[INFO 11-06 04:43:36] ax.service.ax_client: Completed trial\
+      \ 0 with data: {'branin': (33.914521, None)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/ax/modelbridge/cross_validation.py:463:\
+      \ UserWarning: Encountered exception in computing model fit quality: RandomModelBridge\
+      \ does not support prediction.\n  warn(\"Encountered exception in computing\
+      \ model fit quality: \" + str(e))\n[INFO 11-06 04:43:36] ax.service.ax_client:\
+      \ Generated new trial 1 with parameters {'x1': 3.412539, 'x2': 2.78137} using\
+      \ model Sobol.\n[INFO 11-06 04:43:36] ax.service.ax_client: Completed trial\
+      \ 1 with data: {'branin': (1.249719, None)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/ax/modelbridge/cross_validation.py:463:\
+      \ UserWarning: Encountered exception in computing model fit quality: RandomModelBridge\
+      \ does not support prediction.\n  warn(\"Encountered exception in computing\
+      \ model fit quality: \" + str(e))\n[INFO 11-06 04:43:36] ax.service.ax_client:\
+      \ Generated new trial 2 with parameters {'x1': 9.578897, 'x2': 5.808698} using\
+      \ model Sobol.\n[INFO 11-06 04:43:36] ax.service.ax_client: Completed trial\
+      \ 2 with data: {'branin': (10.755716, None)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/ax/modelbridge/cross_validation.py:463:\
+      \ UserWarning: Encountered exception in computing model fit quality: RandomModelBridge\
+      \ does not support prediction.\n  warn(\"Encountered exception in computing\
+      \ model fit quality: \" + str(e))\n[INFO 11-06 04:43:36] ax.service.ax_client:\
+      \ Generated new trial 3 with parameters {'x1': -2.53102, 'x2': 2.224728} using\
+      \ model Sobol.\n[INFO 11-06 04:43:36] ax.service.ax_client: Completed trial\
+      \ 3 with data: {'branin': (76.628319, None)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/ax/modelbridge/cross_validation.py:463:\
+      \ UserWarning: Encountered exception in computing model fit quality: RandomModelBridge\
+      \ does not support prediction.\n  warn(\"Encountered exception in computing\
+      \ model fit quality: \" + str(e))\n[INFO 11-06 04:43:36] ax.service.ax_client:\
+      \ Generated new trial 4 with parameters {'x1': -4.383709, 'x2': 7.000148} using\
+      \ model Sobol.\n[INFO 11-06 04:43:36] ax.service.ax_client: Completed trial\
+      \ 4 with data: {'branin': (78.459717, None)}.\n[INFO 11-06 04:43:37] ax.service.ax_client:\
+      \ Generated new trial 5 with parameters {'x1': 5.459253, 'x2': 10.0} using model\
+      \ BoTorch.\n[INFO 11-06 04:43:37] ax.service.ax_client: Completed trial 5 with\
+      \ data: {'branin': (94.642682, None)}.\n[INFO 11-06 04:43:39] ax.service.ax_client:\
+      \ Generated new trial 6 with parameters {'x1': 4.565103, 'x2': 1.277905} using\
+      \ model BoTorch.\n[INFO 11-06 04:43:39] ax.service.ax_client: Completed trial\
+      \ 6 with data: {'branin': (8.61297, None)}.\n[INFO 11-06 04:43:40] ax.service.ax_client:\
+      \ Generated new trial 7 with parameters {'x1': 2.56388, 'x2': 0.586492} using\
+      \ model BoTorch.\n[INFO 11-06 04:43:40] ax.service.ax_client: Completed trial\
+      \ 7 with data: {'branin': (6.717987, None)}.\n[INFO 11-06 04:43:41] ax.service.ax_client:\
+      \ Generated new trial 8 with parameters {'x1': 10.0, 'x2': 1.665026} using model\
+      \ BoTorch.\n[INFO 11-06 04:43:41] ax.service.ax_client: Completed trial 8 with\
+      \ data: {'branin': (3.733198, None)}.\n[INFO 11-06 04:43:42] ax.service.ax_client:\
+      \ Generated new trial 9 with parameters {'x1': 8.273863, 'x2': 0.63299} using\
+      \ model BoTorch.\n[INFO 11-06 04:43:42] ax.service.ax_client: Completed trial\
+      \ 9 with data: {'branin': (7.172085, None)}.\n[INFO 11-06 04:43:42] ax.service.ax_client:\
+      \ Generated new trial 10 with parameters {'x1': 10.0, 'x2': 0.0} using model\
+      \ BoTorch.\n[INFO 11-06 04:43:42] ax.service.ax_client: Completed trial 10 with\
+      \ data: {'branin': (10.960889, None)}.\n[INFO 11-06 04:43:43] ax.service.ax_client:\
+      \ Generated new trial 11 with parameters {'x1': 2.223712, 'x2': 3.228541} using\
+      \ model BoTorch.\n[INFO 11-06 04:43:43] ax.service.ax_client: Completed trial\
+      \ 11 with data: {'branin': (4.183279, None)}.\n[INFO 11-06 04:43:45] ax.service.ax_client:\
+      \ Generated new trial 12 with parameters {'x1': 9.268395, 'x2': 2.868972} using\
+      \ model BoTorch.\n[INFO 11-06 04:43:45] ax.service.ax_client: Completed trial\
+      \ 12 with data: {'branin': (0.788302, None)}.\n[INFO 11-06 04:43:46] ax.service.ax_client:\
+      \ Generated new trial 13 with parameters {'x1': 10.0, 'x2': 3.292935} using\
+      \ model BoTorch.\n[INFO 11-06 04:43:46] ax.service.ax_client: Completed trial\
+      \ 13 with data: {'branin': (2.027228, None)}.\n[INFO 11-06 04:43:48] ax.service.ax_client:\
+      \ Generated new trial 14 with parameters {'x1': 2.977954, 'x2': 2.432229} using\
+      \ model BoTorch.\n[INFO 11-06 04:43:48] ax.service.ax_client: Completed trial\
+      \ 14 with data: {'branin': (0.526846, None)}.\n[INFO 11-06 04:43:49] ax.service.ax_client:\
+      \ Generated new trial 15 with parameters {'x1': 8.709182, 'x2': 2.945293} using\
+      \ model BoTorch.\n[INFO 11-06 04:43:49] ax.service.ax_client: Completed trial\
+      \ 15 with data: {'branin': (3.768846, None)}.\n[INFO 11-06 04:43:52] ax.service.ax_client:\
+      \ Generated new trial 16 with parameters {'x1': 9.485731, 'x2': 2.647849} using\
+      \ model BoTorch.\n[INFO 11-06 04:43:52] ax.service.ax_client: Completed trial\
+      \ 16 with data: {'branin': (0.430349, None)}.\n[INFO 11-06 04:43:53] ax.service.ax_client:\
+      \ Generated new trial 17 with parameters {'x1': 3.126034, 'x2': 3.621004} using\
+      \ model BoTorch.\n[INFO 11-06 04:43:53] ax.service.ax_client: Completed trial\
+      \ 17 with data: {'branin': (2.178178, None)}.\n[INFO 11-06 04:43:55] ax.service.ax_client:\
+      \ Generated new trial 18 with parameters {'x1': 3.157684, 'x2': 2.45925} using\
+      \ model BoTorch.\n[INFO 11-06 04:43:55] ax.service.ax_client: Completed trial\
+      \ 18 with data: {'branin': (0.437847, None)}.\n[WARNING 11-06 04:43:56] ax.service.utils.report_utils:\
+      \ Column reason missing for all trials. Not appending column.\n[INFO 11-06 04:43:56]\
+      \ ax.service.ax_client: Starting optimization with verbose logging. To disable\
+      \ logging, set the `verbose_logging` argument to `False`. Note that float values\
+      \ in the logs are rounded to 6 decimal points.\n[INFO 11-06 04:43:56] ax.service.utils.instantiation:\
+      \ Created search space: SearchSpace(parameters=[RangeParameter(name='sinter_temperature_celsius',\
+      \ parameter_type=FLOAT, range=[800.0, 1200.0]), RangeParameter(name='sinter_time_hours',\
+      \ parameter_type=FLOAT, range=[1.0, 6.0])], parameter_constraints=[]).\n[INFO\
+      \ 11-06 04:43:56] ax.modelbridge.dispatch_utils: Using Models.BOTORCH_MODULAR\
+      \ since there is at least one ordered parameter and there are no unordered categorical\
+      \ parameters.\n[INFO 11-06 04:43:56] ax.modelbridge.dispatch_utils: Calculating\
+      \ the number of remaining initialization trials based on num_initialization_trials=None\
+      \ max_initialization_trials=None num_tunable_parameters=2 num_trials=None use_batch_trials=False\n\
+      [INFO 11-06 04:43:56] ax.modelbridge.dispatch_utils: calculated num_initialization_trials=5\n\
+      [INFO 11-06 04:43:56] ax.modelbridge.dispatch_utils: num_completed_initialization_trials=0\
+      \ num_remaining_initialization_trials=5\n[INFO 11-06 04:43:56] ax.modelbridge.dispatch_utils:\
+      \ `verbose`, `disable_progbar`, and `jit_compile` are not yet supported when\
+      \ using `choose_generation_strategy` with ModularBoTorchModel, dropping these\
+      \ arguments.\n[INFO 11-06 04:43:56] ax.modelbridge.dispatch_utils: Using Bayesian\
+      \ Optimization generation strategy: GenerationStrategy(name='Sobol+BoTorch',\
+      \ steps=[Sobol for 5 trials, BoTorch for subsequent trials]). Iterations after\
+      \ 5 will take longer to generate due to model-fitting.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/ax/modelbridge/cross_validation.py:463:\
+      \ UserWarning: Encountered exception in computing model fit quality: RandomModelBridge\
+      \ does not support prediction.\n  warn(\"Encountered exception in computing\
+      \ model fit quality: \" + str(e))\n[INFO 11-06 04:43:56] ax.service.ax_client:\
+      \ Generated new trial 0 with parameters {'sinter_temperature_celsius': 800.560327,\
+      \ 'sinter_time_hours': 1.020742} using model Sobol.\n[INFO 11-06 04:43:56] ax.service.ax_client:\
+      \ Completed trial 0 with data: {'density_g_per_cm3': (2.090007, 0.01)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/ax/modelbridge/cross_validation.py:463:\
+      \ UserWarning: Encountered exception in computing model fit quality: RandomModelBridge\
+      \ does not support prediction.\n  warn(\"Encountered exception in computing\
+      \ model fit quality: \" + str(e))\n[INFO 11-06 04:43:56] ax.service.ax_client:\
+      \ Generated new trial 1 with parameters {'sinter_temperature_celsius': 1164.757375,\
+      \ 'sinter_time_hours': 5.743612} using model Sobol.\n[INFO 11-06 04:43:56] ax.service.ax_client:\
+      \ Completed trial 1 with data: {'density_g_per_cm3': (5.824487, 0.01)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/ax/modelbridge/cross_validation.py:463:\
+      \ UserWarning: Encountered exception in computing model fit quality: RandomModelBridge\
+      \ does not support prediction.\n  warn(\"Encountered exception in computing\
+      \ model fit quality: \" + str(e))\n[INFO 11-06 04:43:56] ax.service.ax_client:\
+      \ Generated new trial 2 with parameters {'sinter_temperature_celsius': 1036.90939,\
+      \ 'sinter_time_hours': 3.079803} using model Sobol.\n[INFO 11-06 04:43:56] ax.service.ax_client:\
+      \ Completed trial 2 with data: {'density_g_per_cm3': (5.990688, 0.01)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/ax/modelbridge/cross_validation.py:463:\
+      \ UserWarning: Encountered exception in computing model fit quality: RandomModelBridge\
+      \ does not support prediction.\n  warn(\"Encountered exception in computing\
+      \ model fit quality: \" + str(e))\n[INFO 11-06 04:43:56] ax.service.ax_client:\
+      \ Generated new trial 3 with parameters {'sinter_temperature_celsius': 997.980711,\
+      \ 'sinter_time_hours': 4.001461} using model Sobol.\n[INFO 11-06 04:43:56] ax.service.ax_client:\
+      \ Completed trial 3 with data: {'density_g_per_cm3': (5.925658, 0.01)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/ax/modelbridge/cross_validation.py:463:\
+      \ UserWarning: Encountered exception in computing model fit quality: RandomModelBridge\
+      \ does not support prediction.\n  warn(\"Encountered exception in computing\
+      \ model fit quality: \" + str(e))\n[INFO 11-06 04:43:56] ax.service.ax_client:\
+      \ Generated new trial 4 with parameters {'sinter_temperature_celsius': 902.541356,\
+      \ 'sinter_time_hours': 2.275384} using model Sobol.\n[INFO 11-06 04:43:56] ax.service.ax_client:\
+      \ Completed trial 4 with data: {'density_g_per_cm3': (3.266025, 0.01)}.\n[INFO\
+      \ 11-06 04:43:57] ax.service.ax_client: Generated new trial 5 with parameters\
+      \ {'sinter_temperature_celsius': 1065.025468, 'sinter_time_hours': 5.028563}\
+      \ using model BoTorch.\n[INFO 11-06 04:43:57] ax.service.ax_client: Completed\
+      \ trial 5 with data: {'density_g_per_cm3': (5.992196, 0.01)}.\n[INFO 11-06 04:43:58]\
+      \ ax.service.ax_client: Generated new trial 6 with parameters {'sinter_temperature_celsius':\
+      \ 1162.027562, 'sinter_time_hours': 3.618845} using model BoTorch.\n[INFO 11-06\
+      \ 04:43:58] ax.service.ax_client: Completed trial 6 with data: {'density_g_per_cm3':\
+      \ (5.950598, 0.01)}.\n[INFO 11-06 04:43:58] ax.service.ax_client: Generated\
+      \ new trial 7 with parameters {'sinter_temperature_celsius': 1077.141988, 'sinter_time_hours':\
+      \ 3.823658} using model BoTorch.\n[INFO 11-06 04:43:58] ax.service.ax_client:\
+      \ Completed trial 7 with data: {'density_g_per_cm3': (6.0, 0.01)}.\n[INFO 11-06\
+      \ 04:43:59] ax.service.ax_client: Generated new trial 8 with parameters {'sinter_temperature_celsius':\
+      \ 1132.199844, 'sinter_time_hours': 1.0} using model BoTorch.\n[INFO 11-06 04:43:59]\
+      \ ax.service.ax_client: Completed trial 8 with data: {'density_g_per_cm3': (5.995114,\
+      \ 0.01)}.\n[INFO 11-06 04:44:00] ax.service.ax_client: Generated new trial 9\
+      \ with parameters {'sinter_temperature_celsius': 1200.0, 'sinter_time_hours':\
+      \ 1.0} using model BoTorch.\n[INFO 11-06 04:44:00] ax.service.ax_client: Completed\
+      \ trial 9 with data: {'density_g_per_cm3': (5.971491, 0.01)}.\n[INFO 11-06 04:44:02]\
+      \ ax.service.ax_client: Generated new trial 10 with parameters {'sinter_temperature_celsius':\
+      \ 1082.727285, 'sinter_time_hours': 2.640276} using model BoTorch.\n[INFO 11-06\
+      \ 04:44:02] ax.service.ax_client: Completed trial 10 with data: {'density_g_per_cm3':\
+      \ (5.985352, 0.01)}.\n[INFO 11-06 04:44:04] ax.service.ax_client: Generated\
+      \ new trial 11 with parameters {'sinter_temperature_celsius': 1048.464321, 'sinter_time_hours':\
+      \ 4.388721} using model BoTorch.\n[INFO 11-06 04:44:04] ax.service.ax_client:\
+      \ Completed trial 11 with data: {'density_g_per_cm3': (5.992483, 0.01)}.\n[INFO\
+      \ 11-06 04:44:05] ax.service.ax_client: Generated new trial 12 with parameters\
+      \ {'sinter_temperature_celsius': 1159.322771, 'sinter_time_hours': 1.003392}\
+      \ using model BoTorch.\n[INFO 11-06 04:44:05] ax.service.ax_client: Completed\
+      \ trial 12 with data: {'density_g_per_cm3': (5.947371, 0.01)}.\n[INFO 11-06\
+      \ 04:44:06] ax.service.ax_client: Generated new trial 13 with parameters {'sinter_temperature_celsius':\
+      \ 1121.196691, 'sinter_time_hours': 2.496121} using model BoTorch.\n[INFO 11-06\
+      \ 04:44:06] ax.service.ax_client: Completed trial 13 with data: {'density_g_per_cm3':\
+      \ (5.968671, 0.01)}.\n[INFO 11-06 04:44:08] ax.service.ax_client: Generated\
+      \ new trial 14 with parameters {'sinter_temperature_celsius': 1082.086868, 'sinter_time_hours':\
+      \ 1.0} using model BoTorch.\n[INFO 11-06 04:44:08] ax.service.ax_client: Completed\
+      \ trial 14 with data: {'density_g_per_cm3': (5.866708, 0.01)}.\n[INFO 11-06\
+      \ 04:44:09] ax.service.ax_client: Generated new trial 15 with parameters {'sinter_temperature_celsius':\
+      \ 1200.0, 'sinter_time_hours': 2.929917} using model BoTorch.\n[INFO 11-06 04:44:09]\
+      \ ax.service.ax_client: Completed trial 15 with data: {'density_g_per_cm3':\
+      \ (5.911061, 0.01)}.\n[INFO 11-06 04:44:11] ax.service.ax_client: Generated\
+      \ new trial 16 with parameters {'sinter_temperature_celsius': 1061.681559, 'sinter_time_hours':\
+      \ 3.524296} using model BoTorch.\n[INFO 11-06 04:44:11] ax.service.ax_client:\
+      \ Completed trial 16 with data: {'density_g_per_cm3': (6.0, 0.01)}.\n[INFO 11-06\
+      \ 04:44:12] ax.service.ax_client: Generated new trial 17 with parameters {'sinter_temperature_celsius':\
+      \ 1038.920405, 'sinter_time_hours': 6.0} using model BoTorch.\n[INFO 11-06 04:44:12]\
+      \ ax.service.ax_client: Completed trial 17 with data: {'density_g_per_cm3':\
+      \ (6.0, 0.01)}.\n[INFO 11-06 04:44:14] ax.service.ax_client: Generated new trial\
+      \ 18 with parameters {'sinter_temperature_celsius': 1011.651373, 'sinter_time_hours':\
+      \ 6.0} using model BoTorch.\n[INFO 11-06 04:44:14] ax.service.ax_client: Completed\
+      \ trial 18 with data: {'density_g_per_cm3': (5.984761, 0.01)}.\n[INFO 11-06\
+      \ 04:44:15] ax.service.ax_client: Generated new trial 19 with parameters {'sinter_temperature_celsius':\
+      \ 1004.027785, 'sinter_time_hours': 1.575898} using model BoTorch.\n[INFO 11-06\
+      \ 04:44:15] ax.service.ax_client: Completed trial 19 with data: {'density_g_per_cm3':\
+      \ (5.188983, 0.01)}.\n[INFO 11-06 04:44:17] ax.service.ax_client: Generated\
+      \ new trial 20 with parameters {'sinter_temperature_celsius': 800.0, 'sinter_time_hours':\
+      \ 6.0} using model BoTorch.\n[INFO 11-06 04:44:17] ax.service.ax_client: Completed\
+      \ trial 20 with data: {'density_g_per_cm3': (2.429695, 0.01)}.\n[INFO 11-06\
+      \ 04:44:18] ax.service.ax_client: Generated new trial 21 with parameters {'sinter_temperature_celsius':\
+      \ 1080.101006, 'sinter_time_hours': 6.0} using model BoTorch.\n[INFO 11-06 04:44:18]\
+      \ ax.service.ax_client: Completed trial 21 with data: {'density_g_per_cm3':\
+      \ (5.992295, 0.01)}.\n[INFO 11-06 04:44:19] ax.service.ax_client: Generated\
+      \ new trial 22 with parameters {'sinter_temperature_celsius': 935.681513, 'sinter_time_hours':\
+      \ 6.0} using model BoTorch.\n[INFO 11-06 04:44:19] ax.service.ax_client: Completed\
+      \ trial 22 with data: {'density_g_per_cm3': (5.379512, 0.01)}.\n[INFO 11-06\
+      \ 04:44:21] ax.service.ax_client: Generated new trial 23 with parameters {'sinter_temperature_celsius':\
+      \ 1115.685917, 'sinter_time_hours': 4.689025} using model BoTorch.\n[INFO 11-06\
+      \ 04:44:21] ax.service.ax_client: Completed trial 23 with data: {'density_g_per_cm3':\
+      \ (5.981897, 0.01)}.\n[INFO 11-06 04:44:22] ax.service.ax_client: Generated\
+      \ new trial 24 with parameters {'sinter_temperature_celsius': 1042.873837, 'sinter_time_hours':\
+      \ 3.665045} using model BoTorch.\n[INFO 11-06 04:44:22] ax.service.ax_client:\
+      \ Completed trial 24 with data: {'density_g_per_cm3': (5.975193, 0.01)}.\n[INFO\
+      \ 11-06 04:44:23] ax.service.ax_client: Generated new trial 25 with parameters\
+      \ {'sinter_temperature_celsius': 1033.206469, 'sinter_time_hours': 5.502373}\
+      \ using model BoTorch.\n[INFO 11-06 04:44:23] ax.service.ax_client: Completed\
+      \ trial 25 with data: {'density_g_per_cm3': (5.976795, 0.01)}.\n[INFO 11-06\
+      \ 04:44:24] ax.service.ax_client: Generated new trial 26 with parameters {'sinter_temperature_celsius':\
+      \ 1102.351875, 'sinter_time_hours': 3.768856} using model BoTorch.\n[INFO 11-06\
+      \ 04:44:24] ax.service.ax_client: Completed trial 26 with data: {'density_g_per_cm3':\
+      \ (5.984311, 0.01)}.\n[INFO 11-06 04:44:26] ax.service.ax_client: Generated\
+      \ new trial 27 with parameters {'sinter_temperature_celsius': 1084.579787, 'sinter_time_hours':\
+      \ 5.126605} using model BoTorch.\n[INFO 11-06 04:44:26] ax.service.ax_client:\
+      \ Completed trial 27 with data: {'density_g_per_cm3': (6.0, 0.01)}.\n[INFO 11-06\
+      \ 04:44:28] ax.service.ax_client: Generated new trial 28 with parameters {'sinter_temperature_celsius':\
+      \ 1055.823963, 'sinter_time_hours': 6.0} using model BoTorch.\n[INFO 11-06 04:44:28]\
+      \ ax.service.ax_client: Completed trial 28 with data: {'density_g_per_cm3':\
+      \ (5.996841, 0.01)}.\n[INFO 11-06 04:44:30] ax.service.ax_client: Generated\
+      \ new trial 29 with parameters {'sinter_temperature_celsius': 1062.134187, 'sinter_time_hours':\
+      \ 3.1658} using model BoTorch.\n[INFO 11-06 04:44:30] ax.service.ax_client:\
+      \ Completed trial 29 with data: {'density_g_per_cm3': (5.986616, 0.01)}.\nTraceback\
+      \ (most recent call last):\n  File \"/home/runner/work/honegumi-rag-assistant/honegumi-rag-assistant/data/processed/evaluation/code_files/honegumi_generated_1_research_scientist_corrected.py\"\
+      , line 233, in <module>\n    main()\n  File \"/home/runner/work/honegumi-rag-assistant/honegumi-rag-assistant/data/processed/evaluation/code_files/honegumi_generated_1_research_scientist_corrected.py\"\
+      , line 183, in main\n    best_density_mean = metrics[density_metric_name][\"\
+      mean\"]\n                        ~~~~~~~^^^^^^^^^^^^^^^^^^^^^\nTypeError: tuple\
+      \ indices must be integers or slices, not str\n"
+    execution_time: 57.79s
+    timed_out: false
+  overall_passed: false
+- file: data/processed/evaluation/code_files/honegumi_generated_1_research_scientist_natural.py
+  syntax_check:
+    passed: true
+    error: null
+  import_check:
+    passed: true
+    error: null
+  runtime_check:
+    passed: false
+    error: "Non-zero exit code 1: [WARNING 11-06 04:39:01] ax.service.utils.with_db_settings_base:\
+      \ Ax currently requires a sqlalchemy version below 2.0. This will be addressed\
+      \ in a future release. Disabling SQL storage in Ax for now, if you would like\
+      \ to use SQL storage please install Ax with mysql extras via `pip install ax-platform[mysql]`.\n\
+      [INFO 11-06 04:39:01] ax.service.ax_client: Starting optimization with verbose\
+      \ logging. To disable logging, set the `verbose_logging` argument to `False`.\
+      \ Note that float values in the logs are rounded to 6 decimal points.\n[WARNING\
+      \ 11-06 04:39:01] ax.service.ax_client: Random seed set to 12345. Note that\
+      \ this setting only affects the Sobol quasi-random generator and BoTorch-powered\
+      \ Bayesian optimization models. For the latter models, setting random seed to\
+      \ the same number for two optimizations will make the generated trials similar,\
+      \ but not exactly the same, and over time the trials will diverge more.\n[INFO\
+      \ 11-06 04:39:01] ax.service.utils.instantiation: Created search space: SearchSpace(parameters=[RangeParameter(name='temperature_celsius',\
+      \ parameter_type=FLOAT, range=[800.0, 1200.0]), RangeParameter(name='time_hours',\
+      \ parameter_type=FLOAT, range=[1.0, 6.0])], parameter_constraints=[]).\n[INFO\
+      \ 11-06 04:39:01] ax.modelbridge.dispatch_utils: Using Models.BOTORCH_MODULAR\
+      \ since there is at least one ordered parameter and there are no unordered categorical\
+      \ parameters.\n[INFO 11-06 04:39:01] ax.modelbridge.dispatch_utils: Calculating\
+      \ the number of remaining initialization trials based on num_initialization_trials=None\
+      \ max_initialization_trials=None num_tunable_parameters=2 num_trials=None use_batch_trials=False\n\
+      [INFO 11-06 04:39:01] ax.modelbridge.dispatch_utils: calculated num_initialization_trials=5\n\
+      [INFO 11-06 04:39:01] ax.modelbridge.dispatch_utils: num_completed_initialization_trials=0\
+      \ num_remaining_initialization_trials=5\n[INFO 11-06 04:39:01] ax.modelbridge.dispatch_utils:\
+      \ `verbose`, `disable_progbar`, and `jit_compile` are not yet supported when\
+      \ using `choose_generation_strategy` with ModularBoTorchModel, dropping these\
+      \ arguments.\n[INFO 11-06 04:39:01] ax.modelbridge.dispatch_utils: Using Bayesian\
+      \ Optimization generation strategy: GenerationStrategy(name='Sobol+BoTorch',\
+      \ steps=[Sobol for 5 trials, BoTorch for subsequent trials]). Iterations after\
+      \ 5 will take longer to generate due to model-fitting.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/ax/modelbridge/cross_validation.py:463:\
+      \ UserWarning: Encountered exception in computing model fit quality: RandomModelBridge\
+      \ does not support prediction.\n  warn(\"Encountered exception in computing\
+      \ model fit quality: \" + str(e))\n[INFO 11-06 04:39:01] ax.service.ax_client:\
+      \ Generated new trial 0 with parameters {'temperature_celsius': 1036.118817,\
+      \ 'time_hours': 3.177248} using model Sobol.\n[INFO 11-06 04:39:01] ax.service.ax_client:\
+      \ Completed trial 0 with data: {'density': (0.571862, 0.005)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/ax/modelbridge/cross_validation.py:463:\
+      \ UserWarning: Encountered exception in computing model fit quality: RandomModelBridge\
+      \ does not support prediction.\n  warn(\"Encountered exception in computing\
+      \ model fit quality: \" + str(e))\n[INFO 11-06 04:39:02] ax.service.ax_client:\
+      \ Generated new trial 1 with parameters {'temperature_celsius': 935.44846, 'time_hours':\
+      \ 4.397369} using model Sobol.\n[INFO 11-06 04:39:02] ax.service.ax_client:\
+      \ Completed trial 1 with data: {'density': (0.558555, 0.005)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/ax/modelbridge/cross_validation.py:463:\
+      \ UserWarning: Encountered exception in computing model fit quality: RandomModelBridge\
+      \ does not support prediction.\n  warn(\"Encountered exception in computing\
+      \ model fit quality: \" + str(e))\n[INFO 11-06 04:39:02] ax.service.ax_client:\
+      \ Generated new trial 2 with parameters {'temperature_celsius': 867.346747,\
+      \ 'time_hours': 2.124588} using model Sobol.\n[INFO 11-06 04:39:02] ax.service.ax_client:\
+      \ Completed trial 2 with data: {'density': (0.550965, 0.005)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/ax/modelbridge/cross_validation.py:463:\
+      \ UserWarning: Encountered exception in computing model fit quality: RandomModelBridge\
+      \ does not support prediction.\n  warn(\"Encountered exception in computing\
+      \ model fit quality: \" + str(e))\n[INFO 11-06 04:39:02] ax.service.ax_client:\
+      \ Generated new trial 3 with parameters {'temperature_celsius': 1166.652008,\
+      \ 'time_hours': 5.904505} using model Sobol.\n[INFO 11-06 04:39:02] ax.service.ax_client:\
+      \ Completed trial 3 with data: {'density': (0.689489, 0.005)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/ax/modelbridge/cross_validation.py:463:\
+      \ UserWarning: Encountered exception in computing model fit quality: RandomModelBridge\
+      \ does not support prediction.\n  warn(\"Encountered exception in computing\
+      \ model fit quality: \" + str(e))\n[INFO 11-06 04:39:02] ax.service.ax_client:\
+      \ Generated new trial 4 with parameters {'temperature_celsius': 1101.968179,\
+      \ 'time_hours': 1.224159} using model Sobol.\n[INFO 11-06 04:39:02] ax.service.ax_client:\
+      \ Completed trial 4 with data: {'density': (0.579207, 0.005)}.\n[INFO 11-06\
+      \ 04:39:02] ax.service.ax_client: Generated new trial 5 with parameters {'temperature_celsius':\
+      \ 1200.0, 'time_hours': 6.0} using model BoTorch.\n[INFO 11-06 04:39:02] ax.service.ax_client:\
+      \ Completed trial 5 with data: {'density': (0.721456, 0.005)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/linear_operator/utils/cholesky.py:40:\
+      \ NumericalWarning: A not p.d., added jitter of 1.0e-08 to the diagonal\n  warnings.warn(\n\
+      [INFO 11-06 04:39:03] ax.service.ax_client: Generated new trial 6 with parameters\
+      \ {'temperature_celsius': 1200.0, 'time_hours': 5.205371} using model BoTorch.\n\
+      [INFO 11-06 04:39:03] ax.service.ax_client: Completed trial 6 with data: {'density':\
+      \ (0.710651, 0.005)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/linear_operator/utils/cholesky.py:40:\
+      \ NumericalWarning: A not p.d., added jitter of 1.0e-08 to the diagonal\n  warnings.warn(\n\
+      [INFO 11-06 04:39:03] ax.service.ax_client: Generated new trial 7 with parameters\
+      \ {'temperature_celsius': 1200.0, 'time_hours': 6.0} using model BoTorch.\n\
+      [INFO 11-06 04:39:03] ax.service.ax_client: Completed trial 7 with data: {'density':\
+      \ (0.720426, 0.005)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/linear_operator/utils/cholesky.py:40:\
+      \ NumericalWarning: A not p.d., added jitter of 1.0e-08 to the diagonal\n  warnings.warn(\n\
+      [INFO 11-06 04:39:04] ax.service.ax_client: Generated new trial 8 with parameters\
+      \ {'temperature_celsius': 1200.0, 'time_hours': 6.0} using model BoTorch.\n\
+      [INFO 11-06 04:39:04] ax.service.ax_client: Completed trial 8 with data: {'density':\
+      \ (0.732047, 0.005)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/linear_operator/utils/cholesky.py:40:\
+      \ NumericalWarning: A not p.d., added jitter of 1.0e-08 to the diagonal\n  warnings.warn(\n\
+      [INFO 11-06 04:39:04] ax.service.ax_client: Generated new trial 9 with parameters\
+      \ {'temperature_celsius': 1200.0, 'time_hours': 6.0} using model BoTorch.\n\
+      [INFO 11-06 04:39:04] ax.service.ax_client: Completed trial 9 with data: {'density':\
+      \ (0.728621, 0.005)}.\n[INFO 11-06 04:39:04] ax.service.ax_client: Generated\
+      \ new trial 10 with parameters {'temperature_celsius': 1200.0, 'time_hours':\
+      \ 6.0} using model BoTorch.\n[INFO 11-06 04:39:04] ax.service.ax_client: Completed\
+      \ trial 10 with data: {'density': (0.714883, 0.005)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/linear_operator/utils/cholesky.py:40:\
+      \ NumericalWarning: A not p.d., added jitter of 1.0e-08 to the diagonal\n  warnings.warn(\n\
+      [INFO 11-06 04:39:04] ax.service.ax_client: Generated new trial 11 with parameters\
+      \ {'temperature_celsius': 1200.0, 'time_hours': 6.0} using model BoTorch.\n\
+      [INFO 11-06 04:39:04] ax.service.ax_client: Completed trial 11 with data: {'density':\
+      \ (0.721444, 0.005)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/linear_operator/utils/cholesky.py:40:\
+      \ NumericalWarning: A not p.d., added jitter of 1.0e-08 to the diagonal\n  warnings.warn(\n\
+      [INFO 11-06 04:39:05] ax.service.ax_client: Generated new trial 12 with parameters\
+      \ {'temperature_celsius': 1200.0, 'time_hours': 6.0} using model BoTorch.\n\
+      [INFO 11-06 04:39:05] ax.service.ax_client: Completed trial 12 with data: {'density':\
+      \ (0.722297, 0.005)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/linear_operator/utils/cholesky.py:40:\
+      \ NumericalWarning: A not p.d., added jitter of 1.0e-08 to the diagonal\n  warnings.warn(\n\
+      [INFO 11-06 04:39:05] ax.service.ax_client: Generated new trial 13 with parameters\
+      \ {'temperature_celsius': 1200.0, 'time_hours': 6.0} using model BoTorch.\n\
+      [INFO 11-06 04:39:05] ax.service.ax_client: Completed trial 13 with data: {'density':\
+      \ (0.719941, 0.005)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/linear_operator/utils/cholesky.py:40:\
+      \ NumericalWarning: A not p.d., added jitter of 1.0e-08 to the diagonal\n  warnings.warn(\n\
+      [INFO 11-06 04:39:05] ax.service.ax_client: Generated new trial 14 with parameters\
+      \ {'temperature_celsius': 1200.0, 'time_hours': 6.0} using model BoTorch.\n\
+      [INFO 11-06 04:39:05] ax.service.ax_client: Completed trial 14 with data: {'density':\
+      \ (0.715717, 0.005)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/linear_operator/utils/cholesky.py:40:\
+      \ NumericalWarning: A not p.d., added jitter of 1.0e-08 to the diagonal\n  warnings.warn(\n\
+      [INFO 11-06 04:39:06] ax.service.ax_client: Generated new trial 15 with parameters\
+      \ {'temperature_celsius': 1200.0, 'time_hours': 6.0} using model BoTorch.\n\
+      [INFO 11-06 04:39:06] ax.service.ax_client: Completed trial 15 with data: {'density':\
+      \ (0.719989, 0.005)}.\n[INFO 11-06 04:39:06] ax.service.ax_client: Generated\
+      \ new trial 16 with parameters {'temperature_celsius': 1200.0, 'time_hours':\
+      \ 6.0} using model BoTorch.\n[INFO 11-06 04:39:06] ax.service.ax_client: Completed\
+      \ trial 16 with data: {'density': (0.723467, 0.005)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/linear_operator/utils/cholesky.py:40:\
+      \ NumericalWarning: A not p.d., added jitter of 1.0e-08 to the diagonal\n  warnings.warn(\n\
+      [INFO 11-06 04:39:06] ax.service.ax_client: Generated new trial 17 with parameters\
+      \ {'temperature_celsius': 800.0, 'time_hours': 6.0} using model BoTorch.\n[INFO\
+      \ 11-06 04:39:06] ax.service.ax_client: Completed trial 17 with data: {'density':\
+      \ (0.549944, 0.005)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/linear_operator/utils/cholesky.py:40:\
+      \ NumericalWarning: A not p.d., added jitter of 1.0e-08 to the diagonal\n  warnings.warn(\n\
+      [INFO 11-06 04:39:07] ax.service.ax_client: Generated new trial 18 with parameters\
+      \ {'temperature_celsius': 1200.0, 'time_hours': 6.0} using model BoTorch.\n\
+      [INFO 11-06 04:39:07] ax.service.ax_client: Completed trial 18 with data: {'density':\
+      \ (0.722035, 0.005)}.\n[INFO 11-06 04:39:07] ax.service.ax_client: Generated\
+      \ new trial 19 with parameters {'temperature_celsius': 1200.0, 'time_hours':\
+      \ 6.0} using model BoTorch.\n[INFO 11-06 04:39:07] ax.service.ax_client: Completed\
+      \ trial 19 with data: {'density': (0.733359, 0.005)}.\n[INFO 11-06 04:39:07]\
+      \ ax.service.ax_client: Generated new trial 20 with parameters {'temperature_celsius':\
+      \ 1200.0, 'time_hours': 6.0} using model BoTorch.\n[INFO 11-06 04:39:07] ax.service.ax_client:\
+      \ Completed trial 20 with data: {'density': (0.721117, 0.005)}.\n[INFO 11-06\
+      \ 04:39:07] ax.service.ax_client: Generated new trial 21 with parameters {'temperature_celsius':\
+      \ 1200.0, 'time_hours': 1.0} using model BoTorch.\n[INFO 11-06 04:39:07] ax.service.ax_client:\
+      \ Completed trial 21 with data: {'density': (0.614447, 0.005)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/linear_operator/utils/cholesky.py:40:\
+      \ NumericalWarning: A not p.d., added jitter of 1.0e-08 to the diagonal\n  warnings.warn(\n\
+      [INFO 11-06 04:39:08] ax.service.ax_client: Generated new trial 22 with parameters\
+      \ {'temperature_celsius': 1200.0, 'time_hours': 6.0} using model BoTorch.\n\
+      [INFO 11-06 04:39:08] ax.service.ax_client: Completed trial 22 with data: {'density':\
+      \ (0.724781, 0.005)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/linear_operator/utils/cholesky.py:40:\
+      \ NumericalWarning: A not p.d., added jitter of 1.0e-08 to the diagonal\n  warnings.warn(\n\
+      [INFO 11-06 04:39:08] ax.service.ax_client: Generated new trial 23 with parameters\
+      \ {'temperature_celsius': 1200.0, 'time_hours': 6.0} using model BoTorch.\n\
+      [INFO 11-06 04:39:08] ax.service.ax_client: Completed trial 23 with data: {'density':\
+      \ (0.723512, 0.005)}.\n/opt/hostedtoolcache/Python/3.11.14/x64/lib/python3.11/site-packages/linear_operator/utils/cholesky.py:40:\
+      \ NumericalWarning: A not p.d., added jitter of 1.0e-08 to the diagonal\n  warnings.warn(\n\
+      [INFO 11-06 04:39:08] ax.service.ax_client: Generated new trial 24 with parameters\
+      \ {'temperature_celsius': 1200.0, 'time_hours': 6.0} using model BoTorch.\n\
+      [INFO 11-06 04:39:09] ax.service.ax_client: Completed trial 24 with data: {'density':\
+      \ (0.724882, 0.005)}.\nTraceback (most recent call last):\n  File \"/home/runner/work/honegumi-rag-assistant/honegumi-rag-assistant/data/processed/evaluation/code_files/honegumi_generated_1_research_scientist_natural.py\"\
+      , line 110, in <module>\n    best_density_mean, best_density_sem = best_metrics[\"\
+      density\"]\n                                          ~~~~~~~~~~~~^^^^^^^^^^^\n\
+      TypeError: tuple indices must be integers or slices, not str\n"
+    execution_time: 11.13s
+    timed_out: false
+  overall_passed: false
+- file: data/processed/evaluation/code_files/honegumi_generated_2_computational_intermediate_corrected.py
+  syntax_check:
+    passed: true
+    error: null
+  import_check:
+    passed: true
+    error: null
+  runtime_check:
+    passed: true
+    error: null
+    execution_time: 120.04s
+    timed_out: true
+    note: Execution forcibly terminated after 120s timeout (expected for long-running
+      optimization scripts)
+  overall_passed: true
+- file: data/processed/evaluation/code_files/honegumi_generated_2_computational_intermediate_natural.py
+  syntax_check:
+    passed: true
+    error: null
+  import_check:
+    passed: false
+    error: tuple indices must be integers or slices, not str
+  runtime_check:
+    passed: true
+    error: null
+    execution_time: 120.02s
+    timed_out: true
+    note: Execution forcibly terminated after 120s timeout (expected for long-running
+      optimization scripts)
+  overall_passed: false
+- file: data/processed/evaluation/code_files/honegumi_generated_2_industrial_practitioner_corrected.py
+  syntax_check:
+    passed: true
+    error: null
+  import_check:
+    passed: true
+    error: null
+  runtime_check:
+    passed: true
+    error: null
+    execution_time: 120.02s
+    timed_out: true
+    note: Execution forcibly terminated after 120s timeout (expected for long-running
+      optimization scripts)
+  overall_passed: true
+- file: data/processed/evaluation/code_files/honegumi_generated_2_industrial_practitioner_natural.py
+  syntax_check:
+    passed: true
+    error: null
+  import_check:
+    passed: false
+    error: AxClient.get_next_trials() got an unexpected keyword argument 'batch_size'
+  runtime_check:
+    passed: false
+    error: "Non-zero exit code 1: [WARNING 11-06 06:29:55] ax.service.utils.with_db_settings_base:\
+      \ Ax currently requires a sqlalchemy version below 2.0. This will be addressed\
+      \ in a future release. Disabling SQL storage in Ax for now, if you would like\
+      \ to use SQL storage please install Ax with mysql extras via `pip install ax-platform[mysql]`.\n\
+      [INFO 11-06 06:29:55] ax.service.ax_client: Starting optimization with verbose\
+      \ logging. To disable logging, set the `verbose_logging` argument to `False`.\
+      \ Note that float values in the logs are rounded to 6 decimal points.\n[INFO\
+      \ 11-06 06:29:55] ax.service.utils.instantiation: Inferred value type of ParameterType.FLOAT\
+      \ for parameter resin_fraction. If that is not the expected value type, you\
+      \ can explicitly specify 'value_type' ('int', 'float', 'bool' or 'str') in parameter\
+      \ dict.\n[INFO 11-06 06:29:55] ax.service.utils.instantiation: Inferred value\
+      \ type of ParameterType.FLOAT for parameter inhibitor_fraction. If that is not\
+      \ the expected value type, you can explicitly specify 'value_type' ('int', 'float',\
+      \ 'bool' or 'str') in parameter dict.\n[INFO 11-06 06:29:55] ax.service.utils.instantiation:\
+      \ Inferred value type of ParameterType.FLOAT for parameter insulator_fraction.\
+      \ If that is not the expected value type, you can explicitly specify 'value_type'\
+      \ ('int', 'float', 'bool' or 'str') in parameter dict.\n[INFO 11-06 06:29:55]\
+      \ ax.service.utils.instantiation: Inferred value type of ParameterType.FLOAT\
+      \ for parameter coating_thickness_microns. If that is not the expected value\
+      \ type, you can explicitly specify 'value_type' ('int', 'float', 'bool' or 'str')\
+      \ in parameter dict.\n[INFO 11-06 06:29:55] ax.service.utils.instantiation:\
+      \ Created search space: SearchSpace(parameters=[RangeParameter(name='resin_fraction',\
+      \ parameter_type=FLOAT, range=[0.0, 1.0]), RangeParameter(name='inhibitor_fraction',\
+      \ parameter_type=FLOAT, range=[0.0, 1.0]), RangeParameter(name='insulator_fraction',\
+      \ parameter_type=FLOAT, range=[0.0, 1.0]), RangeParameter(name='coating_thickness_microns',\
+      \ parameter_type=FLOAT, range=[10.0, 80.0])], parameter_constraints=[ParameterConstraint(1.0*inhibitor_fraction\
+      \ + 1.0*insulator_fraction + 1.0*resin_fraction <= 1.0), OrderConstraint(inhibitor_fraction\
+      \ <= resin_fraction), OrderConstraint(insulator_fraction <= resin_fraction)]).\n\
+      [INFO 11-06 06:29:55] ax.modelbridge.dispatch_utils: Using Models.BOTORCH_MODULAR\
+      \ since there is at least one ordered parameter and there are no unordered categorical\
+      \ parameters.\n[INFO 11-06 06:29:55] ax.modelbridge.dispatch_utils: Calculating\
+      \ the number of remaining initialization trials based on num_initialization_trials=None\
+      \ max_initialization_trials=None num_tunable_parameters=4 num_trials=None use_batch_trials=False\n\
+      [INFO 11-06 06:29:55] ax.modelbridge.dispatch_utils: calculated num_initialization_trials=8\n\
+      [INFO 11-06 06:29:55] ax.modelbridge.dispatch_utils: num_completed_initialization_trials=0\
+      \ num_remaining_initialization_trials=8\n[INFO 11-06 06:29:55] ax.modelbridge.dispatch_utils:\
+      \ `verbose`, `disable_progbar`, and `jit_compile` are not yet supported when\
+      \ using `choose_generation_strategy` with ModularBoTorchModel, dropping these\
+      \ arguments.\n[INFO 11-06 06:29:55] ax.modelbridge.dispatch_utils: Using Bayesian\
+      \ Optimization generation strategy: GenerationStrategy(name='Sobol+BoTorch',\
+      \ steps=[Sobol for 8 trials, BoTorch for subsequent trials]). Iterations after\
+      \ 8 will take longer to generate due to model-fitting.\nTraceback (most recent\
+      \ call last):\n  File \"/home/runner/work/honegumi-rag-assistant/honegumi-rag-assistant/data/processed/evaluation/code_files/honegumi_generated_2_industrial_practitioner_natural.py\"\
+      , line 147, in <module>\n    parameterizations, optimization_complete = ax_client.get_next_trials(batch_size=batch_size)\n\
+      \                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n\
+      TypeError: AxClient.get_next_trials() got an unexpected keyword argument 'batch_size'\n"
+    execution_time: 3.69s
+    timed_out: false
+  overall_passed: false
+- file: data/processed/evaluation/code_files/honegumi_generated_2_research_scientist_corrected.py
+  syntax_check:
+    passed: true
+    error: null
+  import_check:
+    passed: false
+    error: '''tuple'' object has no attribute ''items'''
+  runtime_check:
+    passed: true
+    error: null
+    execution_time: 120.03s
+    timed_out: true
+    note: Execution forcibly terminated after 120s timeout (expected for long-running
+      optimization scripts)
+  overall_passed: false
+- file: data/processed/evaluation/code_files/honegumi_generated_2_research_scientist_natural.py
+  syntax_check:
+    passed: true
+    error: null
+  import_check:
+    passed: false
+    error: tuple indices must be integers or slices, not str
+  runtime_check:
+    passed: true
+    error: null
+    execution_time: 120.02s
+    timed_out: true
+    note: Execution forcibly terminated after 120s timeout (expected for long-running
+      optimization scripts)
+  overall_passed: false
+- file: data/processed/evaluation/code_files/honegumi_generated_3_data_science_advanced_corrected.py
+  syntax_check:
+    passed: true
+    error: null
+  import_check:
+    passed: false
+    error: '''strength_MPa'''
+  runtime_check:
+    passed: true
+    error: null
+    execution_time: 120.02s
+    timed_out: true
+    note: Execution forcibly terminated after 120s timeout (expected for long-running
+      optimization scripts)
+  overall_passed: false
+- file: data/processed/evaluation/code_files/honegumi_generated_3_data_science_advanced_natural.py
+  syntax_check:
+    passed: true
+    error: null
+  import_check:
+    passed: true
+    error: null
+  runtime_check:
+    passed: true
+    error: null
+    execution_time: 120.02s
+    timed_out: true
+    note: Execution forcibly terminated after 120s timeout (expected for long-running
+      optimization scripts)
+  overall_passed: true
+- file: data/processed/evaluation/code_files/honegumi_generated_3_industrial_practitioner_corrected.py
+  syntax_check:
+    passed: true
+    error: null
+  import_check:
+    passed: true
+    error: null
+  runtime_check:
+    passed: true
+    error: null
+    execution_time: 120.02s
+    timed_out: true
+    note: Execution forcibly terminated after 120s timeout (expected for long-running
+      optimization scripts)
+  overall_passed: true
+- file: data/processed/evaluation/code_files/honegumi_generated_3_industrial_practitioner_natural.py
+  syntax_check:
+    passed: true
+    error: null
+  import_check:
+    passed: false
+    error: '''tensile_strength_mpa'''
+  runtime_check:
+    passed: true
+    error: null
+    execution_time: 120.02s
+    timed_out: true
+    note: Execution forcibly terminated after 120s timeout (expected for long-running
+      optimization scripts)
+  overall_passed: false
+- file: data/processed/evaluation/code_files/honegumi_generated_3_research_scientist_corrected.py
+  syntax_check:
+    passed: true
+    error: null
+  import_check:
+    passed: true
+    error: null
+  runtime_check:
+    passed: true
+    error: null
+    execution_time: 120.02s
+    timed_out: true
+    note: Execution forcibly terminated after 120s timeout (expected for long-running
+      optimization scripts)
+  overall_passed: true
+- file: data/processed/evaluation/code_files/honegumi_generated_3_research_scientist_natural.py
+  syntax_check:
+    passed: true
+    error: null
+  import_check:
+    passed: true
+    error: null
+  runtime_check:
+    passed: true
+    error: null
+    execution_time: 120.05s
+    timed_out: true
+    note: Execution forcibly terminated after 120s timeout (expected for long-running
+      optimization scripts)
+  overall_passed: true
+- file: data/processed/evaluation/code_files/honegumi_generated_4_experimentalist_basic_corrected.py
+  syntax_check:
+    passed: true
+    error: null
+  import_check:
+    passed: true
+    error: null
+  runtime_check:
+    passed: true
+    error: null
+    execution_time: 120.02s
+    timed_out: true
+    note: Execution forcibly terminated after 120s timeout (expected for long-running
+      optimization scripts)
+  overall_passed: true
+- file: data/processed/evaluation/code_files/honegumi_generated_4_experimentalist_basic_natural.py
+  syntax_check:
+    passed: true
+    error: null
+  import_check:
+    passed: false
+    error: tuple indices must be integers or slices, not str
+  runtime_check:
+    passed: true
+    error: null
+    execution_time: 120.02s
+    timed_out: true
+    note: Execution forcibly terminated after 120s timeout (expected for long-running
+      optimization scripts)
+  overall_passed: false
